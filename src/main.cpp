@@ -62,7 +62,7 @@ PORT21,
 
 //Gyro scale, this is what your gyro reads when you spin the robot 360 degrees.
 //For most cases 360 will do fine here, but this scale factor can be very helpful when precision is necessary.
-360,
+356.5,
 
 /*---------------------------------------------------------------------------*/
 /*                                  PAUSE!                                   */
@@ -188,10 +188,10 @@ void pre_auton() {
 void autonomous(void) {
   auto_started = true;
   switch(current_auton_selection){ 
-    case 0:
+    case 1:
       odom_test();
       break;
-    case 1:         
+    case 0:         
       tank_odom_test();
       break;
     case 2:
@@ -238,20 +238,20 @@ void usercontrol(void) {
 
     // Code for the intake
 
-    if (Controller1.ButtonL2.pressing()){
-      topIntake.spin(forward, 12, volt);
-      bottomIntake.spin(forward, 12, volt);
-    }
+    // if (Controller1.ButtonL2.pressing()){
+    //   topIntake.spin(forward, 12, volt);
+    //   bottomIntake.spin(forward, 12, volt);
+    // }
 
-    else if (Controller1.ButtonL1.pressing()){
-      topIntake.spin(reverse, 12, volt);
-      bottomIntake.spin(reverse, 12, volt);
-    }
+    // else if (Controller1.ButtonL1.pressing()){
+    //   topIntake.spin(reverse, 12, volt);
+    //   bottomIntake.spin(reverse, 12, volt);
+    // }
 
-    else{
-      topIntake.stop();
-      bottomIntake.stop();
-    }
+    // else{
+    //   topIntake.stop();
+    //   bottomIntake.stop();
+    // }
 
     // 
 

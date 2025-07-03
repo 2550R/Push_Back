@@ -17,8 +17,7 @@ motor rightBottom = motor(PORT4, true);
 vex::optical optical_sensor(PORT11);
 vex::inertial inertial(PORT21);
 
-motor topIntake = motor(PORT10, false);
-motor bottomIntake = motor(PORT11, false);
+
 
 controller Controller1 = controller();
 
