@@ -1,286 +1,262 @@
-#include "vex.h"
+#include "main.h"
 
-using namespace vex;
-competition Competition;
+/////
+// For installation, upgrading, documentations, and tutorials, check out our website!
+// https://ez-robotics.github.io/EZ-Template/
+/////
 
-/*---------------------------------------------------------------------------*/
-/*                             VEXcode Config                                */
-/*                                                                           */
-/*  Before you do anything else, start by configuring your motors and        */
-/*  sensors. In VEXcode Pro V5, you can do this using the graphical          */
-/*  configurer port icon at the top right. In the VSCode extension, you'll   */
-/*  need to go to robot-config.cpp and robot-config.h and create the         */
-/*  motors yourself by following the style shown. All motors must be         */
-/*  properly reversed, meaning the drive should drive forward when all       */
-/*  motors spin forward.                                                     */
-/*---------------------------------------------------------------------------*/
+// Chassis constructor
+ez::Drive chassis(
+    // These are your drive motors, the first motor is used for sensing!
+    {1, 2, 3},     // Left Chassis Ports (negative port will reverse it!)
+    {-4, -5, -6},  // Right Chassis Ports (negative port will reverse it!)
 
-/*---------------------------------------------------------------------------*/
-/*                             JAR-Template Config                           */
-/*                                                                           */
-/*  Where all the magic happens. Follow the instructions below to input      */
-/*  all the physical constants and values for your robot. You should         */
-/*  already have configured your motors.                                     */
-/*---------------------------------------------------------------------------*/
+    7,      // IMU Port
+    4.125,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
+    343);   // Wheel RPM = cartridge * (motor gear / wheel gear)
 
-Drive chassis(
-
-//Pick your drive setup from the list below:
-//ZERO_TRACKER_NO_ODOM
-//ZERO_TRACKER_ODOM
-//TANK_ONE_FORWARD_ENCODER
-//TANK_ONE_FORWARD_ROTATION
-//TANK_ONE_SIDEWAYS_ENCODER
-//TANK_ONE_SIDEWAYS_ROTATION
-//TANK_TWO_ENCODER
-//TANK_TWO_ROTATION
-//HOLONOMIC_TWO_ENCODER
-//HOLONOMIC_TWO_ROTATION
-//
-//Write it here:
-TANK_TWO_ROTATION,
-
-//Add the names of your Drive motors into the motor groups below, separated by commas, i.e. motor_group(Motor1,Motor2,Motor3).
-//You will input whatever motor names you chose when you configured your robot using the sidebar configurer, they don't have to be "Motor1" and "Motor2".
-
-//Left Motors:
-motor_group(leftTop, leftMiddle, leftBottom),
-
-//Right Motors:
-motor_group(rightTop, rightMiddle, rightBottom),
-
-//Specify the PORT NUMBER of your inertial sensor, in PORT format (i.e. "PORT1", not simply "1"):
-PORT21,
-
-//Input your wheel diameter. (4" omnis are actually closer to 4.125"):
-3.25,
-
-//External ratio, must be in decimal, in the format of input teeth/output teeth.
-//If your motor has an 84-tooth gear and your wheel has a 60-tooth gear, this value will be 1.4.
-//If the motor drives the wheel directly, this value is 1:
-0.75,
-
-//Gyro scale, this is what your gyro reads when you spin the robot 360 degrees.
-//For most cases 360 will do fine here, but this scale factor can be very helpful when precision is necessary.
-360,
-
-/*---------------------------------------------------------------------------*/
-/*                                  PAUSE!                                   */
-/*                                                                           */
-/*  The rest of the drive constructor is for robots using POSITION TRACKING. */
-/*  If you are not using position tracking, leave the rest of the values as  */
-/*  they are.                                                                */
-/*---------------------------------------------------------------------------*/
-
-//If you are using ZERO_TRACKER_ODOM, you ONLY need to adjust the FORWARD TRACKER CENTER DISTANCE.
-
-//FOR HOLONOMIC DRIVES ONLY: Input your drive motors by position. This is only necessary for holonomic drives, otherwise this section can be left alone.
-//LF:      //RF:    
-PORT1,     -PORT2,
-
-//LB:      //RB: 
-PORT3,     -PORT4,
-
-//If you are using position tracking, this is the Forward Tracker port (the tracker which runs parallel to the direction of the chassis).
-//If this is a rotation sensor, enter it in "PORT1" format, inputting the port below.
-//If this is an encoder, enter the port as an integer. Triport A will be a "1", Triport B will be a "2", etc.
-PORT9,
-
-//Input the Forward Tracker diameter (reverse it to make the direction switch):
--2.75,
-
-//Input Forward Tracker center distance (a positive distance corresponds to a tracker on the right side of the robot, negative is left.)
-//For a zero tracker tank drive with odom, put the positive distance from the center of the robot to the right side of the drive.
-//This distance is in inches:
-0,
-
-//Input the Sideways Tracker Port, following the same steps as the Forward Tracker Port:
-PORT10,
-
-//Sideways tracker diameter (reverse to make the direction switch):
-2,
-
-//Sideways tracker center distance (positive distance is behind the center of the robot, negative is in front):
-0
-
-);
-
-int current_auton_selection = 0;
-bool auto_started = false;
-
-// void blue_color_sort(){
-//   while (true){
-//     if (optical_sensor.color() == red){
-//       //do something, intake or piston or something
-//     }
-//   }
-// }
-
-// void red_color_sort(){
-//   if (optical_sensor.color() == blue){
-//     //do something, intake or piston or other
-//   }
-// }
+// Uncomment the trackers you're using here!
+// - `8` and `9` are smart ports (making these negative will reverse the sensor)
+//  - you should get positive values on the encoders going FORWARD and RIGHT
+// - `2.75` is the wheel diameter
+// - `4.0` is the distance from the center of the wheel to the center of the robot
+// ez::tracking_wheel horiz_tracker(8, 2.75, 4.0);  // This tracking wheel is perpendicular to the drive wheels
+// ez::tracking_wheel vert_tracker(9, 2.75, 4.0);   // This tracking wheel is parallel to the drive wheels
 
 /**
- * Function before autonomous. It prints the current auton number on the screen
- * and tapping the screen cycles the selected auton by 1. Add anything else you
- * may need, like resetting pneumatic components. You can rename these autons to
- * be more descriptive, if you like.
+ * Runs initialization code. This occurs as soon as the program is started.
+ *
+ * All other competition modes are blocked by initialize; it is recommended
+ * to keep execution time for this mode under a few seconds.
  */
+void initialize() {
+  // Print our branding over your terminal :D
+  ez::ez_template_print();
 
-void pre_auton() {
-  // Initializing Robot Configuration. DO NOT REMOVE!
-  vexcodeInit();
+  pros::delay(500);  // Stop the user from doing anything while legacy ports configure
+
+  // Look at your horizontal tracking wheel and decide if it's in front of the midline of your robot or behind it
+  //  - change `back` to `front` if the tracking wheel is in front of the midline
+  //  - ignore this if you aren't using a horizontal tracker
+  // chassis.odom_tracker_back_set(&horiz_tracker);
+  // Look at your vertical tracking wheel and decide if it's to the left or right of the center of the robot
+  //  - change `left` to `right` if the tracking wheel is to the right of the centerline
+  //  - ignore this if you aren't using a vertical tracker
+  // chassis.odom_tracker_left_set(&vert_tracker);
+
+  // Configure your chassis controls
+  chassis.opcontrol_curve_buttons_toggle(true);   // Enables modifying the controller curve with buttons on the joysticks
+  chassis.opcontrol_drive_activebrake_set(0.0);   // Sets the active brake kP. We recommend ~2.  0 will disable.
+  chassis.opcontrol_curve_default_set(0.0, 0.0);  // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
+
+  // Set the drive to your own constants from autons.cpp!
   default_constants();
 
-  while(!auto_started){
-    Brain.Screen.clearScreen();
-    Brain.Screen.printAt(5, 20, "JAR Template v1.2.0");
-    Brain.Screen.printAt(5, 40, "Battery Percentage:");
-    Brain.Screen.printAt(5, 60, "%d", Brain.Battery.capacity());
-    Brain.Screen.printAt(5, 80, "Chassis Heading Reading:");
-    Brain.Screen.printAt(5, 100, "%f", chassis.get_absolute_heading());
-    Brain.Screen.printAt(5, 120, "Selected Auton:");
-    switch(current_auton_selection){
-      case 0:
-        Brain.Screen.printAt(5, 140, "Auton 1");
-        break;
-      case 1:
-        Brain.Screen.printAt(5, 140, "Auton 2");
-        break;
-      case 2:
-        Brain.Screen.printAt(5, 140, "Auton 3");
-        break;
-      case 3:
-        Brain.Screen.printAt(5, 140, "Auton 4");
-        break;
-      case 4:
-        Brain.Screen.printAt(5, 140, "Auton 5");
-        break;
-      case 5:
-        Brain.Screen.printAt(5, 140, "Auton 6");
-        break;
-      case 6:
-        Brain.Screen.printAt(5, 140, "Auton 7");
-        break;
-      case 7:
-        Brain.Screen.printAt(5, 140, "Auton 8");
-        break;
+  // These are already defaulted to these buttons, but you can change the left/right curve buttons here!
+  // chassis.opcontrol_curve_buttons_left_set(pros::E_CONTROLLER_DIGITAL_LEFT, pros::E_CONTROLLER_DIGITAL_RIGHT);  // If using tank, only the left side is used.
+  // chassis.opcontrol_curve_buttons_right_set(pros::E_CONTROLLER_DIGITAL_Y, pros::E_CONTROLLER_DIGITAL_A);
+
+  // Autonomous Selector using LLEMU
+  ez::as::auton_selector.autons_add({
+      {"Drive\n\nDrive forward and come back", drive_example},
+      {"Turn\n\nTurn 3 times.", turn_example},
+      {"Drive and Turn\n\nDrive forward, turn, come back", drive_and_turn},
+      {"Drive and Turn\n\nSlow down during drive", wait_until_change_speed},
+      {"Swing Turn\n\nSwing in an 'S' curve", swing_example},
+      {"Motion Chaining\n\nDrive forward, turn, and come back, but blend everything together :D", motion_chaining},
+      {"Combine all 3 movements", combining_movements},
+      {"Interference\n\nAfter driving forward, robot performs differently if interfered or not", interfered_example},
+      {"Simple Odom\n\nThis is the same as the drive example, but it uses odom instead!", odom_drive_example},
+      {"Pure Pursuit\n\nGo to (0, 30) and pass through (6, 10) on the way.  Come back to (0, 0)", odom_pure_pursuit_example},
+      {"Pure Pursuit Wait Until\n\nGo to (24, 24) but start running an intake once the robot passes (12, 24)", odom_pure_pursuit_wait_until_example},
+      {"Boomerang\n\nGo to (0, 24, 45) then come back to (0, 0, 0)", odom_boomerang_example},
+      {"Boomerang Pure Pursuit\n\nGo to (0, 24, 45) on the way to (24, 24) then come back to (0, 0, 0)", odom_boomerang_injected_pure_pursuit_example},
+      {"Measure Offsets\n\nThis will turn the robot a bunch of times and calculate your offsets for your tracking wheels.", measure_offsets},
+  });
+
+  // Initialize chassis and auton selector
+  chassis.initialize();
+  ez::as::initialize();
+  master.rumble(chassis.drive_imu_calibrated() ? "." : "---");
+}
+
+/**
+ * Runs while the robot is in the disabled state of Field Management System or
+ * the VEX Competition Switch, following either autonomous or opcontrol. When
+ * the robot is enabled, this task will exit.
+ */
+void disabled() {
+  // . . .
+}
+
+/**
+ * Runs after initialize(), and before autonomous when connected to the Field
+ * Management System or the VEX Competition Switch. This is intended for
+ * competition-specific initialization routines, such as an autonomous selector
+ * on the LCD.
+ *
+ * This task will exit when the robot is enabled and autonomous or opcontrol
+ * starts.
+ */
+void competition_initialize() {
+  // . . .
+}
+
+/**
+ * Runs the user autonomous code. This function will be started in its own task
+ * with the default priority and stack size whenever the robot is enabled via
+ * the Field Management System or the VEX Competition Switch in the autonomous
+ * mode. Alternatively, this function may be called in initialize or opcontrol
+ * for non-competition testing purposes.
+ *
+ * If the robot is disabled or communications is lost, the autonomous task
+ * will be stopped. Re-enabling the robot will restart the task, not re-start it
+ * from where it left off.
+ */
+void autonomous() {
+  chassis.pid_targets_reset();                // Resets PID targets to 0
+  chassis.drive_imu_reset();                  // Reset gyro position to 0
+  chassis.drive_sensor_reset();               // Reset drive sensors to 0
+  chassis.odom_xyt_set(0_in, 0_in, 0_deg);    // Set the current position, you can start at a specific position with this
+  chassis.drive_brake_set(MOTOR_BRAKE_HOLD);  // Set motors to hold.  This helps autonomous consistency
+
+  /*
+  Odometry and Pure Pursuit are not magic
+
+  It is possible to get perfectly consistent results without tracking wheels,
+  but it is also possible to have extremely inconsistent results without tracking wheels.
+  When you don't use tracking wheels, you need to:
+   - avoid wheel slip
+   - avoid wheelies
+   - avoid throwing momentum around (super harsh turns, like in the example below)
+  You can do cool curved motions, but you have to give your robot the best chance
+  to be consistent
+  */
+
+  ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
+}
+
+/**
+ * Simplifies printing tracker values to the brain screen
+ */
+void screen_print_tracker(ez::tracking_wheel *tracker, std::string name, int line) {
+  std::string tracker_value = "", tracker_width = "";
+  // Check if the tracker exists
+  if (tracker != nullptr) {
+    tracker_value = name + " tracker: " + util::to_string_with_precision(tracker->get());             // Make text for the tracker value
+    tracker_width = "  width: " + util::to_string_with_precision(tracker->distance_to_center_get());  // Make text for the distance to center
+  }
+  ez::screen_print(tracker_value + tracker_width, line);  // Print final tracker text
+}
+
+/**
+ * Ez screen task
+ * Adding new pages here will let you view them during user control or autonomous
+ * and will help you debug problems you're having
+ */
+void ez_screen_task() {
+  while (true) {
+    // Only run this when not connected to a competition switch
+    if (!pros::competition::is_connected()) {
+      // Blank page for odom debugging
+      if (chassis.odom_enabled() && !chassis.pid_tuner_enabled()) {
+        // If we're on the first blank page...
+        if (ez::as::page_blank_is_on(0)) {
+          // Display X, Y, and Theta
+          ez::screen_print("x: " + util::to_string_with_precision(chassis.odom_x_get()) +
+                               "\ny: " + util::to_string_with_precision(chassis.odom_y_get()) +
+                               "\na: " + util::to_string_with_precision(chassis.odom_theta_get()),
+                           1);  // Don't override the top Page line
+
+          // Display all trackers that are being used
+          screen_print_tracker(chassis.odom_tracker_left, "l", 4);
+          screen_print_tracker(chassis.odom_tracker_right, "r", 5);
+          screen_print_tracker(chassis.odom_tracker_back, "b", 6);
+          screen_print_tracker(chassis.odom_tracker_front, "f", 7);
+        }
+      }
     }
-    if(Brain.Screen.pressing()){
-      while(Brain.Screen.pressing()) {}
-      current_auton_selection ++;
-    } else if (current_auton_selection == 8){
-      current_auton_selection = 0;
+
+    // Remove all blank pages when connected to a comp switch
+    else {
+      if (ez::as::page_blank_amount() > 0)
+        ez::as::page_blank_remove_all();
     }
-    task::sleep(10);
+
+    pros::delay(ez::util::DELAY_TIME);
+  }
+}
+pros::Task ezScreenTask(ez_screen_task);
+
+/**
+ * Gives you some extras to run in your opcontrol:
+ * - run your autonomous routine in opcontrol by pressing DOWN and B
+ *   - to prevent this from accidentally happening at a competition, this
+ *     is only enabled when you're not connected to competition control.
+ * - gives you a GUI to change your PID values live by pressing X
+ */
+void ez_template_extras() {
+  // Only run this when not connected to a competition switch
+  if (!pros::competition::is_connected()) {
+    // PID Tuner
+    // - after you find values that you're happy with, you'll have to set them in auton.cpp
+
+    // Enable / Disable PID Tuner
+    //  When enabled:
+    //  * use A and Y to increment / decrement the constants
+    //  * use the arrow keys to navigate the constants
+    if (master.get_digital_new_press(DIGITAL_X))
+      chassis.pid_tuner_toggle();
+
+    // Trigger the selected autonomous routine
+    if (master.get_digital(DIGITAL_B) && master.get_digital(DIGITAL_DOWN)) {
+      pros::motor_brake_mode_e_t preference = chassis.drive_brake_get();
+      autonomous();
+      chassis.drive_brake_set(preference);
+    }
+
+    // Allow PID Tuner to iterate
+    chassis.pid_tuner_iterate();
+  }
+
+  // Disable PID Tuner when connected to a comp switch
+  else {
+    if (chassis.pid_tuner_enabled())
+      chassis.pid_tuner_disable();
   }
 }
 
 /**
- * Auton function, which runs the selected auton. Case 0 is the default,
- * and will run in the brain screen goes untouched during preauton. Replace
- * drive_test(), for example, with your own auton function you created in
- * autons.cpp and declared in autons.h.
+ * Runs the operator control code. This function will be started in its own task
+ * with the default priority and stack size whenever the robot is enabled via
+ * the Field Management System or the VEX Competition Switch in the operator
+ * control mode.
+ *
+ * If no competition control is connected, this function will run immediately
+ * following initialize().
+ *
+ * If the robot is disabled or communications is lost, the
+ * operator control task will be stopped. Re-enabling the robot will restart the
+ * task, not resume it from where it left off.
  */
+void opcontrol() {
+  // This is preference to what you like to drive on
+  chassis.drive_brake_set(MOTOR_BRAKE_COAST);
 
-void autonomous(void) {
-  auto_started = true;
-  switch(current_auton_selection){ 
-    case 0:
-      odom_test();
-      break;
-    case 1:         
-      tank_odom_test();
-      break;
-    case 2:
-      turn_test();
-      break;
-    case 3:
-      swing_test();
-      break;
-    case 4:
-      full_test();
-      break;
-    case 5:
-      odom_test();
-      break;
-    case 6:
-      tank_odom_test();
-      break;
-    case 7:
-      holonomic_odom_test();
-      break;
- }
-}
-
-
-
-
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*                              User Control Task                            */
-/*                                                                           */
-/*  This task is used to control your robot during the user control phase of */
-/*  a VEX Competition.                                                       */
-/*                                                                           */
-/*  You must modify the code to add your own robot specific commands here.   */
-/*---------------------------------------------------------------------------*/
-
-void usercontrol(void) {
-  // User control code here, inside the loop
-  while (1) {
-    // This is the main execution loop for the user control program.
-    // Each time through the loop your program should update motor + servo
-    // values based on feedback from the joysticks.
-    
-
-    // Code for the intake
-
-    if (Controller1.ButtonL2.pressing()){
-      topIntake.spin(forward, 12, volt);
-      bottomIntake.spin(forward, 12, volt);
-    }
-
-    else if (Controller1.ButtonL1.pressing()){
-      topIntake.spin(reverse, 12, volt);
-      bottomIntake.spin(reverse, 12, volt);
-    }
-
-    else{
-      topIntake.stop();
-      bottomIntake.stop();
-    }
-
-    // 
-
-    //Replace this line with chassis.control_tank(); for tank drive 
-    //or chassis.control_holonomic(); for holo drive.
-    chassis.control_arcade();
-
-    wait(20, msec); // Sleep the task for a short amount of time to
-                    // prevent wasted resources.
-  }
-}
-
-//
-// Main will set up the competition functions and callbacks.
-//
-int main() {
-  // Set up callbacks for autonomous and driver control periods.
-  Competition.autonomous(autonomous);
-  Competition.drivercontrol(usercontrol);
-
-  // Run the pre-autonomous function.
-  pre_auton();
-
-  // Prevent main from exiting with an infinite loop.
   while (true) {
+    // Gives you some extras to make EZ-Template ezier
+    ez_template_extras();
 
+    chassis.opcontrol_tank();  // Tank control
+    // chassis.opcontrol_arcade_standard(ez::SPLIT);   // Standard split arcade
+    // chassis.opcontrol_arcade_standard(ez::SINGLE);  // Standard single arcade
+    // chassis.opcontrol_arcade_flipped(ez::SPLIT);    // Flipped split arcade
+    // chassis.opcontrol_arcade_flipped(ez::SINGLE);   // Flipped single arcade
 
-    
+    // . . .
+    // Put more user control code here!
+    // . . .
 
-    wait(100, msec);
+    pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
 }
