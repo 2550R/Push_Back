@@ -70,7 +70,7 @@ void initialize() {
       {"Pure Pursuit\n\nGo to (0, 30) and pass through (6, 10) on the way.  Come back to (0, 0)", odom_pure_pursuit_example},
       {"Pure Pursuit Wait Until\n\nGo to (24, 24) but start running an intake once the robot passes (12, 24)", odom_pure_pursuit_wait_until_example},
       {"Boomerang\n\nGo to (0, 24, 45) then come back to (0, 0, 0)", odom_boomerang_example},
-      {"Measuring the ODOM", c},
+      {"Measuring the ODOM", odom_boomerang_example},
       {"Measure Offsets\n\nThis will turn the robot a bunch of times and calculate your offsets for your tracking wheels.", measure_offsets},
   });
 
@@ -248,6 +248,17 @@ void opcontrol() {
     ez_template_extras();
 
     chassis.opcontrol_arcade_standard(ez::SPLIT);  // Tank control
+
+		if (master.get_digital(DIGITAL_R2)) {
+			intake_bottom.move(-127);
+			intake_top.move(-127);
+		} else if (master.get_digital(DIGITAL_R1)) {
+			intake_bottom.move(127);
+			intake_top.move(127);
+		} else {
+			intake_bottom.move(0);
+			intake_top.move(0);
+		}
 
     // . . .
     // Put more user control code here!
