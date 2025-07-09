@@ -15,11 +15,11 @@ const int SWING_SPEED = 110;
 ///
 void default_constants() {
   // P, I, D, and Start I
-  chassis.pid_drive_constants_set(15, 0, 100);         // Fwd/rev constants, used for odom and non odom motions
+  chassis.pid_drive_constants_set(17, 0, 100);         // Fwd/rev constants, used for odom and non odom motions
   chassis.pid_heading_constants_set(11.0, 0.0, 20.0);        // Holds the robot straight while going forward without odom
   chassis.pid_turn_constants_set(3, 0.05, 30, 15.0);     // Turn in place constants
   chassis.pid_swing_constants_set(6.0, 0.0, 65.0);           // Swing constants
-  chassis.pid_odom_angular_constants_set(3,0.0,40 );    // Angular control for odom motions
+  chassis.pid_odom_angular_constants_set(2.4,0.0,34);    // Angular control for odom motions
   chassis.pid_odom_boomerang_constants_set(5.8, 0.0, 32.5);  // Angular control for boomerang motions
 
   // Exit conditions
@@ -33,13 +33,13 @@ void default_constants() {
   chassis.pid_drive_chain_constant_set(3_in);
 
   // Slew constants
-  chassis.slew_turn_constants_set(3_deg, 70);
-  chassis.slew_drive_constants_set(3_in, 100);
+  chassis.slew_turn_constants_set(6_deg, 40);
+  chassis.slew_drive_constants_set(5_in, 40);
   chassis.slew_swing_constants_set(3_in, 80);
 
   // The amount that turns are prioritized over driving in odom motions
   // - if you have tracking wheels, you can run this higher.  1.0 is the max
-  chassis.odom_turn_bias_set(0.65);
+  chassis.odom_turn_bias_set(0.40);
 
   chassis.odom_look_ahead_set(7_in);           // This is how far ahead in the path the robot looks at
   chassis.odom_boomerang_distance_set(16_in);  // This sets the maximum distance away from target that the carrot point can be
@@ -73,12 +73,30 @@ void odom_drive_example() {
 		// chassis.pid_wait();
 		// chassis.pid_odom_set({{0_in, 0_in}, rev, DRIVE_SPEED});
 		// chassis.pid_wait();
-		chassis.pid_odom_set({{-24_in, 36_in}, fwd, DRIVE_SPEED});
-		chassis.pid_wait();
-		chassis.pid_odom_set({{0_in, 0_in}, rev, DRIVE_SPEED});
-		chassis.pid_wait();
-  	// chassis.pid_turn_set(0_deg, TURN_SPEED);
-  	// chassis.pid_wait();
+
+		//chassis.pid_wait_until_point({-24_in, 24_in});
+
+    chassis.pid_odom_set({{0_in, 24_in}, fwd, DRIVE_SPEED}, true);
+    chassis.pid_wait();
+
+    chassis.pid_turn_set(-90_deg, TURN_SPEED, true);
+    chassis.pid_wait_quick();
+
+    chassis.pid_odom_set({{-24_in, 24_in}, fwd, DRIVE_SPEED}, true);
+    chassis.pid_wait();
+
+    chassis.pid_turn_set(180_deg, TURN_SPEED, true);
+    chassis.pid_wait();
+
+    chassis.pid_odom_set({{-24_in, 0_in}, fwd, DRIVE_SPEED}, true);
+    chassis.pid_wait();
+
+    chassis.pid_turn_set(90_deg, TURN_SPEED, true);
+    chassis.pid_wait_quick();
+
+    chassis.pid_odom_set({{0_in, 0_in}, fwd, DRIVE_SPEED}, true);
+    chassis.pid_wait();
+
 
 }
 

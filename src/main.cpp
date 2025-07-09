@@ -13,14 +13,14 @@ ez::Drive chassis(
 
     21,      // IMU Port
     3.25,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
-    350);   // Wheel RPM = cartridge * (motor gear / wheel gear)
+    450);   // Wheel RPM = cartridge * (motor gear / wheel gear)
 
 // Uncomment the trackers you're using here!
 // - `8` and `9` are smart ports (making these negative will reverse the sensor)
 //  - you should get positive values on the encoders going FORWARD and RIGHT
 // - `2.75` is the wheel diameter
 // - `4.0` is the distance from the center of the wheel to the center of the robot
-ez::tracking_wheel horiz_tracker(10, 2, 0.0);  // This tracking wheel is perpendicular to the drive wheels
+ez::tracking_wheel horiz_tracker(10, 2, 0.1);  // This tracking wheel is perpendicular to the drive wheels
 ez::tracking_wheel vert_tracker(-9, 2.75, 0.0);   // This tracking wheel is parallel to the drive wheels
 
 /**
@@ -70,10 +70,10 @@ void initialize() {
       {"Pure Pursuit\n\nGo to (0, 30) and pass through (6, 10) on the way.  Come back to (0, 0)", odom_pure_pursuit_example},
       {"Pure Pursuit Wait Until\n\nGo to (24, 24) but start running an intake once the robot passes (12, 24)", odom_pure_pursuit_wait_until_example},
       {"Boomerang\n\nGo to (0, 24, 45) then come back to (0, 0, 0)", odom_boomerang_example},
-      {"Measuring the ODOM", c},
+      {"Measuring the ODOM", odom_boomerang_example},
       {"Measure Offsets\n\nThis will turn the robot a bunch of times and calculate your offsets for your tracking wheels.", measure_offsets},
   });
-
+  
   // Initialize chassis and auton selector
   chassis.initialize();
   ez::as::initialize();
@@ -133,7 +133,8 @@ void autonomous() {
   to be consistent
   */
 
-  ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
+  // ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
+  odom_drive_example();
 }
 
 /**
