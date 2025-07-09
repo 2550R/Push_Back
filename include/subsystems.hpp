@@ -9,9 +9,10 @@ extern Drive chassis;
 inline pros::Distance distance_back_l(12);
 inline pros::Distance distance_front_l(11);
 inline pros::Distance distance_back_r(13);
-inline pros::Distance distance_frontR_r(14);
+inline pros::Distance distance_front_r(14);
 
 // inline pros::Motor intake(1);
+
 inline pros::Motor L1(1);
 inline pros::Motor L2(-2);
 inline pros::Motor L3(-3);
