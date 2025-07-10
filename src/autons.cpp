@@ -15,17 +15,17 @@ const int SWING_SPEED = 110;
 ///
 void default_constants() {
   // P, I, D, and Start I
-  chassis.pid_drive_constants_set(17, 0, 100);         // Fwd/rev constants, used for odom and non odom motions
+  chassis.pid_drive_constants_set(17, 0, 105);         // Fwd/rev constants, used for odom and non odom motions
   chassis.pid_heading_constants_set(11.0, 0.0, 20.0);        // Holds the robot straight while going forward without odom
   chassis.pid_turn_constants_set(3, 0.05, 30, 15.0);     // Turn in place constants
   chassis.pid_swing_constants_set(6.0, 0.0, 65.0);           // Swing constants
   chassis.pid_odom_angular_constants_set(2.4,0.0,34);    // Angular control for odom motions
-  chassis.pid_odom_boomerang_constants_set(1, 0.0, 15);  // Angular control for boomerang motions
+  chassis.pid_odom_boomerang_constants_set(0.9, 0.0, 25);  // Angular control for boomerang motions
 
   // Exit conditions
   chassis.pid_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms,500_ms);
   chassis.pid_swing_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
-  chassis.pid_drive_exit_condition_set(90_ms, 1_in, 250_ms, 3_in, 500_ms, 500_ms);
+  chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 400_ms, 300_ms);
   chassis.pid_odom_turn_exit_condition_set(90_ms, 1_deg, 250_ms, 3_deg, 500_ms, 750_ms);
   chassis.pid_odom_drive_exit_condition_set(90_ms, 1_in, 250_ms, 3_in, 500_ms, 750_ms);
   chassis.pid_turn_chain_constant_set(3_deg);
@@ -39,11 +39,11 @@ void default_constants() {
 
   // The amount that turns are prioritized over driving in odom motions
   // - if you have tracking wheels, you can run this higher.  1.0 is the max
-  chassis.odom_turn_bias_set(0.9);
+  chassis.odom_turn_bias_set(0.8);
 
   chassis.odom_look_ahead_set(7_in);           // This is how far ahead in the path the robot looks at
   chassis.odom_boomerang_distance_set(16_in);  // This sets the maximum distance away from target that the carrot point can be
-  chassis.odom_boomerang_dlead_set(0.625);     // This handles how aggressive the end of boomerang motions are
+  chassis.odom_boomerang_dlead_set(0.7);     // This handles how aggressive the end of boomerang motions are
 
   chassis.pid_angle_behavior_set(ez::shortest);  // Changes the default behavior for turning, this defaults it to the shortest path there
 }
@@ -63,14 +63,17 @@ void Testing_ODOM(){
   chassis.pid_wait();
   chassis.pid_odom_set({{ 0_in, 0_in }, fwd, DRIVE_SPEED});
   chassis.pid_wait();
-  chassis.pid_odom_set({{0_in, 24_in, 0_deg}, fwd, DRIVE_SPEED},true); 
+  chassis.pid_odom_set({{-5_in, 70_in, 0_deg}, fwd, DRIVE_SPEED},true); 
   chassis.pid_wait();
-  pros::delay(2000);
-  chassis.pid_odom_set({{-24_in, 24_in, 90_deg}, rev, DRIVE_SPEED},true); 
+  pros::delay(1000);
+  chassis.pid_odom_set({{-62_in, 36_in}, rev, DRIVE_SPEED}); 
   chassis.pid_wait();
-  pros::delay(2000);
-  chassis.pid_odom_set({{ 0_in, 0_in }, fwd, DRIVE_SPEED});
+  chassis.pid_turn_set(90_deg, TURN_SPEED);
   chassis.pid_wait();
+  pros::delay(1000);
+  chassis.pid_odom_set({{ -11_in, 0_in }, fwd, DRIVE_SPEED});
+  chassis.pid_wait();
+  chassis.pid_turn_set(3_deg, TURN_SPEED);
 
 
 
