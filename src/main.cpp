@@ -58,7 +58,7 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"Setting up the PID",odom_drive_example/*turn_example/*drive_example*/},
+      {"Wall Tracking", Testing_ODOM/*Setting up the PID odom_drive_example// turn_example/*drive_example*/},
       {"Turn\n\nTurn 3 times.", turn_example},
       {"Drive and Turn\n\nDrive forward, turn, come back", drive_and_turn},
       {"Drive and Turn\n\nSlow down during drive", wait_until_change_speed},
@@ -134,7 +134,7 @@ void autonomous() {
   */
 
   // ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
-  odom_drive_example();
+  Testing_ODOM();
 }
 
 /**
@@ -210,7 +210,7 @@ void ez_template_extras() {
       chassis.pid_tuner_toggle();
 
     // Trigger the selected autonomous routine
-    if (master.get_digital(DIGITAL_B) && master.get_digital(DIGITAL_DOWN)) {
+    if (master.get_digital(DIGITAL_LEFT) && master.get_digital(DIGITAL_DOWN)) {
       pros::motor_brake_mode_e_t preference = chassis.drive_brake_get();
       autonomous();
       chassis.drive_brake_set(preference);

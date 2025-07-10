@@ -6,7 +6,7 @@
 /////
 
 // These are out of 127
-const int DRIVE_SPEED = 127;
+const int DRIVE_SPEED = 110;
 const int TURN_SPEED = 90;
 const int SWING_SPEED = 110;
 
@@ -20,13 +20,13 @@ void default_constants() {
   chassis.pid_turn_constants_set(3, 0.05, 30, 15.0);     // Turn in place constants
   chassis.pid_swing_constants_set(6.0, 0.0, 65.0);           // Swing constants
   chassis.pid_odom_angular_constants_set(2.4,0.0,34);    // Angular control for odom motions
-  chassis.pid_odom_boomerang_constants_set(5.8, 0.0, 32.5);  // Angular control for boomerang motions
+  chassis.pid_odom_boomerang_constants_set(1, 0.0, 15);  // Angular control for boomerang motions
 
   // Exit conditions
   chassis.pid_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms,500_ms);
   chassis.pid_swing_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
   chassis.pid_drive_exit_condition_set(90_ms, 1_in, 250_ms, 3_in, 500_ms, 500_ms);
-  chassis.pid_odom_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms, 750_ms);
+  chassis.pid_odom_turn_exit_condition_set(90_ms, 1_deg, 250_ms, 3_deg, 500_ms, 750_ms);
   chassis.pid_odom_drive_exit_condition_set(90_ms, 1_in, 250_ms, 3_in, 500_ms, 750_ms);
   chassis.pid_turn_chain_constant_set(3_deg);
   chassis.pid_swing_chain_constant_set(5_deg);
@@ -39,7 +39,7 @@ void default_constants() {
 
   // The amount that turns are prioritized over driving in odom motions
   // - if you have tracking wheels, you can run this higher.  1.0 is the max
-  chassis.odom_turn_bias_set(0.40);
+  chassis.odom_turn_bias_set(0.9);
 
   chassis.odom_look_ahead_set(7_in);           // This is how far ahead in the path the robot looks at
   chassis.odom_boomerang_distance_set(16_in);  // This sets the maximum distance away from target that the carrot point can be
@@ -52,6 +52,32 @@ void default_constants() {
 ///
 // Odom Drive PID
 ///
+
+void Testing_ODOM(){
+
+  chassis.pid_odom_set({{ 0_in, 12_in }, fwd, DRIVE_SPEED});
+  chassis.pid_wait();
+  chassis.pid_odom_set({{ -12_in, 12_in }, fwd, DRIVE_SPEED});
+  chassis.pid_wait();
+  chassis.pid_odom_set({{ -12_in, 0_in }, fwd, DRIVE_SPEED});
+  chassis.pid_wait();
+  chassis.pid_odom_set({{ 0_in, 0_in }, fwd, DRIVE_SPEED});
+  chassis.pid_wait();
+  chassis.pid_odom_set({{0_in, 24_in, 0_deg}, fwd, DRIVE_SPEED},true); 
+  chassis.pid_wait();
+  pros::delay(2000);
+  chassis.pid_odom_set({{-24_in, 24_in, 90_deg}, rev, DRIVE_SPEED},true); 
+  chassis.pid_wait();
+  pros::delay(2000);
+  chassis.pid_odom_set({{ 0_in, 0_in }, fwd, DRIVE_SPEED});
+  chassis.pid_wait();
+
+
+
+
+  
+}
+
 void odom_drive_example() {
   // This works the same as pid_drive_set, but it uses odom instead!
   // You can replace pid_drive_set with pid_odom_set and your robot will
@@ -75,27 +101,27 @@ void odom_drive_example() {
 		// chassis.pid_wait();
 
 		//chassis.pid_wait_until_point({-24_in, 24_in});
+    wall_allignment(600);
+    // chassis.pid_odom_set({{0_in, 24_in}, fwd, DRIVE_SPEED}, true);
+    // chassis.pid_wait();
 
-    chassis.pid_odom_set({{0_in, 24_in}, fwd, DRIVE_SPEED}, true);
-    chassis.pid_wait();
+    // chassis.pid_turn_set(-90_deg, TURN_SPEED, true);
+    // chassis.pid_wait_quick();
 
-    chassis.pid_turn_set(-90_deg, TURN_SPEED, true);
-    chassis.pid_wait_quick();
+    // chassis.pid_odom_set({{-24_in, 24_in}, fwd, DRIVE_SPEED}, true);
+    // chassis.pid_wait();
 
-    chassis.pid_odom_set({{-24_in, 24_in}, fwd, DRIVE_SPEED}, true);
-    chassis.pid_wait();
+    // chassis.pid_turn_set(180_deg, TURN_SPEED, true);
+    // chassis.pid_wait();
 
-    chassis.pid_turn_set(180_deg, TURN_SPEED, true);
-    chassis.pid_wait();
+    // chassis.pid_odom_set({{-24_in, 0_in}, fwd, DRIVE_SPEED}, true);
+    // chassis.pid_wait();
 
-    chassis.pid_odom_set({{-24_in, 0_in}, fwd, DRIVE_SPEED}, true);
-    chassis.pid_wait();
+    // chassis.pid_turn_set(90_deg, TURN_SPEED, true);
+    // chassis.pid_wait_quick();
 
-    chassis.pid_turn_set(90_deg, TURN_SPEED, true);
-    chassis.pid_wait_quick();
-
-    chassis.pid_odom_set({{0_in, 0_in}, fwd, DRIVE_SPEED}, true);
-    chassis.pid_wait();
+    // chassis.pid_odom_set({{0_in, 0_in}, fwd, DRIVE_SPEED}, true);
+    // chassis.pid_wait();
 
 
 }

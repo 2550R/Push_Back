@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "ProgBotCode",
+    "project_name": "ProgBotCode1",
     "target": "v5",
     "templates": {
       "EZ-Template": {
@@ -424,7 +424,8 @@
       }
     },
     "upload_options": {
-      "description": "roboticsisez.com"
+      "description": "roboticsisez.com",
+      "icon": "alien"
     },
     "use_early_access": false
   }
