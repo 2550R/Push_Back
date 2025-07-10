@@ -20,7 +20,7 @@ void default_constants() {
   chassis.pid_turn_constants_set(3, 0.05, 30, 15.0);     // Turn in place constants
   chassis.pid_swing_constants_set(6.0, 0.0, 65.0);           // Swing constants
   chassis.pid_odom_angular_constants_set(2.4,0.0,34);    // Angular control for odom motions
-  chassis.pid_odom_boomerang_constants_set(0.9, 0.0, 25);  // Angular control for boomerang motions
+  chassis.pid_odom_boomerang_constants_set(1, 0.0, 25);  // Angular control for boomerang motions
 
   // Exit conditions
   chassis.pid_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms,500_ms);
@@ -55,27 +55,17 @@ void default_constants() {
 
 void Testing_ODOM(){
 
-  chassis.pid_odom_set({{ 0_in, 12_in }, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  chassis.pid_odom_set({{ -12_in, 12_in }, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  chassis.pid_odom_set({{ -12_in, 0_in }, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  chassis.pid_odom_set({{ 0_in, 0_in }, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  chassis.pid_odom_set({{-5_in, 70_in, 0_deg}, fwd, DRIVE_SPEED},true); 
+  chassis.pid_odom_set({{-0_in, 70_in, 0_deg}, fwd, DRIVE_SPEED},true); 
   chassis.pid_wait();
   pros::delay(1000);
-  chassis.pid_odom_set({{-62_in, 36_in}, rev, DRIVE_SPEED}); 
+  chassis.pid_odom_set({{-48_in, 36_in}, rev, DRIVE_SPEED}); 
   chassis.pid_wait();
   chassis.pid_turn_set(90_deg, TURN_SPEED);
   chassis.pid_wait();
   pros::delay(1000);
-  chassis.pid_odom_set({{ -11_in, 0_in }, fwd, DRIVE_SPEED});
+  chassis.pid_odom_set({{0_in, 5_in}, fwd, DRIVE_SPEED});
   chassis.pid_wait();
   chassis.pid_turn_set(3_deg, TURN_SPEED);
-
-
 
 
   
@@ -104,7 +94,7 @@ void odom_drive_example() {
 		// chassis.pid_wait();
 
 		//chassis.pid_wait_until_point({-24_in, 24_in});
-    wall_allignment(600);
+    wall_tracking_with_allingment(200,100, 1);
     // chassis.pid_odom_set({{0_in, 24_in}, fwd, DRIVE_SPEED}, true);
     // chassis.pid_wait();
 
