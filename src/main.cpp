@@ -58,7 +58,7 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"Wall Tracking", Testing_ODOM/*Setting up the PID odom_drive_example// turn_example/*drive_example*/},
+      {"Wall Tracking", wall_tracking_test/*Setting up the PID odom_drive_example// turn_example/*drive_example*/},
       {"Turn\n\nTurn 3 times.", turn_example},
       {"Drive and Turn\n\nDrive forward, turn, come back", drive_and_turn},
       {"Drive and Turn\n\nSlow down during drive", wait_until_change_speed},

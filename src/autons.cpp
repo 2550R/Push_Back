@@ -94,7 +94,15 @@ void odom_drive_example() {
 		// chassis.pid_wait();
 
 		//chassis.pid_wait_until_point({-24_in, 24_in});
-    wall_tracking_with_allingment(200,100, 1);
+		//
+		chassis.pid_odom_set({{-24_in, 36_in}, fwd, DRIVE_SPEED});
+		chassis.pid_wait();
+		chassis.pid_odom_set({{0_in, 0_in}, rev, DRIVE_SPEED});
+		chassis.pid_wait();
+}
+
+void wall_tracking_test() {
+	  wall_tracking_with_allingment(200,100, 1);
     // chassis.pid_odom_set({{0_in, 24_in}, fwd, DRIVE_SPEED}, true);
     // chassis.pid_wait();
 
