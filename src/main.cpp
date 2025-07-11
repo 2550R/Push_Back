@@ -13,7 +13,7 @@ ez::Drive chassis(
 
     21,      // IMU Port
     3.25,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
-    350);   // Wheel RPM = cartridge * (motor gear / wheel gear)
+    450);   // Wheel RPM = cartridge * (motor gear / wheel gear)
 
 // Uncomment the trackers you're using here!
 // - `8` and `9` are smart ports (making these negative will reverse the sensor)
@@ -249,10 +249,10 @@ void opcontrol() {
 
     chassis.opcontrol_arcade_standard(ez::SPLIT);  // Tank control
 
-		if (master.get_digital(DIGITAL_R2)) {
+		if (master.get_digital(DIGITAL_L1)) {
 			intake_bottom.move(-127);
 			intake_top.move(-127);
-		} else if (master.get_digital(DIGITAL_R1)) {
+		} else if (master.get_digital(DIGITAL_L2)) {
 			intake_bottom.move(127);
 			intake_top.move(127);
 		} else {
