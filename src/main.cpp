@@ -20,7 +20,7 @@ ez::Drive chassis(
 //  - you should get positive values on the encoders going FORWARD and RIGHT
 // - `2.75` is the wheel diameter
 // - `4.0` is the distance from the center of the wheel to the center of the robot
-ez::tracking_wheel horiz_tracker(10, 2, 0.0);  // This tracking wheel is perpendicular to the drive wheels
+ez::tracking_wheel horiz_tracker(10, 2, 0.1);  // This tracking wheel is perpendicular to the drive wheels
 ez::tracking_wheel vert_tracker(-9, 2.75, 0.0);   // This tracking wheel is parallel to the drive wheels
 
 /**
@@ -58,7 +58,7 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"Setting up the PID",odom_drive_example/*turn_example/*drive_example*/},
+      {"Wall Tracking", wall_tracking_test/*Setting up the PID odom_drive_example// turn_example/*drive_example*/},
       {"Turn\n\nTurn 3 times.", turn_example},
       {"Drive and Turn\n\nDrive forward, turn, come back", drive_and_turn},
       {"Drive and Turn\n\nSlow down during drive", wait_until_change_speed},
@@ -73,7 +73,7 @@ void initialize() {
       {"Measuring the ODOM", odom_boomerang_example},
       {"Measure Offsets\n\nThis will turn the robot a bunch of times and calculate your offsets for your tracking wheels.", measure_offsets},
   });
-
+  
   // Initialize chassis and auton selector
   chassis.initialize();
   ez::as::initialize();
@@ -133,7 +133,8 @@ void autonomous() {
   to be consistent
   */
 
-  ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
+  // ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
+  odom_drive_example();
 }
 
 /**
@@ -209,7 +210,7 @@ void ez_template_extras() {
       chassis.pid_tuner_toggle();
 
     // Trigger the selected autonomous routine
-    if (master.get_digital(DIGITAL_B) && master.get_digital(DIGITAL_DOWN)) {
+    if (master.get_digital(DIGITAL_LEFT) && master.get_digital(DIGITAL_DOWN)) {
       pros::motor_brake_mode_e_t preference = chassis.drive_brake_get();
       autonomous();
       chassis.drive_brake_set(preference);
@@ -242,7 +243,6 @@ void ez_template_extras() {
 void opcontrol() {
   // This is preference to what you like to drive on
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
-
   while (true) {
     // Gives you some extras to make EZ-Template ezier
     ez_template_extras();
