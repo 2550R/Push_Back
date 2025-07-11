@@ -5,23 +5,22 @@
 
 extern Drive chassis;
 
-// Your motors, sensors, etc. should go here.  Below are examples
 inline pros::Distance distance_back_l(12);
 inline pros::Distance distance_front_l(11);
 inline pros::Distance distance_back_r(13);
 inline pros::Distance distance_front_r(14);
 inline pros::Imu inertial(21);
 
-// inline pros::Motor intake(1);
+inline pros::Motor intake_bottom(20);
+inline pros::Motor intake_top(12);
 
-inline pros::Motor L1(1);
-inline pros::Motor L2(-2);
-inline pros::Motor L3(-3);
+// these dt ports have been changed to the numbers on the new bot - 11/6/2025
+inline pros::Motor L1(-7);
+inline pros::Motor L2(8);
+inline pros::Motor L3(-5);
 
-inline pros::Motor R1(-4);
-inline pros::Motor R2(7);
-inline pros::Motor R3(6);
+inline pros::Motor R1(9);
+inline pros::Motor R2(-4);
+inline pros::Motor R3(1);
 
-
-
-// inline pros::adi::DigitalIn limit_switch('A');
+inline pros::adi::DigitalOut trapdoor('A');

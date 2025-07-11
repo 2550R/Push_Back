@@ -8,8 +8,8 @@
 // Chassis constructor
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
-    {1, -2, -3},     // Left Chassis Ports (negative port will reverse it!)
-    {-4, 6, 7},  // Right Chassis Ports (negative port will reverse it!)
+    {-7, 8, -5},     // Left Chassis Ports (negative port will reverse it!)
+    {9, -4, 1},  // Right Chassis Ports (negative port will reverse it!)
 
     21,      // IMU Port
     3.25,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
@@ -248,6 +248,17 @@ void opcontrol() {
     ez_template_extras();
 
     chassis.opcontrol_arcade_standard(ez::SPLIT);  // Tank control
+
+		if (master.get_digital(DIGITAL_L1)) {
+			intake_bottom.move(-127);
+			intake_top.move(-127);
+		} else if (master.get_digital(DIGITAL_L2)) {
+			intake_bottom.move(127);
+			intake_top.move(127);
+		} else {
+			intake_bottom.move(0);
+			intake_top.move(0);
+		}
 
     // . . .
     // Put more user control code here!
