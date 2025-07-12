@@ -254,6 +254,12 @@ void opcontrol() {
 		} else if (master.get_digital(DIGITAL_L2)) {
 			intake_bottom.move(127);
 			intake_top.move(127);
+		} else if (master.get_digital(DIGITAL_R1)) {
+			intake_bottom.move(-65);
+			intake_top.move(-65);
+		} else if (master.get_digital(DIGITAL_R2)) {
+			intake_bottom.move(65);
+			intake_top.move(65);
 		} else {
 			intake_bottom.move(0);
 			intake_top.move(0);
