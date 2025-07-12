@@ -15,9 +15,9 @@ const int SWING_SPEED = 110;
 ///
 void default_constants() {
   // P, I, D, and Start I
-  chassis.pid_drive_constants_set(17, 0, 105);         // Fwd/rev constants, used for odom and non odom motions
+  chassis.pid_drive_constants_set(22, 0, 130);         // Fwd/rev constants, used for odom and non odom motions
   chassis.pid_heading_constants_set(11.0, 0.0, 20.0);        // Holds the robot straight while going forward without odom
-  chassis.pid_turn_constants_set(3, 0.05, 30, 15.0);     // Turn in place constants
+  chassis.pid_turn_constants_set(4, 0.05, 30, 15.0);     // Turn in place constants
   chassis.pid_swing_constants_set(6.0, 0.0, 65.0);           // Swing constants
   chassis.pid_odom_angular_constants_set(2.4,0.0,34);    // Angular control for odom motions
   chassis.pid_odom_boomerang_constants_set(1, 0.0, 25);  // Angular control for boomerang motions
@@ -54,21 +54,18 @@ void default_constants() {
 ///
 
 void Testing_ODOM(){
-
-  chassis.pid_odom_set({{-0_in, 70_in, 0_deg}, fwd, DRIVE_SPEED},true); 
-  chassis.pid_wait();
-  pros::delay(1000);
-  chassis.pid_odom_set({{-48_in, 36_in}, rev, DRIVE_SPEED}); 
-  chassis.pid_wait();
-  chassis.pid_turn_set(90_deg, TURN_SPEED);
-  chassis.pid_wait();
-  pros::delay(1000);
-  chassis.pid_odom_set({{0_in, 5_in}, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  chassis.pid_turn_set(3_deg, TURN_SPEED);
-
-
   
+  chassis.pid_odom_set({{ 24_in, 24_in }, fwd, DRIVE_SPEED});
+  chassis.pid_wait();
+  chassis.pid_odom_set({{ 0_in, 12_in }, rev, DRIVE_SPEED});
+  chassis.pid_wait();
+  chassis.pid_odom_set({{ 24_in, 0_in }, rev, DRIVE_SPEED});
+  chassis.pid_wait();
+  chassis.pid_odom_set({{ 0_in, 0_in }, fwd, DRIVE_SPEED});
+  chassis.pid_wait();
+  chassis.pid_turn_set(0_deg, TURN_SPEED);
+  chassis.pid_wait();
+
 }
 
 void odom_drive_example() {
@@ -94,11 +91,6 @@ void odom_drive_example() {
 		// chassis.pid_wait();
 
 		//chassis.pid_wait_until_point({-24_in, 24_in});
-		//
-		chassis.pid_odom_set({{-24_in, 36_in}, fwd, DRIVE_SPEED});
-		chassis.pid_wait();
-		chassis.pid_odom_set({{0_in, 0_in}, rev, DRIVE_SPEED});
-		chassis.pid_wait();
 }
 
 void wall_tracking_test() {

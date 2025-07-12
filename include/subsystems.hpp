@@ -23,4 +23,5 @@ inline pros::Motor R1(9);
 inline pros::Motor R2(-4);
 inline pros::Motor R3(1);
 
-inline pros::adi::DigitalOut trapdoor('A');
+inline ez::Piston trapdoor('A');
+inline ez::Piston middle_stage('B');
