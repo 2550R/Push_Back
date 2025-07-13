@@ -77,7 +77,7 @@ void initialize() {
   // Initialize chassis and auton selector
   chassis.initialize();
   ez::as::initialize();
-  master.rumble(chassis.drive_imu_calibrated() ? "..." : "-");
+  master.rumble(chassis.drive_imu_calibrated() ? "." : "-");
 }
 
 /**
@@ -133,7 +133,8 @@ void autonomous() {
   to be consistent
   */
 
-  ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
+  // ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
+  blue_top_elims();
 }
 
 /**
