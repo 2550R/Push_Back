@@ -184,6 +184,15 @@ void ez_screen_task() {
         ez::as::page_blank_remove_all();
     }
 
+		if (ez::as::page_blank_is_on(1)) {
+      ez::screen_print("Motor Temps L1 "+ util::to_string_with_precision(L1.get_temperature()*9/5 +32), 1);
+      ez::screen_print("Motor Temps L2 "+ util::to_string_with_precision(L2.get_temperature()*9/5 +32), 2); 
+      ez::screen_print("Motor Temps L3 "+ util::to_string_with_precision(L3.get_temperature()*9/5 +32), 3); 
+      ez::screen_print("Motor Temps R1 "+ util::to_string_with_precision(R1.get_temperature()*9/5 +32), 4); 
+      ez::screen_print("Motor Temps R2 "+ util::to_string_with_precision(R2.get_temperature()*9/5 +32), 5); 
+      ez::screen_print("Motor Temps R3 "+ util::to_string_with_precision(R3.get_temperature()*9/5 +32), 6); 
+    }
+
     pros::delay(ez::util::DELAY_TIME);
   }
 }
