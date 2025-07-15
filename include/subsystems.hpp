@@ -24,7 +24,7 @@ inline pros::Motor R2(-4);
 inline pros::Motor R3(1);
 
 inline ez::Piston trapdoor('A');
-inline ez::Piston middle_stage('D');
+inline ez::Piston middle_stage('F');
 
 inline ez::Piston right_rush_mech('D');
 inline ez::Piston left_rush_mech('D');

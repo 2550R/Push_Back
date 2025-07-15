@@ -20,4 +20,16 @@ void measure_offsets();
 void wall_tracking1();
 void Testing_ODOM();
 
+void auton_setup();
+
+void red_top_quals();
+void blue_top_quals();
+
+void red_top_elims();
 void blue_top_elims();
+
+void red_bottom_quals();
+void blue_bottom_quals();
+
+void red_bottom_elims();
+void red_top_elims();

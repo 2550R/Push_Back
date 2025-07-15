@@ -134,7 +134,7 @@ void autonomous() {
   */
 
   // ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
-  blue_top_elims();
+  blue_top_quals();
 }
 
 /**
