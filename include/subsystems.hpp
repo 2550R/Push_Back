@@ -25,6 +25,10 @@ inline pros::Motor R3(1);
 
 inline ez::Piston trapdoor('A');
 inline ez::Piston middle_stage('F');
+inline ez::Piston Little_Mech_Mac('B');
 
-inline ez::Piston right_rush_mech('D');
-inline ez::Piston left_rush_mech('D');
+
+inline ez::Piston right_rush_mech('C');
+inline ez::Piston left_rush_mech('C');
+
+inline pros::Controller master(pros::E_CONTROLLER_MASTER); 

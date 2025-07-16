@@ -134,7 +134,7 @@ void autonomous() {
   */
 
   // ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
-  blue_top_quals();
+  blue_top_elims();
 }
 
 /**
@@ -191,6 +191,13 @@ void ez_screen_task() {
       ez::screen_print("Motor Temps R1 "+ util::to_string_with_precision(R1.get_temperature()*9/5 +32), 4); 
       ez::screen_print("Motor Temps R2 "+ util::to_string_with_precision(R2.get_temperature()*9/5 +32), 5); 
       ez::screen_print("Motor Temps R3 "+ util::to_string_with_precision(R3.get_temperature()*9/5 +32), 6); 
+
+      ez::screen_print("Motor Temps intake_bottom "+ util::to_string_with_precision(intake_bottom.get_temperature()*9/5 +32), 7); 
+      ez::screen_print("Motor Temps intake_top "+ util::to_string_with_precision(intake_top.get_temperature()*9/5 +32), 8); 
+    }
+    if (ez::as::page_blank_is_on(2)) {
+      ez::screen_print("Motor Temps intake_bottom "+ util::to_string_with_precision(intake_bottom.get_temperature()*9/5 +32), 7); 
+      ez::screen_print("Motor Temps intake_top "+ util::to_string_with_precision(intake_top.get_temperature()*9/5 +32), 8); 
     }
 
     pros::delay(ez::util::DELAY_TIME);
@@ -274,11 +281,13 @@ void opcontrol() {
 			intake_bottom.move(0);
 			intake_top.move(0);
 		}
-
-    
+    string temps1 = util::to_string_with_precision(intake_bottom.get_temperature()*9/5 +32);
+    string temps2 = util::to_string_with_precision(intake_top.get_temperature()*9/5 +32);
+    master.print(0,0,"m",util::to_string_with_precision(L1.get_temperature()*9/5 +32)); 
 
     middle_stage.button_toggle(master.get_digital_new_press(DIGITAL_Y));
     trapdoor.button_toggle(master.get_digital_new_press(DIGITAL_RIGHT));
+    Little_Mech_Mac.button_toggle(master.get_digital_new_press(DIGITAL_B));
     // Put more user control code here!
     // . . .
 

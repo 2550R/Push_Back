@@ -608,9 +608,10 @@ void blue_top_quals(){
   chassis.pid_turn_set(180, 60, true);
   chassis.pid_wait();
 
+  Little_Mech_Mac.set(1);
   //blooper
 
-  chassis.pid_drive_set(6, 60, true);
+  chassis.pid_drive_set(12, 60, true);
   chassis.pid_wait();
 
   pros::delay(1500);
