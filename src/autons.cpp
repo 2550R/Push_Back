@@ -476,31 +476,31 @@ void blue_top_elims(){
   chassis.odom_xyt_set(0_in, 0_in, 166_deg);
 
   chassis.pid_odom_set({{{-14_in, 18_in}, rev, 127},
-                      {{-11_in, 22_in}, rev, 127},
-                      {{-10.9_in, 30_in}, rev, 110},
-                      {{-8.3_in, 46.3_in}, rev, 110}},
+                      {{-12_in, 22_in}, rev, 127},
+                      {{-11.8_in, 30_in}, rev, 110},
+                      {{-11_in, 45.3_in}, rev, 110}},
                       true);
   chassis.pid_wait();
 
   right_rush_mech.set(1);
   pros::delay(300);
 
-  chassis.pid_swing_set(RIGHT_SWING, 90, 60);
+  chassis.pid_swing_set(RIGHT_SWING, 90, 60,-5);
   chassis.pid_wait();
 
   intake_top.move(127);
   intake_bottom.move(127);
 
-  chassis.pid_swing_set(LEFT_SWING, 160, 60);
+  chassis.pid_swing_set(LEFT_SWING, 160, 60,5);
   chassis.pid_wait();
 
   chassis.pid_swing_set(RIGHT_SWING, 100, 60, 20);
   chassis.pid_wait();
 
   right_rush_mech.set(0);
-  pros::delay(350);
+  pros::delay(600);
 
-  chassis.pid_drive_set(-20, 60, true);
+  chassis.pid_drive_set(-22, 60, true);
   chassis.pid_wait();
 
   chassis.pid_turn_set(150, 60, true);
@@ -508,8 +508,9 @@ void blue_top_elims(){
 
   chassis.pid_swing_set(RIGHT_SWING, 80, 60, 20, true);
   chassis.pid_wait();
+  trapdoor.set(0);
 
-  chassis.pid_odom_set({{-8_in, 15_in}, fwd, 80}, true);
+  chassis.pid_odom_set({{-8_in, 16_in}, fwd, 80}, true);
   chassis.pid_wait();
 
   chassis.pid_turn_set(180, 60, true);
