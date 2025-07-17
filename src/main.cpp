@@ -20,8 +20,8 @@ ez::Drive chassis(
 //  - you should get positive values on the encoders going FORWARD and RIGHT
 // - `2.75` is the wheel diameter
 // - `4.0` is the distance from the center of the wheel to the center of the robot
-ez::tracking_wheel horiz_tracker(6, 2, 0.0);  // This tracking wheel is perpendicular to the drive wheels
-ez::tracking_wheel vert_tracker(11, 2, 0.0);   // This tracking wheel is parallel to the drive wheels
+ez::tracking_wheel horiz_tracker(6, 2, 0);  // This tracking wheel is perpendicular to the drive wheels
+ez::tracking_wheel vert_tracker(11, 2, 0);   // This tracking wheel is parallel to the drive wheels
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -58,7 +58,7 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"Wall Tracking", Testing_ODOM/*Setting up the PID odom_drive_example// turn_example/*drive_example*/},
+      {"Wall Tracking", measure_offsets/*Setting up the PID odom_drive_example// turn_example/*drive_example*/},
       {"Turn\n\nTurn 3 times.", turn_example},
       {"Drive and Turn\n\nDrive forward, turn, come back", drive_and_turn},
       {"Drive and Turn\n\nSlow down during drive", wait_until_change_speed},
@@ -133,8 +133,8 @@ void autonomous() {
   to be consistent
   */
 
-  // ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
-  blue_top_elims();
+  ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
+  //odom_boomerang_injected_pure_pursuit_example();
 }
 
 /**
@@ -184,21 +184,16 @@ void ez_screen_task() {
         ez::as::page_blank_remove_all();
     }
 
-		if (ez::as::page_blank_is_on(1)) {
-      ez::screen_print("Motor Temps L1 "+ util::to_string_with_precision(L1.get_temperature()*9/5 +32), 1);
-      ez::screen_print("Motor Temps L2 "+ util::to_string_with_precision(L2.get_temperature()*9/5 +32), 2); 
-      ez::screen_print("Motor Temps L3 "+ util::to_string_with_precision(L3.get_temperature()*9/5 +32), 3); 
-      ez::screen_print("Motor Temps R1 "+ util::to_string_with_precision(R1.get_temperature()*9/5 +32), 4); 
-      ez::screen_print("Motor Temps R2 "+ util::to_string_with_precision(R2.get_temperature()*9/5 +32), 5); 
-      ez::screen_print("Motor Temps R3 "+ util::to_string_with_precision(R3.get_temperature()*9/5 +32), 6); 
+		// if (ez::as::page_blank_is_on(1)) {
+    //   ez::screen_print("Motor Temps L1 "+ util::to_string_with_precision(L1.get_temperature()*9/5 +32), 1);
+    //   ez::screen_print("Motor Temps L2 "+ util::to_string_with_precision(L2.get_temperature()*9/5 +32), 2); 
+    //   ez::screen_print("Motor Temps L3 "+ util::to_string_with_precision(L3.get_temperature()*9/5 +32), 3); 
+    //   ez::screen_print("Motor Temps R1 "+ util::to_string_with_precision(R1.get_temperature()*9/5 +32), 4); 
+    //   ez::screen_print("Motor Temps R2 "+ util::to_string_with_precision(R2.get_temperature()*9/5 +32), 5); 
+    //   ez::screen_print("Motor Temps R3 "+ util::to_string_with_precision(R3.get_temperature()*9/5 +32), 6); 
 
-      ez::screen_print("Motor Temps intake_bottom "+ util::to_string_with_precision(intake_bottom.get_temperature()*9/5 +32), 7); 
-      ez::screen_print("Motor Temps intake_top "+ util::to_string_with_precision(intake_top.get_temperature()*9/5 +32), 8); 
-    }
-    if (ez::as::page_blank_is_on(2)) {
-      ez::screen_print("Motor Temps intake_bottom "+ util::to_string_with_precision(intake_bottom.get_temperature()*9/5 +32), 7); 
-      ez::screen_print("Motor Temps intake_top "+ util::to_string_with_precision(intake_top.get_temperature()*9/5 +32), 8); 
-    }
+    // }
+
 
     pros::delay(ez::util::DELAY_TIME);
   }

@@ -86,19 +86,18 @@ void blue_Qual_Auton(){
 
 void Testing_ODOM(){
   
-  // chassis.pid_odom_set({{ 24_in, 24_in }, fwd, DRIVE_SPEED});
-  // chassis.pid_wait();
-  // chassis.pid_odom_set({{ 0_in, 12_in }, rev, DRIVE_SPEED});
-  // chassis.pid_wait();
-  // chassis.pid_odom_set({{ 24_in, 0_in }, rev, DRIVE_SPEED});
-  // chassis.pid_wait();
-  // chassis.pid_odom_set({{ 0_in, 0_in }, fwd, DRIVE_SPEED});
-  // chassis.pid_wait();
-  // chassis.pid_turn_set(0_deg, TURN_SPEED);
-  // chassis.pid_wait();
-
-  chassis.pid_turn_set(3600_deg, 40, ez::raw);
+  chassis.pid_odom_set({{ 0_in, 24_in }, fwd, DRIVE_SPEED});
   chassis.pid_wait();
+  chassis.pid_odom_set({{ 24_in, 24_in }, rev, DRIVE_SPEED});
+  chassis.pid_wait();
+  chassis.pid_odom_set({{ 24_in, 0_in }, rev, DRIVE_SPEED});
+  chassis.pid_wait();
+  chassis.pid_odom_set({{ 0_in, 0_in }, fwd, DRIVE_SPEED});
+  chassis.pid_wait();
+  chassis.pid_turn_set(0_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+
 
 
 }
@@ -129,7 +128,7 @@ void odom_drive_example() {
 }
 
 void wall_tracking_test() {
-	  wall_tracking_with_allingment(200,100, 1);
+	  wall_tracking_with_allingment(150,50, 1);
     // chassis.pid_odom_set({{0_in, 24_in}, fwd, DRIVE_SPEED}, true);
     // chassis.pid_wait();
 
@@ -517,8 +516,9 @@ void blue_top_elims(){
   chassis.pid_wait();
 
   //blooper
+  Little_Mech_Mac.set(1);
 
-  chassis.pid_drive_set(4, 60, true);
+  chassis.pid_drive_set(12, 50, true);
   chassis.pid_wait();
 
   pros::delay(1500);
@@ -526,7 +526,7 @@ void blue_top_elims(){
   chassis.pid_turn_set(180, 60, true);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-28, 60, true);
+  chassis.pid_drive_set(-29, 60, true);
   chassis.pid_wait();
 
   trapdoor.set(0);
@@ -608,7 +608,7 @@ void blue_top_quals(){
   chassis.pid_turn_set(180, 60, true);
   chassis.pid_wait();
 
-  Little_Mech_Mac.set(1);
+  
   //blooper
 
   chassis.pid_drive_set(12, 60, true);

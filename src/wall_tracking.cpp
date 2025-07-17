@@ -51,7 +51,6 @@ void wall_tracking_with_allingment(float target_distance, float DRIVE_SPEED, flo
         derivitive_tracking = error_tracking - prev_error_tr;
         output_tracking = error_tracking * w_KP + w_KD * derivitive_tracking;
         
-        if (error_tracking == 0){error_tracking = 0.001;} 
         //This is turning 
         error_turn = (distance_front_l.get_distance() - distance_back_l.get_distance());
         derivitive_turn = error_turn - prev_error_tu;
@@ -130,3 +129,4 @@ void wall_Riding(float target_distance, float DRIVE_SPEED, float drive_distance)
     }
 
 }
+

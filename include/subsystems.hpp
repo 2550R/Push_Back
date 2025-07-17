@@ -5,10 +5,10 @@
 
 extern Drive chassis;
 
-inline pros::Distance distance_back_l(12);
-inline pros::Distance distance_front_l(11);
-inline pros::Distance distance_back_r(13);
-inline pros::Distance distance_front_r(14);
+inline pros::Distance distance_back_l(14);
+inline pros::Distance distance_front_l(17);
+inline pros::Distance distance_back_r(18);
+inline pros::Distance distance_front_r(19);
 inline pros::Imu inertial(21);
 
 inline pros::Motor intake_bottom(20);
@@ -32,3 +32,4 @@ inline ez::Piston right_rush_mech('C');
 inline ez::Piston left_rush_mech('C');
 
 inline pros::Controller master(pros::E_CONTROLLER_MASTER); 
+
