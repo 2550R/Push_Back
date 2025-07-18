@@ -1,5 +1,10 @@
 #include "main.h"
 
+/* Order of function calls:
+ * initialize() -> competition_initialize() -> autonomous() -> disabled()
+ * -> opcontrol() -> disabled()
+ */
+
 ez::Drive chassis(
     {-7, 8, -5},
     {9, -4, 1},
@@ -36,31 +41,10 @@ void initialize() {
   master.rumble(chassis.drive_imu_calibrated() ? "." : "-");
 }
 
-/**
- * Runs while the robot is in the disabled state of Field Management System or
- * the VEX Competition Switch, following either autonomous or opcontrol. When
- * the robot is enabled, this task will exit.
- */
 void disabled() { }
 
-/**
- * Runs after initialize(), and before autonomous when connected to the Field
- * Management System or the VEX Competition Switch. This is intended for
- * competition-specific initialization routines, such as an autonomous selector
- * on the LCD.
- *
- * This task will exit when the robot is enabled and autonomous or opcontrol
- * starts.
- */
 void competition_initialize() { }
 
-/**
- * Runs the user autonomous code. This function will be started in its own task
- * with the default priority and stack size whenever the robot is enabled via
- * the Field Management System or the VEX Competition Switch in the autonomous
- * mode. Alternatively, this function may be called in initialize or opcontrol
- * for non-competition testing purposes.
- */
 void autonomous() {
   chassis.pid_targets_reset();
   chassis.drive_imu_reset();
@@ -80,6 +64,15 @@ void screen_print_tracker(ez::tracking_wheel *tracker, std::string name, int lin
   ez::screen_print(tracker_value + tracker_width, line);
 }
 
+void screen_print_temp(pros::v5::Motor *motor, std::string name, int line) {
+  if (motor != nullptr) {
+    double temperature = motor->get_temperature();
+    double fahrenheit = temperature * 9 / 5 + 32;
+    std::string formatted = util::to_string_with_precision(fahrenheit);
+    ez::screen_print(name + " Temperature: " + formatted, line);
+  }
+}
+
 void ez_screen_task() {
   while (true) {
     if (!pros::competition::is_connected() && ez::as::page_blank_is_on(0)) {
@@ -95,13 +88,13 @@ void ez_screen_task() {
       screen_print_tracker(chassis.odom_tracker_front, "f", 7);
     }
 
-		if (ez::as::page_blank_is_on(1)) {
-      ez::screen_print("Motor Temps L1 "+ util::to_string_with_precision(L1.get_temperature()*9/5 +32), 1);
-      ez::screen_print("Motor Temps L2 "+ util::to_string_with_precision(L2.get_temperature()*9/5 +32), 2); 
-      ez::screen_print("Motor Temps L3 "+ util::to_string_with_precision(L3.get_temperature()*9/5 +32), 3); 
-      ez::screen_print("Motor Temps R1 "+ util::to_string_with_precision(R1.get_temperature()*9/5 +32), 4); 
-      ez::screen_print("Motor Temps R2 "+ util::to_string_with_precision(R2.get_temperature()*9/5 +32), 5); 
-      ez::screen_print("Motor Temps R3 "+ util::to_string_with_precision(R3.get_temperature()*9/5 +32), 6); 
+    if (ez::as::page_blank_is_on(1)) {
+      screen_print_temp(&L1, "L1", 1);
+      screen_print_temp(&L2, "L2", 2);
+      screen_print_temp(&L3, "L3", 3);
+      screen_print_temp(&R1, "R1", 4);
+      screen_print_temp(&R2, "R2", 5);
+      screen_print_temp(&R3, "R3", 6);
     }
 
     pros::delay(ez::util::DELAY_TIME);
@@ -109,6 +102,19 @@ void ez_screen_task() {
 }
 
 pros::Task ezScreenTask(ez_screen_task);
+
+std::string avg_motor_temps() {
+  double sum = (
+    L1.get_temperature() + L2.get_temperature() + L3.get_temperature() + R1.get_temperature()
+    + R2.get_temperature() + R3.get_temperature()
+  );
+
+  double mean = sum / 6;
+  double fahrenheit = mean * 9 / 5 + 32;
+  std::string formatted = util::to_string_with_precision(fahrenheit);
+
+  return formatted;
+}
 
 void opcontrol() {
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
@@ -132,9 +138,8 @@ void opcontrol() {
 			intake_top.move(0);
 		}
 
-    string temps1 = util::to_string_with_precision(intake_bottom.get_temperature()*9/5 +32);
-    string temps2 = util::to_string_with_precision(intake_top.get_temperature()*9/5 +32);
-    master.print(0,0,"m",util::to_string_with_precision(L1.get_temperature()*9/5 +32)); 
+    std::string motor_temp = avg_motor_temps();
+    master.print(0, 0, "m", motor_temp);
 
     middle_stage.button_toggle(master.get_digital_new_press(DIGITAL_Y));
     trapdoor.button_toggle(master.get_digital_new_press(DIGITAL_RIGHT));
