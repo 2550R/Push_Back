@@ -3,18 +3,10 @@
 #include "EZ-Template/api.hpp"
 #include "api.h"
 
+inline pros::Controller master(pros::E_CONTROLLER_MASTER);
+
 extern Drive chassis;
 
-inline pros::Distance distance_back_l(14);
-inline pros::Distance distance_front_l(17);
-inline pros::Distance distance_back_r(18);
-inline pros::Distance distance_front_r(19);
-inline pros::Imu inertial(21);
-
-inline pros::Motor intake_bottom(20);
-inline pros::Motor intake_top(12);
-
-// these dt ports have been changed to the numbers on the new bot - 11/6/2025
 inline pros::Motor L1(-7);
 inline pros::Motor L2(8);
 inline pros::Motor L3(-5);
@@ -23,13 +15,19 @@ inline pros::Motor R1(9);
 inline pros::Motor R2(-4);
 inline pros::Motor R3(1);
 
+inline pros::Imu inertial(2);
+
+inline pros::Distance distance_back_l(14);
+inline pros::Distance distance_front_l(17);
+inline pros::Distance distance_back_r(18);
+inline pros::Distance distance_front_r(19);
+
+inline pros::Motor intake_bottom(20);
+inline pros::Motor intake_top(12);
+
 inline ez::Piston trapdoor('A');
 inline ez::Piston middle_stage('F');
 inline ez::Piston Little_Mech_Mac('B');
 
-
 inline ez::Piston right_rush_mech('C');
 inline ez::Piston left_rush_mech('C');
-
-inline pros::Controller master(pros::E_CONTROLLER_MASTER); 
-
