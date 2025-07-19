@@ -8,8 +8,8 @@
 // Chassis constructor
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
-    {-10, 7, -4},     // Left Chassis Ports (negative port will reverse it!)
-    {3, -6, 1},  // Right Chassis Ports (negative port will reverse it!)
+    {10, -7, -4},     // Left Chassis Ports (negative port will reverse it!)
+    {-3, 6, 1},  // Right Chassis Ports (negative port will reverse it!)
 
     2,      // IMU Port
     3.25,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
@@ -133,8 +133,8 @@ void autonomous() {
   to be consistent
   */
 
-  ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
-  //odom_boomerang_injected_pure_pursuit_example();
+  // ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
+  solo_winpoint_left();
 }
 
 /**

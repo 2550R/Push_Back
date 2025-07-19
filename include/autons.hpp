@@ -33,3 +33,5 @@ void blue_bottom_quals();
 
 void red_bottom_elims();
 void red_top_elims();
+
+void solo_winpoint_left();
