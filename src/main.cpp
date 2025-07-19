@@ -106,7 +106,7 @@ void ez_screen_task() {
 
 pros::Task ezScreenTask(ez_screen_task);
 
-std::string avg_motor_temps() {
+double avg_motor_temps() {
   double sum = (
     L1.get_temperature() + L2.get_temperature() + L3.get_temperature() + R1.get_temperature()
     + R2.get_temperature() + R3.get_temperature()
@@ -114,13 +114,14 @@ std::string avg_motor_temps() {
 
   double mean = sum / 6;
   double fahrenheit = mean * 9 / 5 + 32;
-  std::string formatted = util::to_string_with_precision(fahrenheit);
 
-  return formatted;
+  return fahrenheit;
 }
 
 void opcontrol() {
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
+	int count = 0;
+
   while (true) {
     chassis.opcontrol_arcade_standard(ez::SPLIT);
 
@@ -141,13 +142,19 @@ void opcontrol() {
 			intake_top.move(0);
 		}
 
-    std::string motor_temp = avg_motor_temps();
-    master.print(0, 0, "m", motor_temp);
+		if (count == 20) {
+			// only update controller screen every 20 cycles
+			count = 0;
+
+      double motor_temp = avg_motor_temps();
+      master.print(0, 0, "%f", motor_temp);
+		}
 
     middle_stage.button_toggle(master.get_digital_new_press(DIGITAL_Y));
     trapdoor.button_toggle(master.get_digital_new_press(DIGITAL_RIGHT));
     Little_Mech_Mac.button_toggle(master.get_digital_new_press(DIGITAL_B));
 
+		count++;
 		pros::delay(ez::util::DELAY_TIME);
   }
 }
