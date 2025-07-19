@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "MOA new brain",
+    "project_name": "MOA Final (+brain)",
     "target": "v5",
     "templates": {
       "EZ-Template": {
