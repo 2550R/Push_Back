@@ -6,15 +6,15 @@
  */
 
 ez::Drive chassis(
-    {-7, 8, -5},
-    {9, -4, 1},
-    2,
-    3.25,
-    450
+  {-10, 7, -4},
+  {3, -6, 1},
+  2,
+  3.25,
+  450
 );
 
-ez::tracking_wheel horiz_tracker(6, 2, 0);
-ez::tracking_wheel vert_tracker(11, 2, 0);
+ez::tracking_wheel horiz_tracker(9, 2, 0);
+ez::tracking_wheel vert_tracker(12, 2, 0);
 
 void initialize() {
   ez::ez_template_print();
