@@ -2,10 +2,13 @@
 
 void default_constants();
 
-void blue_qual();
 void blue_top_elims();
 void red_top_elims();
+void red_bottom_elims();
 void blue_top_quals();
+void blue_qual();
+
+void solo_winpoint_left();
 
 /* Odom TESTING Functions */
 

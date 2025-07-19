@@ -6,8 +6,8 @@
  */
 
 ez::Drive chassis(
-  {-10, 7, -4},
-  {3, -6, 1},
+  {10, -7, -4},
+  {-3, 6, 1},
   2,
   3.25,
   450
@@ -31,9 +31,12 @@ void initialize() {
   default_constants();
 
   ez::as::auton_selector.autons_add({
-      {"Blue Elims", blue_top_elims},
-      {"Pure Pursuit Wait Until\n\nGo to (24, 24) but start running an intake once the robot passes (12, 24)", odom_pure_pursuit_wait_until_example},
-			{"Injected Boomerang Example", odom_boomerang_injected_pure_pursuit_example}
+    {"Solo AWP Left", solo_winpoint_left},
+    {"Blue Top Elims", blue_top_elims},
+    {"Red Top Elims", red_top_elims},
+    {"Blue Quals", blue_top_quals},
+    {"Pure Pursuit Wait Until\n\nGo to (24, 24) but start running an intake once the robot passes (12, 24)", odom_pure_pursuit_wait_until_example},
+    {"Injected Boomerang Example", odom_boomerang_injected_pure_pursuit_example}
   });
   
   chassis.initialize();
