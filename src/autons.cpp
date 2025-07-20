@@ -66,21 +66,22 @@ void blue_qual() { }
 void blue_top_elims() {
   trapdoor.set(1);
   chassis.odom_xyt_set(0_in, 0_in, 166_deg);
+  
+  chassis.pid_drive_exit_condition_set(50_ms, 1_in, 100_ms, 3_in, 200_ms, 200_ms);
 
   chassis.pid_odom_set({{{-13_in, 18_in}, rev, 127},
                       {{-10.8_in, 22_in}, rev, 127},
                       {{-11.4_in, 30_in}, rev, 127},
-                      {{-8.4_in, 46.8_in}, rev, 127}},
-                      true);
-  chassis.pid_wait();
+                      {{-8.15_in, 47.2_in}, rev, 127}},
+                      false);
+  chassis.pid_wait_quick();
 
   right_rush_mech.set(1);
-  pros::delay(300);
+  pros::delay(200);
 
   chassis.pid_swing_set(RIGHT_SWING, 90, 60,-5);
   chassis.pid_wait();
 
-  intake_top.move(127);
   intake_bottom.move(127);
 
   chassis.pid_swing_set(LEFT_SWING, 170, 60,3);
@@ -89,11 +90,11 @@ void blue_top_elims() {
   chassis.pid_swing_set(RIGHT_SWING, 100, 60, 20);
   chassis.pid_wait();
 
-  pros::delay(500);
+  pros::delay(300);
 
   right_rush_mech.set(0);
 
-  pros::delay(600);
+  pros::delay(200);
 
   chassis.pid_drive_set(-20, 60, true);
   chassis.pid_wait();
@@ -102,16 +103,13 @@ void blue_top_elims() {
   chassis.pid_wait_quick();
 
   chassis.pid_swing_set(RIGHT_SWING, 90, 60, 30, true);
-  chassis.pid_wait();
+  chassis.pid_wait_quick();
 
-  chassis.pid_drive_set(7, 60, true);
-  chassis.pid_wait();
-
-  chassis.pid_odom_set({{-6.2_in, 17_in}, fwd, 80}, true);
+  chassis.pid_odom_set({{-5.8_in, 17_in}, fwd, 80}, true);
   chassis.pid_wait();
 
   chassis.pid_turn_set(180, 60, true);
-  chassis.pid_wait();
+  chassis.pid_wait_quick();
 
   // blooper
   Little_Mech_Mac.set(1);
@@ -119,10 +117,9 @@ void blue_top_elims() {
   chassis.pid_drive_set(12, 50, true);
   chassis.pid_wait();
 
-  pros::delay(1500);
+  //pros::delay(500);
 
-  chassis.pid_turn_set(180, 60, true);
-  chassis.pid_wait();
+  intake_top.move(127);
 
   chassis.pid_drive_set(-29.5, 60, true);
   chassis.pid_wait();
@@ -389,20 +386,27 @@ void solo_winpoint_left() {
   chassis.odom_xyt_set(0_in, 0_in, -90_deg);
   trapdoor.set(1);
 
+  chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 100_ms, 300_ms);
+  chassis.pid_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 100_ms, 400_ms);
+
   chassis.pid_odom_set({{-33_in, 0_in}, fwd, 100}, true);
-  chassis.pid_wait();
+  chassis.pid_wait_quick();
 
   Little_Mech_Mac.set(1);
 
-  chassis.pid_turn_set(180, 100, true);
+  chassis.pid_turn_set(180, 110, true);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(9.8, 80, true);
+  chassis.pid_drive_set(9.8, 90, true);
   chassis.pid_wait();
+
+  chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 400_ms, 300_ms);
+  chassis.pid_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms,500_ms);
+
 
   intake_bottom.move(127);
 
-  pros::delay(400);
+  pros::delay(390);
 
   chassis.pid_turn_set(180, 60, true);
   chassis.pid_wait_quick();
@@ -416,12 +420,12 @@ void solo_winpoint_left() {
 
   intake_top.move(127);
 
-  pros::delay(1700);
+  pros::delay(1600);
 
   intake_top.brake();
   intake_bottom.move(127);
 
-  chassis.pid_swing_set(RIGHT_SWING, 45, 80, -20, true);
+  chassis.pid_swing_set(RIGHT_SWING, 45, 80, -19.5, true);
   chassis.pid_wait();
 
   chassis.pid_drive_set(30, 45, true);
@@ -458,19 +462,24 @@ void solo_winpoint_left() {
   middle_stage.set(0);
   Little_Mech_Mac.set(0);
 
-  chassis.pid_odom_set({{25.3_in, 35.9_in}, fwd, 80}, true);
-  chassis.pid_wait_quick();
+  chassis.pid_odom_set({{26.3_in, 35.9_in}, fwd, 100}, true);
+  chassis.pid_wait_quick_chain();
 
   chassis.pid_swing_set(RIGHT_SWING, 15, 60, 10, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_turn_set(-57, 60, false);
   chassis.pid_wait_quick();
 
-  intake_top.move(-60);
+  intake_top.move(-100);
   intake_bottom.move(-60);
 
-  chassis.pid_turn_set(-40, 60, true);
+  chassis.pid_drive_set(17.5, 60, false);
   chassis.pid_wait_quick();
 
-  chassis.pid_drive_set(13, 60, true);
+  pros::delay(100);
+
+  chassis.pid_drive_set(-1.5, 127, false);
   chassis.pid_wait_quick();
 }
 
