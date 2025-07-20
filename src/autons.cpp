@@ -1,17 +1,31 @@
+/*
+ * Copyright (c) 2025, Grizzly Robotics Team 2550R. This Source Code
+ * Form is subject to the terms of the Mozilla Public License, v. 2.0
+ * and made available under the terms of the License at 
+ * https://github.com/2550R/Push_Back.
+ * A copy of the MPL can be obtained at http://mozilla.org/MPL/2.0/.
+ * 
+ * Copyright (c) 2021-2025, EZ Robotics. The original Source Code was
+ * made available under the Mozilla Public License, v. 2.0, at
+ * https://github.com/EZ-Robotics/EZ-Template.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 #include "main.h"
 
-/*
-  Odometry and Pure Pursuit ARE NOT MAGIC
-
-  It is possible to get perfectly consistent results without tracking wheels,
-  but it is also possible to have extremely inconsistent results without tracking wheels.
-  When you don't use tracking wheels, you need to:
-   - avoid wheel slip
-   - avoid wheelies
-   - avoid throwing momentum around (super harsh turns, like in the example below)
-  You can do cool curved motions, but you have to give your robot the best chance
-  to be consistent
-  */
+/* Below is a copy-pasted reminder from EZ Template:
+ * Odometry and Pure Pursuit ARE NOT MAGIC!
+ *
+ * It is possible to get perfectly consistent results with tracking wheels,
+ * but it is also possible to have extremely inconsistent results with
+ * tracking wheels. You can do cool curved motions, but you have to give your
+ * robot the best chance to be consistent:
+ * 1. avoid wheel slip
+ * 2. avoid wheelies
+ * 3. avoid throwing momentum around (super harsh turns, like in the example 
+ *    below)
+ */
 
 const int DRIVE_SPEED = 110;
 const int TURN_SPEED = 90;
