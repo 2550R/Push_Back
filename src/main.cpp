@@ -55,7 +55,8 @@ void autonomous() {
   chassis.odom_xyt_set(0_in, 0_in, 0_deg);
   chassis.drive_brake_set(MOTOR_BRAKE_HOLD);
 
-  ez::as::auton_selector.selected_auton_call();
+  // ez::as::auton_selector.selected_auton_call();
+  blue_top_elims();
 }
 
 void screen_print_tracker(ez::tracking_wheel *tracker, std::string name, int line) {
@@ -118,9 +119,32 @@ double avg_motor_temps() {
   return fahrenheit;
 }
 
+
+void anti_jam(void* param){
+  while(true){
+  if (intake_top.get_voltage()> 11){
+    float intake_speed = intake_top.get_actual_velocity();
+    intake_top.move(-intake_speed);
+    pros::delay(200);
+    intake_top.move(intake_speed);
+  }
+  if (intake_bottom.get_voltage()> 11){
+    float intake_speed = intake_bottom.get_actual_velocity();
+    intake_bottom.move(-intake_speed);
+    pros::delay(200);
+    //intake_bottom.move(intake_speed);
+  }
+  std::cout << "Task 1 running\n";
+  pros::delay(200);
+  }
+}
+
+
 void opcontrol() {
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
 	int count = 0;
+  pros::Task task1(anti_jam);
+
 
   while (true) {
     chassis.opcontrol_arcade_standard(ez::SPLIT);
@@ -133,10 +157,10 @@ void opcontrol() {
 			intake_top.move(127);
 		} else if (master.get_digital(DIGITAL_R1)) {
 			intake_bottom.move(-65);
-			intake_top.move(-65);
+			intake_top.move(0);
 		} else if (master.get_digital(DIGITAL_R2)) {
 			intake_bottom.move(65);
-			intake_top.move(65);
+			intake_top.move(0);
 		} else {
 			intake_bottom.move(0);
 			intake_top.move(0);
@@ -146,8 +170,10 @@ void opcontrol() {
 			// only update controller screen every 20 cycles
 			count = 0;
 
-      double motor_temp = avg_motor_temps();
-      master.print(0, 0, "%f", motor_temp);
+      double motor_temp1 = intake_top.get_temperature();
+      double motor_temp2 = intake_top.get_temperature();
+      master.print(0, 0, "%f", motor_temp1);
+      master.print(1, 0, "%f", motor_temp2);
 		}
 
     middle_stage.button_toggle(master.get_digital_new_press(DIGITAL_Y));

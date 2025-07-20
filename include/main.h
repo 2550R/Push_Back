@@ -72,6 +72,7 @@ using namespace okapi::literals;
 #ifdef __cplusplus
 extern "C" {
 #endif
+void anti_jam(void* param);
 void autonomous(void);
 void initialize(void);
 void disabled(void);
