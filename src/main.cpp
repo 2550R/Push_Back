@@ -122,18 +122,19 @@ double avg_motor_temps() {
 
 void anti_jam(void* param){
   while(true){
-  if (intake_top.get_voltage()> 11){
+  if (intake_top.get_current_draw() > 1000){
     float intake_speed = intake_top.get_actual_velocity();
-    intake_top.move(-intake_speed);
-    pros::delay(200);
-    intake_top.move(intake_speed);
+    intake_top.move(-127);
+    pros::delay(500);
+    intake_top.move(127);
+    pros::delay(500);
   }
-  if (intake_bottom.get_voltage()> 11){
-    float intake_speed = intake_bottom.get_actual_velocity();
-    intake_bottom.move(-intake_speed);
-    pros::delay(200);
-    //intake_bottom.move(intake_speed);
-  }
+  // if (intake_bottom.get_voltage() > 11){
+  //   float intake_speed = intake_bottom.get_actual_velocity();
+  //   intake_bottom.move(-intake_speed);
+  //   pros::delay(500);
+  //   //intake_bottom.move(intake_speed);
+  // }
   std::cout << "Task 1 running\n";
   pros::delay(200);
   }
@@ -150,11 +151,11 @@ void opcontrol() {
     chassis.opcontrol_arcade_standard(ez::SPLIT);
 
 		if (master.get_digital(DIGITAL_L1)) {
-			intake_bottom.move(-127);
-			intake_top.move(-127);
+			intake_bottom.move(-100);
+			intake_top.move(-100);
 		} else if (master.get_digital(DIGITAL_L2)) {
-			intake_bottom.move(127);
-			intake_top.move(127);
+			intake_bottom.move(100);
+			intake_top.move(100);
 		} else if (master.get_digital(DIGITAL_R1)) {
 			intake_bottom.move(-65);
 			intake_top.move(0);
@@ -170,7 +171,7 @@ void opcontrol() {
 			// only update controller screen every 20 cycles
 			count = 0;
 
-      double motor_temp1 = intake_top.get_temperature();
+      double motor_temp1 = intake_top.get_current_draw();
       double motor_temp2 = intake_top.get_temperature();
       master.print(0, 0, "%f", motor_temp1);
       master.print(1, 0, "%f", motor_temp2);
