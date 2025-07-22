@@ -145,6 +145,10 @@ void ez_screen_task() {
 
 pros::Task ezScreenTask(ez_screen_task);
 
+double to_fahrenheit(double celsius) {
+	return celsius * 9 / 5 + 32;
+}
+
 double avg_motor_temps() {
   double sum = (
     L1.get_temperature() + L2.get_temperature() + L3.get_temperature() + R1.get_temperature()
@@ -152,40 +156,37 @@ double avg_motor_temps() {
   );
 
   double mean = sum / 6;
-  double fahrenheit = mean * 9 / 5 + 32;
 
-  return fahrenheit;
+  return mean;
 }
 
+/*
+void anti_jam() {
+  while (true) {
+    if (intake_top.get_current_draw() > 1000) {
+      float intake_speed = intake_top.get_actual_velocity();
+      intake_top.move(-127);
+      pros::delay(500);
+      intake_top.move(127);
+      pros::delay(500);
+    }
 
-// void anti_jam(void* param){
-//   while(true){
-//   if (intake_top.get_current_draw() > 1000){
-//     float intake_speed = intake_top.get_actual_velocity();
-//     intake_top.move(-127);
-//     pros::delay(500);
-//     intake_top.move(127);
-//     pros::delay(500);
-//   }
-//   // if (intake_bottom.get_voltage() > 11){
-//   //   float intake_speed = intake_bottom.get_actual_velocity();
-//   //   intake_bottom.move(-intake_speed);
-//   //   pros::delay(500);
-//   //   //intake_bottom.move(intake_speed);
-//   // }
-//   std::cout << "Task 1 running\n";
-//   pros::delay(200);
-//   }
-// }
+    if (intake_bottom.get_voltage() > 11) {
+      float intake_speed = intake_bottom.get_actual_velocity();
+      intake_bottom.move(-intake_speed);
+      pros::delay(500);
+      intake_bottom.move(intake_speed);
+    }
 
-
-
+    std::cout << "Task 1 running\n";
+    pros::delay(200);
+  }
+}
+*/
 
 void opcontrol() {
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
 	int count = 0;
-  // pros::Task task1(anti_jam);
-
 
   while (true) {
     chassis.opcontrol_arcade_standard(ez::SPLIT);
@@ -207,13 +208,18 @@ void opcontrol() {
 			intake_top.move(0);
 		}
 
-		if (count == 20) {
-			// only update controller screen every 20 cycles
+		if (count == 80) {
+			// only update controller screen every 80 cycles
 			count = 0;
 
-      double motor_temp1 = distance_front.get_distance();
-      //double motor_temp2 = intake_top.get_temperature();
-      master.print(0, 0, "%f", motor_temp1);
+			int dt_temps = (int) to_fahrenheit(avg_motor_temps());
+
+      int distance = (int) distance_front.get_distance();
+
+      int top_temp = (int) to_fahrenheit(intake_top.get_temperature());
+			int bottom_temp = (int) to_fahrenheit(intake_bottom.get_temperature());
+
+      master.print(0, 0, "%d/%d/%d/%d        ", dt_temps, bottom_temp, top_temp, distance);
 		}
 
     middle_stage.button_toggle(master.get_digital_new_press(DIGITAL_Y));
