@@ -62,6 +62,7 @@ void default_constants() {
 }
 
 void skills() {  
+
   chassis.odom_xyt_set(0_in, 0_in, -90_deg);
   trapdoor.set(1);
 
@@ -89,9 +90,7 @@ void skills() {
   chassis.pid_drive_set(-9.8, 90, true);
   chassis.pid_wait_quick();
   // wall_tracking_with_alignment_R(407,-110,500);
-  chassis.pid_odom_set({{{-45_in, 10_in}, rev, 127},
-                    {{-37_in, 36_in}, rev, 127}},
-                    false);
+  chassis.pid_odom_set({{-46_in, 12_in}, rev, 127},false);
   chassis.pid_wait();
 
   Little_Mech_Mac.set(0);
@@ -99,12 +98,15 @@ void skills() {
   pros::delay(200);
   chassis.pid_turn_set(0, 60, true);
   chassis.pid_wait();
-  pros::delay(900);
+  chassis.pid_drive_set(10_in, 110);
+  chassis.pid_wait();
+  pros::delay(3000);
 
   wall_tracking_with_alignment(150,50,1000);
+  pros::delay(300000);
   wall_tracking_with_alignment(150,60,500);
   chassis.odom_xyt_set(0_in, 0_in, 0_deg);
-  pros::delay(10000);
+  pros::delay(3000000);
   
   chassis.pid_turn_set(90, 60, true);
   chassis.pid_wait();

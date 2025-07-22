@@ -11,13 +11,13 @@
 
 #include "main.h"
 
-float w_KP = 0.13;
+float w_KP = 0.1;
 float w_KI = 0;
-float w_KD = 3;
+float w_KD = 0;
 
-float wa_kP = .2;
-float wa_kI = 0.0;
-float wa_kD = .01;
+float wa_kP = .1;
+float wa_kI = 0;
+float wa_kD = 0;
 
 float d_KP = 0.15;
 float d_KI = 0.00007;
@@ -123,13 +123,12 @@ void wall_tracking_with_alignment(float target_distance, float DRIVE_SPEED, floa
   float derivative_turn;
   float output_tracking;
   float output_turn;
-  float error_tw = 0.1;
 
   while (distance_front.get_distance() > drive_distance) {
     // Track wall
     error_tracking = (target_distance - (distance_front_l.get_distance() + distance_back_l.get_distance())/2);
     derivative_tracking = error_tracking - prev_error_tr;
-    output_tracking = error_tracking * w_KP + w_KD * derivative_tracking;
+    output_tracking = (error_tracking * w_KP) + (w_KD * derivative_tracking);
     
     // Calculate turns 
     error_turn = (distance_front_l.get_distance() - distance_back_l.get_distance());

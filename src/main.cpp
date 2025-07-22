@@ -32,17 +32,13 @@ ez::tracking_wheel vert_tracker(12, 2, 0);
 
 
 void color_sort_task(void* param) {
-  master.print(0, 0, "%f", distance_front.get_distance());
+  color_sort.set_led_pwm(100);
   while (true) {
-    // color_sort_P.set(1);
-    color_sort.set_led_pwm(100);
-    if (color_sort.get_hue() > 180) {
+    if (color_sort.get_hue() > 180 && color_sort.get_proximity() > 170) {
       color_sort_P.set(1);
-      pros::delay(300);
+      pros::delay(400);
       color_sort_P.set(0);
     }
-
-    pros::delay(20);
   }
   std::cout << "Task 1 running\n";
 }
@@ -219,7 +215,7 @@ void opcontrol() {
       count = 0;
 
       int dt_temps = (int) to_fahrenheit(avg_motor_temps());
-      int distance = (int) distance_front.get_distance();
+      int distance = (int) color_sort.get_proximity();
       int top_temp = (int) to_fahrenheit(intake_top.get_temperature());
       int bottom_temp = (int) to_fahrenheit(intake_bottom.get_temperature());
 
