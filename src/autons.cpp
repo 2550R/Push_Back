@@ -60,7 +60,84 @@ void default_constants() {
 
   chassis.pid_angle_behavior_set(ez::shortest);
 }
+void skills() {
+  
+  chassis.odom_xyt_set(0_in, 0_in, -90_deg);
+  trapdoor.set(1);
 
+  chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 100_ms, 300_ms);
+  chassis.pid_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 100_ms, 400_ms);
+
+  chassis.pid_odom_set({{-33_in, 0_in}, fwd, 127}, true);
+  chassis.pid_wait();
+  //drive_wall(460, 30);
+  Little_Mech_Mac.set(1);
+
+  chassis.pid_turn_set(180, 110, true);
+  chassis.pid_wait();
+  //wall_tracking_with_alignment_R(407,110,390);
+
+  chassis.pid_drive_set(9.8, 90, true);
+  chassis.pid_wait();
+
+  chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 400_ms, 300_ms);
+  chassis.pid_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms,500_ms);
+
+
+  //intake_bottom.move(127);
+
+  pros::delay(390);
+  chassis.pid_drive_set(-9.8, 90, true);
+  chassis.pid_wait_quick();
+  //wall_tracking_with_alignment_R(407,-110,500);
+  chassis.pid_odom_set({{{-45_in, 10_in}, rev, 127},
+                    {{-37_in, 36_in}, rev, 127}},
+                    false);
+  chassis.pid_wait();
+
+  Little_Mech_Mac.set(0);
+  trapdoor.set(0);
+  pros::delay(200);
+  chassis.pid_turn_set(0, 60, true);
+  chassis.pid_wait();
+  pros::delay(900);
+
+  wall_tracking_with_alignment(150,50,1000);
+  wall_tracking_with_alignment(150,60,500);
+  chassis.odom_xyt_set(0_in, 0_in, 0_deg);
+  pros::delay(10000);
+  
+  chassis.pid_turn_set(90, 60, true);
+  chassis.pid_wait();
+
+  chassis.pid_odom_set({{8.7_in, 0_in}, fwd, 127});
+  chassis.pid_wait();
+  Little_Mech_Mac.set(1);
+  chassis.pid_turn_set(0, 60, true);
+  chassis.pid_wait();
+  chassis.pid_drive_set(11, 90, true);
+  chassis.pid_wait();
+
+  pros::delay(1600);
+  chassis.pid_turn_set(0, 60, true);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-27, 110, true);
+  chassis.pid_wait();
+  Little_Mech_Mac.set(0);
+
+ 
+
+  
+
+
+
+
+
+
+
+
+}
 void blue_qual() { }
 
 void blue_top_elims() {
@@ -389,8 +466,9 @@ void solo_winpoint_left() {
   chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 100_ms, 300_ms);
   chassis.pid_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 100_ms, 400_ms);
 
-  chassis.pid_odom_set({{-33_in, 0_in}, fwd, 100}, true);
-  chassis.pid_wait_quick();
+  //chassis.pid_odom_set({{-33_in, 0_in}, fwd, 127}, true);
+  drive_wall(450, 30);
+  chassis.odom_xyt_set(-33_in, 0_in, -90_deg);
 
   Little_Mech_Mac.set(1);
 
