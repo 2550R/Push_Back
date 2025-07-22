@@ -16,11 +16,26 @@ ez::Drive chassis(
 ez::tracking_wheel horiz_tracker(9, 2, 0);
 ez::tracking_wheel vert_tracker(12, 2, 0);
 
+
+void Color_Sort(void* param){
+  master.print(0, 0, "%f", distance_front.get_distance());
+  while(true){
+    //color_sort_P.set(1);
+    color_sort.set_led_pwm(100);
+    if ( color_sort.get_hue() > 180){
+      
+      color_sort_P.set(1);
+      pros::delay(300);
+      color_sort_P.set(0);
+    }
+    pros::delay(20);
+  }
+  std::cout << "Task 1 running\n";
+}
+
 void initialize() {
   ez::ez_template_print();
-
   pros::delay(500);  // Stop the user from doing anything while legacy ports configure
-
 	chassis.odom_tracker_back_set(&horiz_tracker);
   chassis.odom_tracker_right_set(&vert_tracker);
 
@@ -31,6 +46,7 @@ void initialize() {
   default_constants();
 
   ez::as::auton_selector.autons_add({
+    {"Skills", skills},
     {"Solo AWP Left", solo_winpoint_left},
     {"Blue Top Elims", blue_top_elims},
     {"Red Top Elims", red_top_elims},
@@ -42,6 +58,8 @@ void initialize() {
   chassis.initialize();
   ez::as::initialize();
   master.rumble(chassis.drive_imu_calibrated() ? "." : "-");
+
+  pros::Task task1(Color_Sort);
 }
 
 void disabled() { }
@@ -100,6 +118,9 @@ void ez_screen_task() {
       screen_print_temp(&R2, "R2", 5);
       screen_print_temp(&R3, "R3", 6);
     }
+    if (ez::as::page_blank_is_on(2)) {
+      ez::screen_print("test_variable: " + util::to_string_with_precision(color_sort.get_hue()), 1);
+    }
 
     pros::delay(ez::util::DELAY_TIME);
   }
@@ -141,6 +162,8 @@ double avg_motor_temps() {
 // }
 
 
+
+
 void opcontrol() {
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
 	int count = 0;
@@ -171,16 +194,15 @@ void opcontrol() {
 			// only update controller screen every 20 cycles
 			count = 0;
 
-      double motor_temp1 = intake_top.get_current_draw();
-      double motor_temp2 = intake_top.get_temperature();
+      double motor_temp1 = distance_front.get_distance();
+      //double motor_temp2 = intake_top.get_temperature();
       master.print(0, 0, "%f", motor_temp1);
-      master.print(1, 0, "%f", motor_temp2);
 		}
 
     middle_stage.button_toggle(master.get_digital_new_press(DIGITAL_Y));
     trapdoor.button_toggle(master.get_digital_new_press(DIGITAL_RIGHT));
     Little_Mech_Mac.button_toggle(master.get_digital_new_press(DIGITAL_B));
-
+    color_sort_P.button_toggle(master.get_digital_new_press(DIGITAL_X));
 		count++;
 		pros::delay(ez::util::DELAY_TIME);
   }
