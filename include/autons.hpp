@@ -16,11 +16,16 @@
 
 void default_constants();
 
+void skills();
+
 void blue_top_elims();
 void red_top_elims();
-void red_bottom_elims();
 void blue_top_quals();
-void blue_qual();
+
+void blue_bottom_elims();
+void red_bottom_elims();
+void blue_bottom_quals();
+void red_bottom_quals();
 
 void solo_winpoint_left();
 
@@ -34,4 +39,3 @@ void auton_setup();
 /* Wall Tracking TEST */
 
 void wall_tracking_test();
-void skills();

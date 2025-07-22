@@ -31,17 +31,17 @@ ez::tracking_wheel horiz_tracker(9, 2, 0);
 ez::tracking_wheel vert_tracker(12, 2, 0);
 
 
-void Color_Sort(void* param){
+void color_sort_task(void* param) {
   master.print(0, 0, "%f", distance_front.get_distance());
-  while(true){
-    //color_sort_P.set(1);
+  while (true) {
+    // color_sort_P.set(1);
     color_sort.set_led_pwm(100);
-    if ( color_sort.get_hue() > 180){
-      
+    if (color_sort.get_hue() > 180) {
       color_sort_P.set(1);
       pros::delay(300);
       color_sort_P.set(0);
     }
+
     pros::delay(20);
   }
   std::cout << "Task 1 running\n";
@@ -64,7 +64,11 @@ void initialize() {
     {"Solo AWP Left", solo_winpoint_left},
     {"Blue Top Elims", blue_top_elims},
     {"Red Top Elims", red_top_elims},
-    {"Blue Quals", blue_top_quals},
+    {"Blue Top Quals", blue_top_quals},
+    {"Blue Bottom Elims", blue_bottom_elims},
+    {"Red Bottom Elims", red_bottom_elims},
+    {"Blue Bottom Quals", blue_bottom_quals},
+    {"Red Bottom Quals", red_bottom_quals},
     {"Pure Pursuit Wait Until\n\nGo to (24, 24) but start running an intake once the robot passes (12, 24)", odom_pure_pursuit_wait_until_example},
     {"Injected Boomerang Example", odom_boomerang_injected_pure_pursuit_example}
   });
@@ -73,7 +77,7 @@ void initialize() {
   ez::as::initialize();
   master.rumble(chassis.drive_imu_calibrated() ? "." : "-");
 
-  pros::Task task1(Color_Sort);
+  pros::Task task1(color_sort_task);
 }
 
 void disabled() { }
@@ -88,7 +92,6 @@ void autonomous() {
   chassis.drive_brake_set(MOTOR_BRAKE_HOLD);
 
   ez::as::auton_selector.selected_auton_call();
-  // blue_top_elims();
 }
 
 void screen_print_tracker(ez::tracking_wheel *tracker, std::string name, int line) {
