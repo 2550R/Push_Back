@@ -212,6 +212,7 @@ void opcontrol() {
     trapdoor.button_toggle(master.get_digital_new_press(DIGITAL_RIGHT));
     Little_Mech_Mac.button_toggle(master.get_digital_new_press(DIGITAL_B));
     color_sort_P.button_toggle(master.get_digital_new_press(DIGITAL_X));
+    left_rush_mech.button_toggle(master.get_digital_new_press(DIGITAL_UP));
 
     if (count == 80) {
       // only update controller screen every 80 cycles
