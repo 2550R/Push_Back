@@ -208,25 +208,31 @@ void opcontrol() {
 			intake_top.move(0);
 		}
 
-		if (count == 80) {
-			// only update controller screen every 80 cycles
-			count = 0;
-
-			int dt_temps = (int) to_fahrenheit(avg_motor_temps());
-
-      int distance = (int) distance_front.get_distance();
-
-      int top_temp = (int) to_fahrenheit(intake_top.get_temperature());
-			int bottom_temp = (int) to_fahrenheit(intake_bottom.get_temperature());
-
-      master.print(0, 0, "%d/%d/%d/%d        ", dt_temps, bottom_temp, top_temp, distance);
-		}
-
     middle_stage.button_toggle(master.get_digital_new_press(DIGITAL_Y));
     trapdoor.button_toggle(master.get_digital_new_press(DIGITAL_RIGHT));
     Little_Mech_Mac.button_toggle(master.get_digital_new_press(DIGITAL_B));
     color_sort_P.button_toggle(master.get_digital_new_press(DIGITAL_X));
+
+    if (count == 80) {
+      // only update controller screen every 80 cycles
+      count = 0;
+
+      int dt_temps = (int) to_fahrenheit(avg_motor_temps());
+      int distance = (int) distance_front.get_distance();
+      int top_temp = (int) to_fahrenheit(intake_top.get_temperature());
+      int bottom_temp = (int) to_fahrenheit(intake_bottom.get_temperature());
+
+      master.print(0, 0, "%d/%d/%d/%d        ", dt_temps, bottom_temp, top_temp, distance);
+    }
+
 		count++;
+
+    if (!pros::competition::is_connected() && master.get_digital(DIGITAL_LEFT) && master.get_digital(DIGITAL_DOWN)) {
+      pros::motor_brake_mode_e_t preference = chassis.drive_brake_get();
+      autonomous();
+      chassis.drive_brake_set(preference);
+    }
+
 		pros::delay(ez::util::DELAY_TIME);
   }
 }
