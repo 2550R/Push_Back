@@ -20,3 +20,4 @@ void auton_setup();
 /* Wall Tracking TEST */
 
 void wall_tracking_test();
+void skills();

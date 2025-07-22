@@ -47,6 +47,7 @@
 #include "autons.hpp"
 #include "subsystems.hpp"
 #include "wall_tracking.hpp"
+#include "color_sort.hpp"
 
 
 /**
