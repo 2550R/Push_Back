@@ -23,13 +23,14 @@ float d_KP = 0.15;
 float d_KI = 0.00007;
 float d_KD = 0;
 
-void drive_wall(float distance, float speed){
+void drive_wall(float distance, float speed) {
   float error;
   float prev_error;
   float integral;
   float derivative;
-  while (distance_front.get_distance() > distance){
-    error = distance_front.get_distance() - distance ;
+
+  while (distance_front.get_distance() > distance) {
+    error = distance_front.get_distance() - distance;
     derivative = error - prev_error;
     float output = (error * d_KP + error * derivative * d_KD + error * integral * d_KI);
 
@@ -44,7 +45,6 @@ void drive_wall(float distance, float speed){
     if (error < 600){
       integral += error;
     }
-    
 
     pros::delay(50);
   }

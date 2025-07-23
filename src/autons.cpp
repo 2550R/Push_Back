@@ -32,20 +32,23 @@ const int TURN_SPEED = 90;
 const int SWING_SPEED = 110;
 float p_x;
 float p_y;
-int value = 0;
-void controller_update(void *param){
-  while(true)
-  {
-  if (value == 0){
-    master.print(0, 0, "%d/%d/%d       ", distance_front_l.get_distance(), distance_front_l.get_distance(),distance_front.get_distance());
-    pros::delay(100);
-  } else {
-    master.print(0, 0, "%f/%f      ", p_x, p_y);
-    pros::delay(100);
+
+int screen = 0;
+
+void controller_update() {
+  while (true) {
+    if (screen == 0) {
+      master.print(0, 0, "%d/%d/%d       ", distance_front_l.get_distance(), distance_front_l.get_distance(),distance_front.get_distance());
+      pros::delay(100);
+    } else {
+      master.print(0, 0, "%f/%f      ", p_x, p_y);
+      pros::delay(100);
+    }
   }
-  }
-  std::cout << "Task 1 running\n";
+
+  std::cout << "Controller output running\n";
 }
+
 void default_constants() {
   chassis.pid_drive_constants_set(22, 0, 130);
   chassis.pid_heading_constants_set(11.0, 0.0, 20.0);
@@ -75,37 +78,22 @@ void default_constants() {
 
   chassis.pid_angle_behavior_set(ez::shortest);
 }
-void test_code(){
-  pros::Task task1(controller_update);
-  wall_tracking_with_alignment(145, 100, 500);
-  L1.brake();
-  L2.brake();
-  L3.brake();
-  R1.brake();
-  R2.brake();
-  R3.brake();
-
-}
-
 
 void skills() {  
-  
   pros::Task task1(controller_update);
-  
-  
 
   chassis.odom_xyt_set(0_in, 0_in, -90_deg);
   trapdoor.set(1);
 
   /*
-  setup for first matchload
+  Setup for first matchload
   */
 
   chassis.pid_odom_set({{-33_in, 0_in}, fwd, 127}, true);
   chassis.pid_wait();
 
   /*
-  empty first match loader
+  Empty first match loader
   */
 
   Little_Mech_Mac.set(1);
@@ -119,7 +107,7 @@ void skills() {
   pros::delay(1000);
 
   /*
-  back up from match loader
+  Back up from match loader
   */
 
   chassis.pid_drive_set(-9.8, 90, true);
@@ -131,7 +119,7 @@ void skills() {
   chassis.pid_wait();
 
   /*
-  relocate to blue side
+  Relocate to blue side
   */
 
   chassis.pid_odom_set({{-47_in, 0_in}, fwd, 110}, true);
@@ -141,7 +129,7 @@ void skills() {
   chassis.pid_wait();
 
   /*
-  reset location to 0, 0
+  Reset location to 0, 0
   */
 
   chassis.pid_odom_set({{-47_in, 90_in}, fwd, 110}, true);
@@ -149,18 +137,22 @@ void skills() {
   chassis.pid_turn_set(0, 60, true);
   chassis.pid_wait();
   pros::delay(100);
-  float position_y = (distance_front.get_distance()- 600)/25.4;
-  float position_x = ((distance_front_l.get_distance() + distance_back_l.get_distance())/2 - 160)/25.4;
+
+  // Reset odom position with distance sensors
+  float position_y = (distance_front.get_distance() - 600) / 25.4;
+  float position_x = ((distance_front_l.get_distance() + distance_back_l.get_distance()) / 2 - 160) / 25.4;
+
   p_x = position_x;
   p_y = position_y;
-  chassis.odom_xyt_set(position_x, position_y,  0);
+
+  chassis.odom_xyt_set(position_x, position_y, 0);
   pros::delay(150);
 
   chassis.pid_drive_exit_condition_set(90_ms, 0.25_in, 200_ms, 3_in, 400_ms, 300_ms);
-  chassis.pid_turn_exit_condition_set(90_ms, 1_deg, 250_ms, 7_deg, 500_ms,500_ms);
+  chassis.pid_turn_exit_condition_set(90_ms, 1_deg, 250_ms, 7_deg, 500_ms, 500_ms);
 
   /*
-  setup for match loader
+  Setup for match loader
   */
   
   chassis.pid_turn_set(90, 60, true);
@@ -168,10 +160,10 @@ void skills() {
 
   chassis.pid_odom_set({{10.3_in, 0_in}, fwd, 110}, true);
   chassis.pid_wait();
-  value = 1;
+  screen = 1;
 
   /*
-  empty second match loader
+  Empty second match loader
   */
 
   Little_Mech_Mac.set(1);
@@ -196,10 +188,10 @@ void skills() {
   pros::delay(1000);
 
   /*
-  set up for first 2 middle balls
+  Set up for first 2 middle balls
   */
 
-  //activate color sort
+  // Activate color sort
 
   chassis.pid_drive_set(15, 110, true);
   chassis.pid_wait();
@@ -211,7 +203,7 @@ void skills() {
   chassis.pid_wait();
 
   /*
-  grab frist 2 from mid
+  Grab first 2 from mid
   */
 
   intake_bottom.move(127);
@@ -220,7 +212,7 @@ void skills() {
   chassis.pid_wait();
 
   /*
-  grab second 2 from mid
+  Grab second 2 from mid
   */
 
   chassis.pid_odom_set({{69, -2}, fwd, 100}, true);
@@ -240,11 +232,7 @@ void skills() {
   chassis.pid_turn_set(0, 60, true);
   chassis.pid_wait();
 
-  
   // chassis.pid_drive_set(-32, 90, false);
-
-  
-
 }
 
 void blue_top_elims() {
@@ -719,4 +707,16 @@ void auton_setup() {
 
 void wall_tracking_test() {
   wall_tracking_with_alignment(150, 50, 1);
+}
+
+void wall_alignment_test() {
+  pros::Task task1(controller_update);
+  wall_tracking_with_alignment(145, 100, 500);
+
+  L1.brake();
+  L2.brake();
+  L3.brake();
+  R1.brake();
+  R2.brake();
+  R3.brake();
 }

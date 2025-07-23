@@ -39,7 +39,7 @@ inline pros::Motor intake_top(11);
 inline ez::Piston trapdoor('A');
 inline ez::Piston middle_stage('C');
 inline ez::Piston Little_Mech_Mac('B');
-inline ez::Piston color_sort_P('G');
+inline ez::Piston color_sort_piston('G');
 
 inline ez::Piston right_rush_mech('F');
 inline ez::Piston left_rush_mech('F');

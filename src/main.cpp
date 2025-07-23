@@ -30,18 +30,17 @@ ez::Drive chassis(
 ez::tracking_wheel horiz_tracker(9, 2, 0);
 ez::tracking_wheel vert_tracker(12, 2, 0);
 
-
 void color_sort_task(void* param) {
   color_sort.set_led_pwm(100);
   while (true) {
     if (color_sort.get_hue() > 180 && color_sort.get_proximity() > 170) {
       pros::delay(50);
-      color_sort_P.set(1);
+      color_sort_piston.set(1);
       pros::delay(350);
-      color_sort_P.set(0);
+      color_sort_piston.set(0);
     }
   }
-  std::cout << "Task 1 running\n";
+  std::cout << "Color sort running\n";
 }
 
 void initialize() {
@@ -208,7 +207,7 @@ void opcontrol() {
     middle_stage.button_toggle(master.get_digital_new_press(DIGITAL_Y));
     trapdoor.button_toggle(master.get_digital_new_press(DIGITAL_RIGHT));
     Little_Mech_Mac.button_toggle(master.get_digital_new_press(DIGITAL_B));
-    color_sort_P.button_toggle(master.get_digital_new_press(DIGITAL_X));
+    color_sort_piston.button_toggle(master.get_digital_new_press(DIGITAL_X));
     left_rush_mech.button_toggle(master.get_digital_new_press(DIGITAL_UP));
 
     if (count == 80) {

@@ -39,4 +39,4 @@ void auton_setup();
 /* Wall Tracking TEST */
 
 void wall_tracking_test();
-void test_code();
+void wall_alignment_test();
