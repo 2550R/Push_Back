@@ -30,7 +30,22 @@
 const int DRIVE_SPEED = 110;
 const int TURN_SPEED = 90;
 const int SWING_SPEED = 110;
-
+float p_x;
+float p_y;
+int value = 0;
+void controller_update(void *param){
+  while(true)
+  {
+  if (value == 0){
+    master.print(0, 0, "%d/%d/%d       ", distance_front_l.get_distance(), distance_front_l.get_distance(),distance_front.get_distance());
+    pros::delay(100);
+  } else {
+    master.print(0, 0, "%f/%f      ", p_x, p_y);
+    pros::delay(100);
+  }
+  }
+  std::cout << "Task 1 running\n";
+}
 void default_constants() {
   chassis.pid_drive_constants_set(22, 0, 130);
   chassis.pid_heading_constants_set(11.0, 0.0, 20.0);
@@ -60,72 +75,176 @@ void default_constants() {
 
   chassis.pid_angle_behavior_set(ez::shortest);
 }
+void test_code(){
+  pros::Task task1(controller_update);
+  wall_tracking_with_alignment(145, 100, 500);
+  L1.brake();
+  L2.brake();
+  L3.brake();
+  R1.brake();
+  R2.brake();
+  R3.brake();
+
+}
+
 
 void skills() {  
+  
+  pros::Task task1(controller_update);
+  
+  
 
   chassis.odom_xyt_set(0_in, 0_in, -90_deg);
   trapdoor.set(1);
 
-  chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 100_ms, 300_ms);
-  chassis.pid_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 100_ms, 400_ms);
+  /*
+  setup for first matchload
+  */
 
   chassis.pid_odom_set({{-33_in, 0_in}, fwd, 127}, true);
   chassis.pid_wait();
-  // drive_wall(460, 30);
+
+  /*
+  empty first match loader
+  */
+
   Little_Mech_Mac.set(1);
 
   chassis.pid_turn_set(180, 110, true);
   chassis.pid_wait();
-  // wall_tracking_with_alignment_R(407,110,390);
 
   chassis.pid_drive_set(9.8, 90, true);
   chassis.pid_wait();
 
-  chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 400_ms, 300_ms);
-  chassis.pid_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms,500_ms);
+  pros::delay(1000);
 
-  // intake_bottom.move(127);
+  /*
+  back up from match loader
+  */
 
-  pros::delay(390);
   chassis.pid_drive_set(-9.8, 90, true);
   chassis.pid_wait_quick();
-  // wall_tracking_with_alignment_R(407,-110,500);
-  chassis.pid_odom_set({{-46_in, 12_in}, rev, 127},false);
+  
+  Little_Mech_Mac.set(0);
+
+  chassis.pid_turn_set(-90, 60, true);
   chassis.pid_wait();
 
-  Little_Mech_Mac.set(0);
-  trapdoor.set(0);
-  pros::delay(200);
+  /*
+  relocate to blue side
+  */
+
+  chassis.pid_odom_set({{-47_in, 0_in}, fwd, 110}, true);
+  chassis.pid_wait();
+
   chassis.pid_turn_set(0, 60, true);
   chassis.pid_wait();
-  chassis.pid_drive_set(10_in, 110);
-  chassis.pid_wait();
-  pros::delay(3000);
 
-  wall_tracking_with_alignment(150,50,1000);
-  pros::delay(300000);
-  wall_tracking_with_alignment(150,60,500);
-  chassis.odom_xyt_set(0_in, 0_in, 0_deg);
-  pros::delay(3000000);
+  /*
+  reset location to 0, 0
+  */
+
+  chassis.pid_odom_set({{-47_in, 90_in}, fwd, 110}, true);
+  chassis.pid_wait();
+  chassis.pid_turn_set(0, 60, true);
+  chassis.pid_wait();
+  pros::delay(100);
+  float position_y = (distance_front.get_distance()- 600)/25.4;
+  float position_x = ((distance_front_l.get_distance() + distance_back_l.get_distance())/2 - 160)/25.4;
+  p_x = position_x;
+  p_y = position_y;
+  chassis.odom_xyt_set(position_x, position_y,  0);
+  pros::delay(150);
+
+  chassis.pid_drive_exit_condition_set(90_ms, 0.25_in, 200_ms, 3_in, 400_ms, 300_ms);
+  chassis.pid_turn_exit_condition_set(90_ms, 1_deg, 250_ms, 7_deg, 500_ms,500_ms);
+
+  /*
+  setup for match loader
+  */
   
   chassis.pid_turn_set(90, 60, true);
   chassis.pid_wait();
 
-  chassis.pid_odom_set({{8.7_in, 0_in}, fwd, 127});
+  chassis.pid_odom_set({{10.3_in, 0_in}, fwd, 110}, true);
   chassis.pid_wait();
+  value = 1;
+
+  /*
+  empty second match loader
+  */
+
   Little_Mech_Mac.set(1);
-  chassis.pid_turn_set(0, 60, true);
-  chassis.pid_wait();
-  chassis.pid_drive_set(11, 90, true);
-  chassis.pid_wait();
 
-  pros::delay(1600);
   chassis.pid_turn_set(0, 60, true);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-27, 110, true);
+  chassis.pid_drive_set(14, 110, true);
   chassis.pid_wait();
+
+  pros::delay(1000);
+
+  /*
+  Score first 14 on long goal
+  */
+
+  chassis.pid_drive_set(-28, 110, true);
+  chassis.pid_wait();
+
   Little_Mech_Mac.set(0);
+
+  pros::delay(1000);
+
+  /*
+  set up for first 2 middle balls
+  */
+
+  //activate color sort
+
+  chassis.pid_drive_set(15, 110, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(135, 60, true);
+  chassis.pid_wait();
+
+  chassis.pid_odom_set({{24, -9}, fwd, 100}, true);
+  chassis.pid_wait();
+
+  /*
+  grab frist 2 from mid
+  */
+
+  intake_bottom.move(127);
+
+  chassis.pid_drive_set(15, 40, true);
+  chassis.pid_wait();
+
+  /*
+  grab second 2 from mid
+  */
+
+  chassis.pid_odom_set({{69, -2}, fwd, 100}, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(135, 60, true);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(20, 40, true);
+  chassis.pid_wait();
+
+  pros::delay(200);
+
+  chassis.pid_odom_set({{90, 0}, fwd, 100}, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(0, 60, true);
+  chassis.pid_wait();
+
+  
+  // chassis.pid_drive_set(-32, 90, false);
+
+  
+
 }
 
 void blue_top_elims() {

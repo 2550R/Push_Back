@@ -11,13 +11,13 @@
 
 #include "main.h"
 
-float w_KP = 0.1;
+float w_KP = .05;
 float w_KI = 0;
-float w_KD = 0;
+float w_KD = 0.5;
 
-float wa_kP = .1;
+float wa_kP = .4;
 float wa_kI = 0;
-float wa_kD = 0;
+float wa_kD = 0.5;
 
 float d_KP = 0.15;
 float d_KI = 0.00007;
@@ -57,11 +57,13 @@ void wall_alignment(float timeout) {
   float derivative;
 
   float currentTime = float(pros::millis());
+  float kp = 0.3;
+  float kd = 1000000000000;
 
   while ((pros::millis() - currentTime) < timeout) {
     error = distance_front_l.get_distance() - distance_back_l.get_distance();
     derivative = error - prev_error;
-    float output = error * wa_kP + wa_kD * derivative;
+    float output = error * kp + kd * derivative;
 
     L1.move_velocity(-output);
     L2.move_velocity(-output);
@@ -69,7 +71,10 @@ void wall_alignment(float timeout) {
     R1.move_velocity(output);
     R2.move_velocity(output);
     R3.move_velocity(output);
+
+    prev_error = error;
   }
+
 }
 
 void wall_tracking_with_alignment_B(float target_distance, float DRIVE_SPEED, float drive_distance) {
@@ -148,12 +153,7 @@ void wall_tracking_with_alignment(float target_distance, float DRIVE_SPEED, floa
     prev_error_tr = error_tracking;
     prev_error_tu = error_turn;
   }
-  L1.brake();
-  L2.brake();
-  L3.brake();
-  R1.brake();
-  R2.brake();
-  R3.brake();
+
 }
 
 void wall_tracking(float target_distance, float DRIVE_SPEED, float drive_distance) {

@@ -35,8 +35,9 @@ void color_sort_task(void* param) {
   color_sort.set_led_pwm(100);
   while (true) {
     if (color_sort.get_hue() > 180 && color_sort.get_proximity() > 170) {
+      pros::delay(50);
       color_sort_P.set(1);
-      pros::delay(400);
+      pros::delay(350);
       color_sort_P.set(0);
     }
   }
