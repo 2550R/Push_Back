@@ -50,6 +50,33 @@ void drive_wall(float distance, float speed) {
   }
 }
 
+void wall_alignment_R(float timeout) {
+  float error;
+  float prev_error;
+  float integral;
+  float derivative;
+
+  float currentTime = float(pros::millis());
+  float kp = 0.5;
+  float kd = 1000000000000;
+
+  while ((pros::millis() - currentTime) < timeout) {
+    error = distance_front_r.get_distance()-5 - distance_back_r.get_distance();
+    derivative = error - prev_error;
+    float output = error * kp + kd * derivative;
+
+    L1.move_velocity(output);
+    L2.move_velocity(output);
+    L3.move_velocity(output);
+    R1.move_velocity(-output);
+    R2.move_velocity(-output);
+    R3.move_velocity(-output);
+
+    prev_error = error;
+  }
+
+}
+
 void wall_alignment(float timeout) {
   float error;
   float prev_error;

@@ -29,15 +29,24 @@ ez::Drive chassis(
 
 ez::tracking_wheel horiz_tracker(9, 2, 0);
 ez::tracking_wheel vert_tracker(12, 2, 0);
-
+int hue;
+int proximity;
 void color_sort_task(void* param) {
   color_sort.set_led_pwm(100);
+  bool auton_skills_cs_switch = true;
   while (true) {
-    if (color_sort.get_hue() > 180 && color_sort.get_proximity() > 170) {
-      pros::delay(50);
-      color_sort_piston.set(1);
-      pros::delay(350);
-      color_sort_piston.set(0);
+    if (color_sort.get_hue() > 180 && color_sort.get_proximity() > 130) {
+      if (auton_skills_cs_switch){
+        pros::delay(50);
+        color_sort_piston.set(1);
+        pros::delay(350);
+        color_sort_piston.set(0);
+      }
+      else{
+        color_sort_piston.set(1);
+        pros::delay(350);
+        color_sort_piston.set(0);
+      }
     }
   }
   std::cout << "Color sort running\n";
@@ -54,6 +63,7 @@ void initialize() {
   chassis.opcontrol_curve_default_set(0.0, 0.0);
 
   default_constants();
+  pros::Task task1(color_sort_task);
 
   ez::as::auton_selector.autons_add({
     {"Skills", skills},
@@ -73,7 +83,7 @@ void initialize() {
   ez::as::initialize();
   master.rumble(chassis.drive_imu_calibrated() ? "." : "-");
 
-  pros::Task task1(color_sort_task);
+
 }
 
 void disabled() { }
@@ -204,9 +214,31 @@ void opcontrol() {
 			intake_top.move(0);
 		}
 
-    middle_stage.button_toggle(master.get_digital_new_press(DIGITAL_Y));
-    trapdoor.button_toggle(master.get_digital_new_press(DIGITAL_RIGHT));
-    Little_Mech_Mac.button_toggle(master.get_digital_new_press(DIGITAL_B));
+    if(master.get_digital(DIGITAL_RIGHT)){
+      trapdoor.set(0);
+    }
+    else{
+      trapdoor.set(1);
+    }
+
+    if(master.get_digital(DIGITAL_Y)){
+      middle_stage.set(1);
+    }
+    else{
+      middle_stage.set(0);
+    }
+
+    if(master.get_digital(DIGITAL_B)){
+      Little_Mech_Mac.set(1);
+    }
+    else{
+      Little_Mech_Mac.set(0);
+    }
+
+
+    // trapdoor.button_toggle(master.get_digital_new_press(DIGITAL_RIGHT));
+    // middle_stage.button_toggle(master.get_digital_new_press(DIGITAL_Y));
+    // Little_Mech_Mac.button_toggle(master.get_digital_new_press(DIGITAL_B));
     color_sort_piston.button_toggle(master.get_digital_new_press(DIGITAL_X));
     left_rush_mech.button_toggle(master.get_digital_new_press(DIGITAL_UP));
 
@@ -215,9 +247,9 @@ void opcontrol() {
       count = 0;
 
       int dt_temps = (int) to_fahrenheit(avg_motor_temps());
-      int distance = (int) color_sort.get_proximity();
-      int top_temp = (int) to_fahrenheit(intake_top.get_temperature());
-      int bottom_temp = (int) to_fahrenheit(intake_bottom.get_temperature());
+      int distance = (int) color_sort.get_hue();/*color_sort.get_proximity()*/
+      int top_temp = (int) hue/*to_fahrenheit(intake_top.get_temperature())*/;
+      int bottom_temp = (int) proximity/*to_fahrenheit(intake_bottom.get_temperature())*/;
 
       master.print(0, 0, "%d/%d/%d/%d        ", dt_temps, bottom_temp, top_temp, distance);
     }
