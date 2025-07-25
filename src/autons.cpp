@@ -654,24 +654,27 @@ void solo_winpoint_left() {
   chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 100_ms, 300_ms);
   chassis.pid_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 100_ms, 400_ms);
 
-  // chassis.pid_odom_set({{-33_in, 0_in}, fwd, 127}, true);
-  drive_wall(450, 30);
-  chassis.odom_xyt_set(-33_in, 0_in, -90_deg);
+  chassis.pid_odom_set({{-33_in, 0_in}, fwd, 127}, true);
+  chassis.pid_wait();
 
   Little_Mech_Mac.set(1);
 
   chassis.pid_turn_set(180, 110, true);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(9.8, 90, true);
+  chassis.pid_drive_set(12, 90, true);
   chassis.pid_wait();
 
   chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 400_ms, 300_ms);
   chassis.pid_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms,500_ms);
 
   intake_bottom.move(127);
+  intake_top.move(127);
+
 
   pros::delay(390);
+
+  Little_Mech_Mac.set(0);
 
   chassis.pid_turn_set(180, 60, true);
   chassis.pid_wait_quick();
@@ -679,11 +682,7 @@ void solo_winpoint_left() {
   chassis.pid_drive_set(-28, 60, true);
   chassis.pid_wait();
 
-  Little_Mech_Mac.set(0);
-
   trapdoor.set(0);
-
-  intake_top.move(127);
 
   pros::delay(1600);
 
@@ -730,16 +729,16 @@ void solo_winpoint_left() {
   chassis.pid_odom_set({{26.3_in, 35.9_in}, fwd, 100}, true);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_swing_set(RIGHT_SWING, 15, 60, 10, true);
+  chassis.pid_swing_set(RIGHT_SWING, 20, 60, 10, true);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_turn_set(-57, 60, false);
+  chassis.pid_turn_set(-75, 60, false);
   chassis.pid_wait_quick();
 
   intake_top.move(-100);
   intake_bottom.move(-60);
 
-  chassis.pid_drive_set(17.5, 60, false);
+  chassis.pid_swing_set(LEFT_SWING, -45, 60, 45);
   chassis.pid_wait_quick();
 
   pros::delay(100);
