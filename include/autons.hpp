@@ -34,7 +34,8 @@ void solo_winpoint_left();
 void odom_pure_pursuit_wait_until_example();
 void odom_boomerang_injected_pure_pursuit_example();
 void square_odom_test();
-void auton_setup();
+void auton_setup_left();
+void auton_setup_right();
 
 /* Wall Tracking TEST */
 

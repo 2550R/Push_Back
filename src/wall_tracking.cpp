@@ -57,11 +57,11 @@ void wall_alignment_R(float timeout) {
   float derivative;
 
   float currentTime = float(pros::millis());
-  float kp = 0.5;
-  float kd = 1000000000000;
+  float kp = 0.3;
+  float kd = 1;
 
   while ((pros::millis() - currentTime) < timeout) {
-    error = distance_front_r.get_distance()-5 - distance_back_r.get_distance();
+    error = distance_front_r.get_distance()-2 - distance_back_r.get_distance();
     derivative = error - prev_error;
     float output = error * kp + kd * derivative;
 

@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "MOA ",
+    "project_name": "MOA 7/24",
     "target": "v5",
     "templates": {
       "EZ-Template": {

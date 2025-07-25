@@ -63,10 +63,10 @@ void initialize() {
   chassis.opcontrol_curve_default_set(0.0, 0.0);
 
   default_constants();
-  pros::Task task1(color_sort_task);
+  //rpros::Task task1(color_sort_task);
 
   ez::as::auton_selector.autons_add({
-    {"Skills", skills},
+    {"Skills", blue_top_elims},
     {"Solo AWP Left", solo_winpoint_left},
     {"Blue Top Elims", blue_top_elims},
     {"Red Top Elims", red_top_elims},
@@ -97,7 +97,8 @@ void autonomous() {
   chassis.odom_xyt_set(0_in, 0_in, 0_deg);
   chassis.drive_brake_set(MOTOR_BRAKE_HOLD);
 
-  ez::as::auton_selector.selected_auton_call();
+  // ez::as::auton_selector.selected_auton_call();
+  skills();
 }
 
 void screen_print_tracker(ez::tracking_wheel *tracker, std::string name, int line) {
