@@ -30,20 +30,29 @@ ez::Drive chassis(
 ez::tracking_wheel horiz_tracker(9, 2, 0);
 ez::tracking_wheel vert_tracker(12, 2, 0);
 
-std::string color = "R"; // R or B; press UP+X to change; x for disabled
+std::string color = "x"; // against R or B; press UP+X to change; x for disabled
 
 void color_sort_task() {
   color_sort.set_led_pwm(100);
   bool blue_color_sort = true;
 
   while (true) {
-    if (color == "x") continue;
+    int hue_lower;
+    int hue_higher;
+
+    if (color == "B") {
+      hue_lower = 200;
+      hue_higher = 240;
+    } else if (color == "R") {
+      hue_lower = 0;
+      hue_higher = 20;
+    } else {
+      continue;
+    }
 
     bool in_proximity = color_sort.get_proximity() > 130;
-    int hue_lower = color == "B" ? 200 : 0;
-    int hue_higher = color == "B" ? 240 : 20;
 
-    if (in_proximity && hue_lower <= color_sort.get_hue() <= hue_higher) {
+    if (in_proximity && hue_lower < color_sort.get_hue() < hue_higher) {
       color_sort_piston.set(1);
       pros::delay(350);
       color_sort_piston.set(0);
@@ -64,7 +73,7 @@ void initialize() {
   chassis.opcontrol_curve_default_set(0.0, 0.0);
 
   default_constants();
-  //rpros::Task task1(color_sort_task);
+  //pros::Task task1(color_sort_task);
 
   ez::as::auton_selector.autons_add({
     {"Blue Top Elims", blue_top_elims},
@@ -189,6 +198,7 @@ void anti_jam() {
 }
 */
 
+int Digital_X;
 void opcontrol() {
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
 	int count = 0;
@@ -223,7 +233,11 @@ void opcontrol() {
 		  	intake_bottom.move(-40);
 			  intake_top.move(-40);
       }
-		}
+		} 
+    else if (!intake_auto_reverse_enabled){
+      intake_bottom.move(0);
+			intake_top.move(0);
+    }
 
     if (master.get_digital(DIGITAL_RIGHT)) {
       trapdoor.set(0);
@@ -247,13 +261,15 @@ void opcontrol() {
     }
 
     if (master.get_digital_new_press(DIGITAL_X)) {
-      if (color == "R") color = "B";
-      if (color == "B") color = "x";
-      if (color == "x") color = "R";
+      Digital_X += 1;
+      if (Digital_X == 4){Digital_X = 1;}
+      if (Digital_X == 1){color = "B";}
+      if (Digital_X == 2){color = "x";}
+      if (Digital_X == 3){color = "R";}
     }
 
     if (
-      master.get_digital(DIGITAL_LEFT)
+      master.get_digital_new_press(DIGITAL_LEFT)
       && master.get_digital(DIGITAL_UP)
     ) {
       intake_auto_reverse_enabled = !intake_auto_reverse_enabled;
@@ -262,8 +278,8 @@ void opcontrol() {
     // trapdoor.button_toggle(master.get_digital_new_press(DIGITAL_RIGHT));
     // middle_stage.button_toggle(master.get_digital_new_press(DIGITAL_Y));
     // Little_Mech_Mac.button_toggle(master.get_digital_new_press(DIGITAL_B));
-    color_sort_piston.button_toggle(master.get_digital_new_press(DIGITAL_X));
-    left_rush_mech.button_toggle(master.get_digital_new_press(DIGITAL_UP));
+    // color_sort_piston.button_toggle(master.get_digital_new_press(DIGITAL_X));
+    // left_rush_mech.button_toggle(master.get_digital_new_press(DIGITAL_UP));
 
 
     if (count == 80) {
@@ -273,17 +289,21 @@ void opcontrol() {
       int dt_temps = (int) to_fahrenheit(avg_motor_temps());
       int top_temp = (int) to_fahrenheit(intake_top.get_temperature());
       int bottom_temp = (int) to_fahrenheit(intake_bottom.get_temperature());
+      std::string intake_back = "";
+      if (!intake_auto_reverse_enabled){
+        intake_back = "N";
+      }
 
-      master.print(0, 0, "%d/%d/%d%s        ", dt_temps, bottom_temp, top_temp, color);
+      master.print(0, 0, "%d/%d/%d/%s/%s         ", dt_temps, top_temp, bottom_temp, color, intake_back);
     }
 
 		count++;
 
-    if (!pros::competition::is_connected() && master.get_digital(DIGITAL_LEFT) && master.get_digital(DIGITAL_DOWN)) {
-      pros::motor_brake_mode_e_t preference = chassis.drive_brake_get();
-      autonomous();
-      chassis.drive_brake_set(preference);
-    }
+    // if (!pros::competition::is_connected() && master.get_digital(DIGITAL_LEFT) && master.get_digital(DIGITAL_DOWN)) {
+    //   pros::motor_brake_mode_e_t preference = chassis.drive_brake_get();
+    //   autonomous();
+    //   chassis.drive_brake_set(preference);
+    // }
 
 		pros::delay(ez::util::DELAY_TIME);
   }
