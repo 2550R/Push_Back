@@ -41,18 +41,18 @@ void color_sort_task() {
     int hue_higher;
 
     if (color == "B") {
-      hue_lower = 200;
+      hue_lower = 210;
       hue_higher = 240;
     } else if (color == "R") {
       hue_lower = 0;
-      hue_higher = 20;
+      hue_higher = 15;
     } else {
       continue;
     }
 
     bool in_proximity = color_sort.get_proximity() > 130;
 
-    if (in_proximity && hue_lower < color_sort.get_hue() < hue_higher) {
+    if (in_proximity && hue_lower < color_sort.get_hue() && color_sort.get_hue() < hue_higher) {
       color_sort_piston.set(1);
       pros::delay(350);
       color_sort_piston.set(0);
@@ -174,29 +174,6 @@ double avg_motor_temps() {
   return mean;
 }
 
-/*
-void anti_jam() {
-  while (true) {
-    if (intake_top.get_current_draw() > 1000) {
-      float intake_speed = intake_top.get_actual_velocity();
-      intake_top.move(-127);
-      pros::delay(500);
-      intake_top.move(127);
-      pros::delay(500);
-    }
-
-    if (intake_bottom.get_voltage() > 11) {
-      float intake_speed = intake_bottom.get_actual_velocity();
-      intake_bottom.move(-intake_speed);
-      pros::delay(500);
-      intake_bottom.move(intake_speed);
-    }
-
-    std::cout << "Task 1 running\n";
-    pros::delay(200);
-  }
-}
-*/
 
 int Digital_X;
 void opcontrol() {
@@ -290,11 +267,11 @@ void opcontrol() {
       int top_temp = (int) to_fahrenheit(intake_top.get_temperature());
       int bottom_temp = (int) to_fahrenheit(intake_bottom.get_temperature());
       std::string intake_back = "";
-      if (!intake_auto_reverse_enabled){
-        intake_back = "N";
+      if (intake_auto_reverse_enabled){
+        intake_back = "<";
       }
 
-      master.print(0, 0, "%d/%d/%d/%s/%s         ", dt_temps, top_temp, bottom_temp, color, intake_back);
+      master.print(0, 0, "%d/%d/%d/%s%s         ", dt_temps, top_temp, bottom_temp, color, intake_back);
     }
 
 		count++;
