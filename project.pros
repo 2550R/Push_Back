@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "MOA 7/24",
+    "project_name": "MOA 7/25",
     "target": "v5",
     "templates": {
       "EZ-Template": {
@@ -426,7 +426,7 @@
     "upload_options": {
       "description": "roboticsisez.com",
       "icon": "planet",
-      "slot": 1
+      "slot": 2
     },
     "use_early_access": false
   }

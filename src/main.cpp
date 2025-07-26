@@ -40,8 +40,8 @@ void color_sort_task() {
     if (color == "x") continue;
 
     bool in_proximity = color_sort.get_proximity() > 130;
-    int hue_lower = color == "B" ? 0 : 40;
-    int hue_higher = color == "B" ? 180 : 320;
+    int hue_lower = color == "B" ? 200 : 0;
+    int hue_higher = color == "B" ? 240 : 20;
 
     if (in_proximity && hue_lower <= color_sort.get_hue() <= hue_higher) {
       color_sort_piston.set(1);
@@ -67,8 +67,6 @@ void initialize() {
   //rpros::Task task1(color_sort_task);
 
   ez::as::auton_selector.autons_add({
-    {"Skills", blue_top_elims},
-    {"Solo AWP Left", solo_winpoint_left},
     {"Blue Top Elims", blue_top_elims},
     {"Red Top Elims", red_top_elims},
     {"Blue Top Quals", blue_top_quals},
@@ -76,6 +74,8 @@ void initialize() {
     {"Red Bottom Elims", red_bottom_elims},
     {"Blue Bottom Quals", blue_bottom_quals},
     {"Red Bottom Quals", red_bottom_quals},
+    {"Solo AWP Left", solo_winpoint_left},
+    {"Skills", blue_top_elims},
     {"Pure Pursuit Wait Until\n\nGo to (24, 24) but start running an intake once the robot passes (12, 24)", odom_pure_pursuit_wait_until_example},
     {"Injected Boomerang Example", odom_boomerang_injected_pure_pursuit_example}
   });
@@ -220,8 +220,8 @@ void opcontrol() {
         intake_bottom.move(0);
 			  intake_top.move(0);
       } else {
-		  	intake_bottom.move(-80);
-			  intake_top.move(-80);
+		  	intake_bottom.move(-40);
+			  intake_top.move(-40);
       }
 		}
 
@@ -246,16 +246,15 @@ void opcontrol() {
       Little_Mech_Mac.set(0);
     }
 
-    if (master.get_digital_new_press(DIGITAL_X) && master.get_digital_new_press(DIGITAL_UP)) {
+    if (master.get_digital_new_press(DIGITAL_X)) {
       if (color == "R") color = "B";
       if (color == "B") color = "x";
       if (color == "x") color = "R";
     }
 
     if (
-      master.get_digital_new_press(DIGITAL_LEFT)
-      && master.get_digital_new_press(DIGITAL_UP)
-      && master.get_digital_new_press(DIGITAL_Y)
+      master.get_digital(DIGITAL_LEFT)
+      && master.get_digital(DIGITAL_UP)
     ) {
       intake_auto_reverse_enabled = !intake_auto_reverse_enabled;
     }
