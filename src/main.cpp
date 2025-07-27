@@ -39,7 +39,7 @@ void anti_jam(){
     double current_top = intake_top.get_current_draw();
     double velocity_bottom = intake_bottom.get_actual_velocity();
     double current_bottom = intake_bottom.get_current_draw();
-    double current_threshold = 1500;
+    double current_threshold = 2000;
     double spin_time = 200;
     if (master.get_digital(DIGITAL_L1) || master.get_digital(DIGITAL_R1)) {
       if ((current_top > current_threshold && velocity_top < -20) || 
@@ -309,7 +309,7 @@ void opcontrol() {
     // left_rush_mech.button_toggle(master.get_digital_new_press(DIGITAL_UP));
 
 
-    if (count == 80) {
+    if (count == 20) {
       // only update controller screen every 80 cycles
       count = 0;
 
