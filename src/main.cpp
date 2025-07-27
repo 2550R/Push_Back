@@ -34,41 +34,47 @@ ez::tracking_wheel vert_tracker(12, 2, 0);
 bool anti_jam_w = false;
 void anti_jam(){
   while(true){
-    
-    double velocity_top = intake_top.get_actual_velocity();
+    float currentTime = float(pros::millis());
     double current_top = intake_top.get_current_draw();
-    double velocity_bottom = intake_bottom.get_actual_velocity();
+    double velocity_top = intake_top.get_actual_velocity();
     double current_bottom = intake_bottom.get_current_draw();
+    double velocity_bottom = intake_bottom.get_actual_velocity();
     double current_threshold = 2000;
     double spin_time = 200;
     if (master.get_digital(DIGITAL_L1) || master.get_digital(DIGITAL_R1)) {
-      if ((current_top > current_threshold && velocity_top < -20) || 
-      (current_bottom > current_threshold && velocity_bottom < -20)){
+      double v_threshold_top = -127;
+      double v_threshold_bottom = -127;
+      if (((v_threshold_top+110)<velocity_top) && current_top > current_threshold){
         anti_jam_w = true;
-        float start_time = float(pros::millis());
-        while ((intake_distance.get_distance() > 150) && (pros::millis() - start_time) < spin_time){
-          intake_top.move(127);
-          intake_bottom.move(127);
-          pros::delay(20);
-        }
+        intake_top.move(127);
+        pros::delay(spin_time);
         anti_jam_w = false;
         
       }
-    if (master.get_digital(DIGITAL_L2) || master.get_digital(DIGITAL_R2)){
-      if ((current_top > current_threshold && velocity_top > 20) || 
-         current_bottom > current_threshold && velocity_bottom > 20){
-        anti_jam_w = true;
-        float start_time = float(pros::millis());
-        while ((intake_distance.get_distance() > 150) && (pros::millis() - start_time) < spin_time){
-          intake_top.move(-127);
-          intake_bottom.move(-127);
-          pros::delay(20);
-        }
-        anti_jam_w = false;
+      if (((v_threshold_bottom+110)<velocity_bottom) && current_bottom > current_threshold){
         
+        anti_jam_w = true;
+        intake_bottom.move(127);
+        pros::delay(spin_time);
+        anti_jam_w = false;
       }
-		}
-    } 
+		} 
+    else if (master.get_digital(DIGITAL_L2) || master.get_digital(DIGITAL_R2)) {
+      double v_threshold_top = 127;
+      double v_threshold_bottom = 127;
+      if (((v_threshold_top-110)>velocity_top) && current_top > current_threshold){
+        anti_jam_w = true;
+        intake_top.move(-127);
+        pros::delay(spin_time);
+        anti_jam_w = false;
+      }
+      if (((v_threshold_bottom-110)>velocity_bottom) && current_bottom > current_threshold){
+        anti_jam_w = true;
+        intake_bottom.move(-127);
+        pros::delay(spin_time);
+        anti_jam_w = false;
+      }
+		} 
 
   }
 }
@@ -309,7 +315,7 @@ void opcontrol() {
     // left_rush_mech.button_toggle(master.get_digital_new_press(DIGITAL_UP));
 
 
-    if (count == 20) {
+    if (count == 80) {
       // only update controller screen every 80 cycles
       count = 0;
 
@@ -321,7 +327,7 @@ void opcontrol() {
         intake_back = "N";
       }
 
-      master.print(0, 0, "%d/%d/%d/%s%s         ", (int)intake_top.get_current_draw()/*dt_temps*/, color_sort.get_proximity()/*top_temp*/, bottom_temp, color, intake_back);
+      master.print(0, 0, "%d/%d/%d/%s%s         ", (int)color_sort.get_hue()/*dt_temps*/, color_sort.get_proximity()/*top_temp*/, bottom_temp, color, intake_back);
     }
 
 		count++;
