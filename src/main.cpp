@@ -31,7 +31,7 @@ ez::tracking_wheel horiz_tracker(9, 2, 0);
 ez::tracking_wheel vert_tracker(12, 2, 0);
 
 
-bool anti_jam_w = false;
+bool anti_jam_enabled = false;
 void anti_jam(){
   while(true){
     float currentTime = float(pros::millis());
@@ -45,34 +45,34 @@ void anti_jam(){
       double v_threshold_top = -127;
       double v_threshold_bottom = -127;
       if (((v_threshold_top+110)<velocity_top) && current_top > current_threshold){
-        anti_jam_w = true;
+        anti_jam_enabled = true;
         intake_top.move(127);
         pros::delay(spin_time);
-        anti_jam_w = false;
+        anti_jam_enabled = false;
         
       }
       if (((v_threshold_bottom+110)<velocity_bottom) && current_bottom > current_threshold){
         
-        anti_jam_w = true;
+        anti_jam_enabled = true;
         intake_bottom.move(127);
         pros::delay(spin_time);
-        anti_jam_w = false;
+        anti_jam_enabled = false;
       }
 		} 
     else if (master.get_digital(DIGITAL_L2) || master.get_digital(DIGITAL_R2)) {
       double v_threshold_top = 127;
       double v_threshold_bottom = 127;
       if (((v_threshold_top-110)>velocity_top) && current_top > current_threshold){
-        anti_jam_w = true;
+        anti_jam_enabled = true;
         intake_top.move(-127);
         pros::delay(spin_time);
-        anti_jam_w = false;
+        anti_jam_enabled = false;
       }
       if (((v_threshold_bottom-110)>velocity_bottom) && current_bottom > current_threshold){
-        anti_jam_w = true;
+        anti_jam_enabled = true;
         intake_bottom.move(-127);
         pros::delay(spin_time);
-        anti_jam_w = false;
+        anti_jam_enabled = false;
       }
 		} 
 
@@ -81,7 +81,6 @@ void anti_jam(){
 std::string color = "x"; // against R or B; press UP+X to change; x for disabled
 
 void color_sort_task() {
-  
   bool blue_color_sort = true;
   color_sort.set_integration_time(3);
   while (true) {
@@ -234,7 +233,8 @@ void opcontrol() {
 
   while (true) {
     chassis.opcontrol_arcade_standard(ez::SPLIT);
-    if (anti_jam_w){
+
+    if (anti_jam_enabled) {
       continue;
     } else if (master.get_digital(DIGITAL_L1)) {
 			intake_bottom.move(-127);
