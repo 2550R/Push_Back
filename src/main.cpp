@@ -32,8 +32,13 @@ ez::tracking_wheel vert_tracker(12, 2, 0);
 
 
 bool anti_jam_enabled = false;
+int in_speed = 0;
+int in_speed_bottom = 0;
 
 void anti_jam() {
+  int past_in_speed_bottom;
+  int past_in_speed;
+
   while (true) {
     float currentTime = float(pros::millis());
 
@@ -44,28 +49,58 @@ void anti_jam() {
 
     int current_threshold = 2000;
     int spin_time = 200;
-	
-		int direction = 1;
 
-		if (master.get_digital(DIGITAL_L2) || master.get_digital(DIGITAL_R2)) {
-			// Reverse direction
-			direction = -1;
-		}
+		int v_threshold_top = in_speed;
+		int v_threshold_bottom = in_speed;
+		int intake_speed = -in_speed;
 
-		int v_threshold_top = -direction * 127;
-		int v_threshold_bottom = -direction * 127;
-		int intake_speed = direction * 127;
-		int threshold_offset = direction * 110;
-
+    bool within_threshold = false;
+    if (
+      (past_in_speed < 0 && in_speed > 0)
+      || (past_in_speed > 0 && in_speed < 0)
+    ) {
+      pros::delay(300);
+      continue;
+    }
 
     if (
-			(v_threshold_top - 110 > velocity_top && current_top > current_threshold)
-			|| (v_threshold_bottom - 110 > velocity_bottom && current_bottom > current_threshold)  
+      (past_in_speed_bottom < 0 && in_speed_bottom > 0)
+      || (past_in_speed_bottom > 0 && in_speed_bottom < 0)
+    ) {
+      pros::delay(300);
+      continue;
+    }
+
+    past_in_speed = in_speed;
+    past_in_speed_bottom = in_speed_bottom;
+    if (
+      in_speed >= 0
+      && (
+        ((v_threshold_top - 110 > velocity_top) && current_top > current_threshold )
+        || ((v_threshold_bottom - 110 > velocity_bottom)  && current_bottom > current_threshold)  
+      )
 		) {
+      within_threshold = true;
+    } else if (
+      in_speed < 0
+      && (
+        ((v_threshold_top + 110 < velocity_top) && current_top > current_threshold )
+        || ((v_threshold_bottom + 110 < velocity_bottom)  && current_bottom > current_threshold)  
+      )
+		) {
+      within_threshold = true;
+    }
+    if (within_threshold) {
       anti_jam_enabled = true;
-      intake_top.move(intake_speed);
-      pros::delay(spin_time);
+      int starting_time = pros::millis();
+      while ((pros::millis() - starting_time) < spin_time && intake_distance.get_distance() > 150){
+        intake_top.move(intake_speed); 
+        intake_bottom.move(intake_speed);
+      }
+      intake_top.move(in_speed); 
+      intake_bottom.move(in_speed_bottom);
       anti_jam_enabled = false;
+      pros::delay(300);
     }
   }
 }
@@ -115,8 +150,8 @@ void initialize() {
   pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"Skills", skills},
     {"Pid tune", pid_tune},
+    {"Skills", skills},
     {"Blue Top Quals", blue_top_quals},
     {"Solo AWP Left", solo_winpoint_left},
     {"Blue Top Elims", blue_top_elims},
@@ -231,18 +266,22 @@ void opcontrol() {
     } else if (master.get_digital(DIGITAL_L1)) {
 			intake_bottom.move(-127);
 			intake_top.move(-127);
+      in_speed = -127;
 		} 
     else if (master.get_digital(DIGITAL_L2)) {
 			intake_bottom.move(127);
 			intake_top.move(127);
+      in_speed = 127;
 		} 
     else if (master.get_digital(DIGITAL_R1)) {
 			intake_bottom.move(-60);
 			intake_top.move(-127);
+      in_speed = -127;
 		} 
     else if (master.get_digital(DIGITAL_R2)) {
 			intake_bottom.move(127);
 			intake_top.move(0);
+      in_speed = 127;
 		} 
     else if (intake_auto_reverse_enabled) {
       if (intake_distance.get_distance() < 150){
