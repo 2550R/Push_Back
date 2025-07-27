@@ -32,52 +32,44 @@ ez::tracking_wheel vert_tracker(12, 2, 0);
 
 
 bool anti_jam_enabled = false;
-void anti_jam(){
-  while(true){
-    float currentTime = float(pros::millis());
-    double current_top = intake_top.get_current_draw();
-    double velocity_top = intake_top.get_actual_velocity();
-    double current_bottom = intake_bottom.get_current_draw();
-    double velocity_bottom = intake_bottom.get_actual_velocity();
-    double current_threshold = 2000;
-    double spin_time = 200;
-    if (master.get_digital(DIGITAL_L1) || master.get_digital(DIGITAL_R1)) {
-      double v_threshold_top = -127;
-      double v_threshold_bottom = -127;
-      if (((v_threshold_top+110)<velocity_top) && current_top > current_threshold){
-        anti_jam_enabled = true;
-        intake_top.move(127);
-        pros::delay(spin_time);
-        anti_jam_enabled = false;
-        
-      }
-      if (((v_threshold_bottom+110)<velocity_bottom) && current_bottom > current_threshold){
-        
-        anti_jam_enabled = true;
-        intake_bottom.move(127);
-        pros::delay(spin_time);
-        anti_jam_enabled = false;
-      }
-		} 
-    else if (master.get_digital(DIGITAL_L2) || master.get_digital(DIGITAL_R2)) {
-      double v_threshold_top = 127;
-      double v_threshold_bottom = 127;
-      if (((v_threshold_top-110)>velocity_top) && current_top > current_threshold){
-        anti_jam_enabled = true;
-        intake_top.move(-127);
-        pros::delay(spin_time);
-        anti_jam_enabled = false;
-      }
-      if (((v_threshold_bottom-110)>velocity_bottom) && current_bottom > current_threshold){
-        anti_jam_enabled = true;
-        intake_bottom.move(-127);
-        pros::delay(spin_time);
-        anti_jam_enabled = false;
-      }
-		} 
 
+void anti_jam() {
+  while (true) {
+    float currentTime = float(pros::millis());
+
+    int current_top = intake_top.get_current_draw();
+    double velocity_top = intake_top.get_actual_velocity();
+    int current_bottom = intake_bottom.get_current_draw();
+    double velocity_bottom = intake_bottom.get_actual_velocity();
+
+    int current_threshold = 2000;
+    int spin_time = 200;
+	
+		int direction = 1;
+
+		if (master.get_digital(DIGITAL_L2) || master.get_digital(DIGITAL_R2)) {
+			// Reverse direction
+			direction = -1;
+		}
+
+		int v_threshold_top = -direction * 127;
+		int v_threshold_bottom = -direction * 127;
+		int intake_speed = direction * 127;
+		int threshold_offset = direction * 110;
+
+
+    if (
+			(v_threshold_top - 110 > velocity_top && current_top > current_threshold)
+			|| (v_threshold_bottom - 110 > velocity_bottom && current_bottom > current_threshold)  
+		) {
+      anti_jam_enabled = true;
+      intake_top.move(intake_speed);
+      pros::delay(spin_time);
+      anti_jam_enabled = false;
+    }
   }
 }
+
 std::string color = "x"; // against R or B; press UP+X to change; x for disabled
 
 void color_sort_task() {
