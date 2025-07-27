@@ -19,11 +19,11 @@ float wa_kP = .4;
 float wa_kI = 0;
 float wa_kD = 0.5;
 
-float d_KP = 0.15;
-float d_KI = 0.00007;
+float d_KP = 0.12;
+float d_KI = 0.00002;
 float d_KD = 0;
 
-void drive_wall(float distance, float speed) {
+void drive_wall(float distance) {
   float error;
   float prev_error;
   float integral;
@@ -48,6 +48,12 @@ void drive_wall(float distance, float speed) {
 
     pros::delay(50);
   }
+  L1.brake();
+  L2.brake();
+  L3.brake();
+  R1.brake();
+  R2.brake();
+  R3.brake();
 }
 
 void wall_alignment_R(float timeout) {
@@ -61,7 +67,7 @@ void wall_alignment_R(float timeout) {
   float kd = 1;
 
   while ((pros::millis() - currentTime) < timeout) {
-    error = distance_front_r.get_distance()-2 - distance_back_r.get_distance();
+    error = distance_front_r.get_distance()+5 - distance_back_r.get_distance();
     derivative = error - prev_error;
     float output = error * kp + kd * derivative;
 

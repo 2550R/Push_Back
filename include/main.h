@@ -33,8 +33,9 @@ using namespace okapi::literals;
 #ifdef __cplusplus
 extern "C" {
 #endif
-void anti_jam(void* param);
+extern std::string color;
 void autonomous(void);
+void color_sort_task(void);
 void initialize(void);
 void disabled(void);
 void competition_initialize(void);

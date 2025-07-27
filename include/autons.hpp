@@ -41,3 +41,4 @@ void auton_setup_right();
 
 void wall_tracking_test();
 void wall_alignment_test();
+void pid_tune();

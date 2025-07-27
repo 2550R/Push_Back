@@ -35,26 +35,26 @@ std::string color = "x"; // against R or B; press UP+X to change; x for disabled
 void color_sort_task() {
   color_sort.set_led_pwm(100);
   bool blue_color_sort = true;
-
+  color_sort.set_integration_time(10);
   while (true) {
     int hue_lower;
     int hue_higher;
 
     if (color == "B") {
       hue_lower = 210;
-      hue_higher = 240;
+      hue_higher = 270;
     } else if (color == "R") {
       hue_lower = 0;
-      hue_higher = 15;
+      hue_higher = 40;
     } else {
       continue;
     }
 
-    bool in_proximity = color_sort.get_proximity() > 130;
+    bool in_proximity = color_sort.get_proximity() > 50;
 
-    if (in_proximity && hue_lower < color_sort.get_hue() && color_sort.get_hue() < hue_higher) {
+    if (in_proximity && (hue_lower < color_sort.get_hue() && color_sort.get_hue() < hue_higher)||(color == "R" && color_sort.get_hue() > 300)) {
       color_sort_piston.set(1);
-      pros::delay(350);
+      pros::delay(250);
       color_sort_piston.set(0);
     }
 
@@ -76,15 +76,16 @@ void initialize() {
   //pros::Task task1(color_sort_task);
 
   ez::as::auton_selector.autons_add({
+    {"Skills", skills},
+    {"Pid tune", pid_tune},
+    {"Blue Top Quals", blue_top_quals},
+    {"Solo AWP Left", solo_winpoint_left},
     {"Blue Top Elims", blue_top_elims},
     {"Red Top Elims", red_top_elims},
-    {"Blue Top Quals", blue_top_quals},
     {"Blue Bottom Elims", blue_bottom_elims},
     {"Red Bottom Elims", red_bottom_elims},
     {"Blue Bottom Quals", blue_bottom_quals},
     {"Red Bottom Quals", red_bottom_quals},
-    {"Solo AWP Left", solo_winpoint_left},
-    {"Skills", blue_top_elims},
     {"Pure Pursuit Wait Until\n\nGo to (24, 24) but start running an intake once the robot passes (12, 24)", odom_pure_pursuit_wait_until_example},
     {"Injected Boomerang Example", odom_boomerang_injected_pure_pursuit_example}
   });
@@ -187,11 +188,11 @@ void opcontrol() {
     chassis.opcontrol_arcade_standard(ez::SPLIT);
 
 		if (master.get_digital(DIGITAL_L1)) {
-			intake_bottom.move(-127);
+			intake_bottom.move(-80);
 			intake_top.move(-127);
 		} 
     else if (master.get_digital(DIGITAL_L2)) {
-			intake_bottom.move(127);
+			intake_bottom.move(80);
 			intake_top.move(127);
 		} 
     else if (master.get_digital(DIGITAL_R1)) {
@@ -268,10 +269,10 @@ void opcontrol() {
       int bottom_temp = (int) to_fahrenheit(intake_bottom.get_temperature());
       std::string intake_back = "";
       if (intake_auto_reverse_enabled){
-        intake_back = "<";
+        intake_back = "N";
       }
 
-      master.print(0, 0, "%d/%d/%d/%s%s         ", dt_temps, top_temp, bottom_temp, color, intake_back);
+      master.print(0, 0, "%d/%d/%d/%s%s         ", (int)color_sort.get_hue()/*dt_temps*/, color_sort.get_proximity()/*top_temp*/, bottom_temp, color, intake_back);
     }
 
 		count++;
