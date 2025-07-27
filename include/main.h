@@ -34,16 +34,12 @@ using namespace okapi::literals;
 extern "C" {
 #endif
 extern std::string color;
-extern bool anti_jam_enabled; 
-extern int in_speed;
-extern int in_speed_bottom;
 void autonomous(void);
 void color_sort_task(void);
 void initialize(void);
 void disabled(void);
 void competition_initialize(void);
 void opcontrol(void);
-
 #ifdef __cplusplus
 }
 #endif

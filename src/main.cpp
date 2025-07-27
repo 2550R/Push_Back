@@ -31,83 +31,57 @@ ez::tracking_wheel horiz_tracker(9, 2, 0);
 ez::tracking_wheel vert_tracker(12, 2, 0);
 
 
-bool anti_jam_enabled = false;
-int in_speed = 0;
-int in_speed_bottom = 0;
-
-void anti_jam() {
-  int past_in_speed_bottom;
-  int past_in_speed;
-
-  while (true) {
+bool anti_jam_w = false;
+void anti_jam(){
+  while(true){
     float currentTime = float(pros::millis());
-
-    int current_top = intake_top.get_current_draw();
+    double current_top = intake_top.get_current_draw();
     double velocity_top = intake_top.get_actual_velocity();
-    int current_bottom = intake_bottom.get_current_draw();
+    double current_bottom = intake_bottom.get_current_draw();
     double velocity_bottom = intake_bottom.get_actual_velocity();
-
-    int current_threshold = 2000;
-    int spin_time = 200;
-
-		int v_threshold_top = in_speed;
-		int v_threshold_bottom = in_speed;
-		int intake_speed = -in_speed;
-
-    bool within_threshold = false;
-    if (
-      (past_in_speed < 0 && in_speed > 0)
-      || (past_in_speed > 0 && in_speed < 0)
-    ) {
-      pros::delay(300);
-      continue;
-    }
-
-    if (
-      (past_in_speed_bottom < 0 && in_speed_bottom > 0)
-      || (past_in_speed_bottom > 0 && in_speed_bottom < 0)
-    ) {
-      pros::delay(300);
-      continue;
-    }
-
-    past_in_speed = in_speed;
-    past_in_speed_bottom = in_speed_bottom;
-    if (
-      in_speed >= 0
-      && (
-        ((v_threshold_top - 110 > velocity_top) && current_top > current_threshold )
-        || ((v_threshold_bottom - 110 > velocity_bottom)  && current_bottom > current_threshold)  
-      )
-		) {
-      within_threshold = true;
-    } else if (
-      in_speed < 0
-      && (
-        ((v_threshold_top + 110 < velocity_top) && current_top > current_threshold )
-        || ((v_threshold_bottom + 110 < velocity_bottom)  && current_bottom > current_threshold)  
-      )
-		) {
-      within_threshold = true;
-    }
-    if (within_threshold) {
-      anti_jam_enabled = true;
-      int starting_time = pros::millis();
-      while ((pros::millis() - starting_time) < spin_time && intake_distance.get_distance() > 150){
-        intake_top.move(intake_speed); 
-        intake_bottom.move(intake_speed);
+    double current_threshold = 2000;
+    double spin_time = 200;
+    if (master.get_digital(DIGITAL_L1) || master.get_digital(DIGITAL_R1)) {
+      double v_threshold_top = -127;
+      double v_threshold_bottom = -127;
+      if (((v_threshold_top+110)<velocity_top) && current_top > current_threshold){
+        anti_jam_w = true;
+        intake_top.move(127);
+        pros::delay(spin_time);
+        anti_jam_w = false;
+        
       }
-      intake_top.move(in_speed); 
-      intake_bottom.move(in_speed_bottom);
-      anti_jam_enabled = false;
-      pros::delay(300);
-    }
+      if (((v_threshold_bottom+110)<velocity_bottom) && current_bottom > current_threshold){
+        
+        anti_jam_w = true;
+        intake_bottom.move(127);
+        pros::delay(spin_time);
+        anti_jam_w = false;
+      }
+		} 
+    else if (master.get_digital(DIGITAL_L2) || master.get_digital(DIGITAL_R2)) {
+      double v_threshold_top = 127;
+      double v_threshold_bottom = 127;
+      if (((v_threshold_top-110)>velocity_top) && current_top > current_threshold){
+        anti_jam_w = true;
+        intake_top.move(-127);
+        pros::delay(spin_time);
+        anti_jam_w = false;
+      }
+      if (((v_threshold_bottom-110)>velocity_bottom) && current_bottom > current_threshold){
+        anti_jam_w = true;
+        intake_bottom.move(-127);
+        pros::delay(spin_time);
+        anti_jam_w = false;
+      }
+		} 
+
   }
 }
-
 std::string color = "x"; // against R or B; press UP+X to change; x for disabled
 
 void color_sort_task() {
+  
   bool blue_color_sort = true;
   color_sort.set_integration_time(3);
   while (true) {
@@ -150,8 +124,8 @@ void initialize() {
   pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"Pid tune", pid_tune},
     {"Skills", skills},
+    {"Pid tune", pid_tune},
     {"Blue Top Quals", blue_top_quals},
     {"Solo AWP Left", solo_winpoint_left},
     {"Blue Top Elims", blue_top_elims},
@@ -260,28 +234,23 @@ void opcontrol() {
 
   while (true) {
     chassis.opcontrol_arcade_standard(ez::SPLIT);
-
-    if (anti_jam_enabled) {
+    if (anti_jam_w){
       continue;
     } else if (master.get_digital(DIGITAL_L1)) {
 			intake_bottom.move(-127);
 			intake_top.move(-127);
-      in_speed = -127;
 		} 
     else if (master.get_digital(DIGITAL_L2)) {
 			intake_bottom.move(127);
 			intake_top.move(127);
-      in_speed = 127;
 		} 
     else if (master.get_digital(DIGITAL_R1)) {
 			intake_bottom.move(-60);
 			intake_top.move(-127);
-      in_speed = -127;
 		} 
     else if (master.get_digital(DIGITAL_R2)) {
 			intake_bottom.move(127);
 			intake_top.move(0);
-      in_speed = 127;
 		} 
     else if (intake_auto_reverse_enabled) {
       if (intake_distance.get_distance() < 150){

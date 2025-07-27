@@ -34,18 +34,6 @@ float p_x;
 float p_y;
 
 int screen = 0;
-void top_intake(int speed = 127, bool reset = true){
-  intake_top.move(speed);
-  in_speed = speed;
-  //if (reset ) in_speed_bottom = 0;
-
-}
-void bottom_intake(int speed = 127, bool reset = true){
-  intake_bottom.move(speed);
-  in_speed_bottom = speed;
-  //if (reset) in_speed = 0;
-}
-
 
 void controller_update() {
   while (true) {
@@ -107,10 +95,7 @@ void default_constants() {
   chassis.pid_angle_behavior_set(ez::shortest);
 }
 void pid_tune(){
-  top_intake(-127);
-  bottom_intake(-127);
-  pros::delay(40000000);
-
+  drive_wall(450);
 }
 
 void blue_top_elims() {
