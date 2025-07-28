@@ -179,19 +179,18 @@ void skills() {
   Setup for first matchload
   */
 
-  chassis.pid_odom_set({{-32.5_in, 0_in}, fwd, 127}, true);
+  chassis.pid_odom_set({{-33_in, 0_in}, fwd, 127}, true);
   chassis.pid_wait();
 
   /*
   Empty first match loader
   */
-
   Little_Mech_Mac.set(1);
 
   chassis.pid_turn_set(180, 110, true);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(12, 90, true);
+  chassis.pid_drive_set(10.5, 90, true);
   chassis.pid_wait();
 
   intake_bottom.move(127);
@@ -209,7 +208,7 @@ void skills() {
   chassis.pid_drive_set(-9.8, 90, true);
   chassis.pid_wait_quick();
 
-  // intake_counter_spin();
+  intake_counter_spin();
 
   chassis.pid_turn_set(-90, 60, true);
   chassis.pid_wait();
@@ -251,7 +250,7 @@ void skills() {
   chassis.pid_turn_set(90, 60, true);
   chassis.pid_wait();
 
-  chassis.pid_odom_set({{10_in, 0_in}, fwd, 110}, true);
+  chassis.pid_odom_set({{9.5_in, 0_in}, fwd, 110}, true);
   chassis.pid_wait();
   screen = 1;
   
@@ -267,7 +266,7 @@ void skills() {
   intake_top.move(127);
   intake_bottom.move(127);
 
-  chassis.pid_drive_set(-14, 110, true);
+  chassis.pid_drive_set(-12, 60, true);
   chassis.pid_wait();
 
   trapdoor.set(0);
@@ -280,7 +279,7 @@ void skills() {
 
   trapdoor.set(1);
 
-  chassis.pid_drive_set(27.5, 80, true);
+  chassis.pid_drive_set(29, 80, true);
 
   pros::delay(1800);
 
@@ -292,7 +291,7 @@ void skills() {
 
   pros::delay(100);
 
-  chassis.pid_drive_set(-27, 80, true);
+  chassis.pid_drive_set(-27, 60, true);
   chassis.pid_wait();
 
   trapdoor.set(0);
@@ -305,7 +304,6 @@ void skills() {
   */
 
   // Activate color sort
-  color = "B";
   trapdoor.set(1);
   
   chassis.pid_drive_set(17, 110, true);
@@ -314,7 +312,7 @@ void skills() {
   chassis.pid_turn_set(135, 60, true);
   chassis.pid_wait();
 
-  chassis.pid_odom_set({{27, -9}, fwd, 80}, true);
+  chassis.pid_odom_set({{25, -9.2}, fwd, 80}, true);
   chassis.pid_wait_quick();
 
   /*
@@ -322,6 +320,7 @@ void skills() {
   */
 
   intake_bottom.move(127);
+  intake_top.move(0);
 
   chassis.pid_drive_set(15, 40, true);
   chassis.pid_wait();
@@ -336,7 +335,7 @@ void skills() {
   chassis.pid_turn_set(135, 60, true);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(25, 40, true);
+  chassis.pid_drive_set(25, 30, true);
   chassis.pid_wait();
 
   pros::delay(200);
@@ -351,8 +350,10 @@ void skills() {
   intake_top.move(-50);
   intake_bottom.move(-50);
 
-  chassis.pid_turn_set(-137, 60, true);
+  chassis.pid_drive_set(-2, 60, true);
+  chassis.pid_wait();
 
+  chassis.pid_turn_set(-137, 60, true);
   chassis.pid_wait();
   
   middle_stage.set(1);
@@ -384,8 +385,8 @@ void skills() {
   chassis.pid_turn_set(0, 60);
   chassis.pid_wait();
 
-  while (distance_front.get_distance() > 450){
-    chassis.pid_drive_set(1000000, 30);
+  while (distance_front.get_distance() > 750){
+    chassis.pid_drive_set(1000000, 40);
   }
   L1.brake();
   L2.brake();
@@ -398,11 +399,11 @@ void skills() {
   
   //drive_wall(450);
 
-  chassis.pid_turn_set(90, 60);
+  chassis.pid_turn_set(89, 60);
   chassis.pid_wait();
 
-  while (distance_front.get_distance() > 515){
-    chassis.pid_drive_set(1000000, 30);
+  while (distance_front.get_distance() > 740){
+    chassis.pid_drive_set(1000000, 40);
   }
   L1.brake();
   L2.brake();
@@ -414,25 +415,112 @@ void skills() {
 
   //drive_wall(450);
 
-  chassis.pid_turn_set(0, 60);
+  chassis.pid_turn_set(-3, 60);
   chassis.pid_wait();
 
-  wall_alignment_R(1000);
+  pros::delay(150);
 
   /*
   reset position
   */
 
-  // position_y = (distance_front.get_distance() - 453) / 25.4;
-  // position_x = ((distance_front_r.get_distance() + distance_back_r.get_distance()) / 2 - 450) / 25.4;
+  float position_y_1 = (distance_front.get_distance() - 525) / 25.4;
+  float position_x_1 = ((distance_front_r.get_distance() + distance_back_r.get_distance()) / 2 - 435) / 25.4;
 
-  // p_x = position_x;
-  // p_y = position_y;
+  p_x = position_x_1;
+  p_y = position_y_1;
 
-  // chassis.odom_xyt_set(position_x, position_y, 0);
+  pros::delay(150);
 
-  // chassis.pid_odom_set({{0, 10}, fwd, 100}, true);
-  // chassis.pid_wait();
+  chassis.odom_xy_set(position_x_1, position_y_1);
+  chassis.pid_wait();
+
+  /*
+  grab third match load
+  */
+
+  Little_Mech_Mac.set(1);
+
+  chassis.pid_drive_set(15, 60, true);
+  chassis.pid_wait();
+
+  intake_top.move(127);
+  intake_bottom.move(127);
+
+  pros::delay(1200);
+
+  Little_Mech_Mac.set(0);
+
+  chassis.pid_drive_set(-10, 60, true);
+  chassis.pid_wait();
+
+  intake_counter_spin();
+
+  chassis.pid_odom_set({{12_in, 0_in}, rev, 100}, true);
+  chassis.pid_wait();
+
+  /*
+  go to blue side
+  */
+
+  chassis.pid_odom_set({{15_in, -85_in}, rev, 110}, true);
+  chassis.pid_wait();
+
+  chassis.pid_odom_set({{6.5_in, -85_in}, rev, 110}, true);
+  chassis.pid_wait();
+
+  /*
+  score third set of match load
+  */
+
+  chassis.pid_turn_set(178, 60, true);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-8.5, 60, true);
+  chassis.pid_wait();
+
+  intake_top.move(127);
+  intake_bottom.move(127);
+
+  trapdoor.set(0);
+
+  pros::delay(2000);
+
+  /*
+  empty second match loader
+  */
+
+  trapdoor.set(1);
+  
+  Little_Mech_Mac.set(1);
+
+  chassis.pid_drive_set(29, 80, true);
+
+  pros::delay(2000);
+
+  /*
+  Score second 6 on long goal
+  */
+
+  Little_Mech_Mac.set(0);
+
+  pros::delay(100);
+
+  chassis.pid_drive_set(-27.5, 60, true);
+  chassis.pid_wait();
+
+  trapdoor.set(0);
+
+  pros::delay(2000);
+
+  chassis.pid_drive_set(20, 60, true);
+  chassis.pid_wait();
+
+  chassis.pid_odom_set({{-100, -40}, rev, 100}, true);
+  chassis.pid_wait();
+
+
+
 
 }
 

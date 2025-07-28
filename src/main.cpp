@@ -327,7 +327,7 @@ void opcontrol() {
         intake_back = "N";
       }
 
-      master.print(0, 0, "%d/%d/%d/%s%s         ", (int)color_sort.get_hue()/*dt_temps*/, color_sort.get_proximity()/*top_temp*/, bottom_temp, color, intake_back);
+      master.print(0, 0, "%d/%d/%d/%s%s         ", /*(int)color_sort.get_hue()*/dt_temps, /*color_sort.get_proximity()*/top_temp, bottom_temp, color, intake_back);
     }
 
 		count++;
