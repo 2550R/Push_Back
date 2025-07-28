@@ -38,12 +38,13 @@ int screen = 0;
 void controller_update() {
   while (true) {
     if (screen == 0) {
-      master.print(0, 0, "%d/%d/%d       ", distance_front_l.get_distance(), distance_front_l.get_distance(),distance_front.get_distance());
+      master.print(0, 0, "%d/%d/%d       ", intake_top.get_current_draw(), intake_bottom.get_current_draw(),distance_front.get_distance());
       pros::delay(100);
     } else {
       master.print(0, 0, "%f/%f      ", p_x, p_y);
       pros::delay(100);
     }
+    pros::delay(100);
   }
 
   std::cout << "Controller output running\n";
@@ -63,6 +64,72 @@ void intake_counter_spin(){
 
 }
 
+int top_stage_intake = 0;
+int bottom_stage_intake = 0;
+bool change = false;
+void anti_jam_auton(){
+  float spin_time = 200;
+  int v_threshold_top;
+  int velocity_top;
+  int current_top;
+  int velocity_bottom;
+  int current_bottom;
+  int current_threshold = 2300;
+  bool is_jammed_fwd = false;
+  bool is_jammed_bcwd = false;
+  while(true){
+    if (change){pros::delay(300);}
+    velocity_top = intake_top.get_actual_velocity();
+    velocity_bottom = intake_bottom.get_actual_velocity();
+    current_top = intake_top.get_current_draw();
+    current_bottom = intake_bottom.get_current_draw();
+    if (top_stage_intake <= 0 || bottom_stage_intake <= 0){ 
+      if ((current_top > current_threshold && velocity_top > -10) || (current_bottom > current_threshold && velocity_top > -10) ){
+        is_jammed_fwd = true;
+      }
+    }
+    if (top_stage_intake > 0 || bottom_stage_intake > 0){ 
+      if ((current_top > current_threshold && velocity_top < 10) || (current_bottom > current_threshold && velocity_bottom < 10) ){
+        is_jammed_bcwd = true;
+      }
+    }
+
+    if (is_jammed_fwd){
+      float start_time = pros::millis();
+      while (intake_distance.get_distance() > 150 && ((float)pros::millis() - start_time) < spin_time){
+        intake_top.move(127);
+        intake_bottom.move(127);
+      }
+      is_jammed_fwd = false;
+      intake_top.move(top_stage_intake);
+      intake_bottom.move(bottom_stage_intake);
+      pros::delay(300);
+    }
+    if (is_jammed_bcwd){
+      float start_time = pros::millis();
+      while (intake_distance.get_distance() > 150 && ((float)pros::millis() - start_time) < spin_time){
+        intake_top.move(-127);
+        intake_bottom.move(-127);
+      }
+      is_jammed_bcwd = false;
+      intake_top.move(top_stage_intake);
+      intake_bottom.move(bottom_stage_intake);
+      pros::delay(300);
+    }
+    pros::delay(40);
+  }
+}
+
+void top_intake(int speed){
+  change = true;
+  intake_top.move(speed);
+  top_stage_intake = speed;
+}
+void bottom_intake(int speed){
+  change = true;
+  intake_bottom.move(speed);
+  bottom_stage_intake = speed;
+}
 
 
 void default_constants() {
@@ -95,7 +162,12 @@ void default_constants() {
   chassis.pid_angle_behavior_set(ez::shortest);
 }
 void pid_tune(){
-  drive_wall(450);
+  pros::Task anti (anti_jam_auton);
+  top_intake(127);
+  bottom_intake(127);
+  pros::delay(6000);
+  top_intake(-127);
+  bottom_intake(-127);
 }
 
 void blue_top_elims() {
@@ -168,6 +240,7 @@ void blue_top_elims() {
 
 
 void skills() {  
+  pros::Task anti (anti_jam_auton);
   pros::Task task1(controller_update);
   pros::Task color_sort_task_running(color_sort_task);
 
@@ -193,8 +266,11 @@ void skills() {
   chassis.pid_drive_set(10.5, 90, true);
   chassis.pid_wait();
 
-  intake_bottom.move(127);
-  intake_top.move(127);
+  bottom_intake(127);
+  top_intake(127);
+
+  //intake_bottom.move(127);
+  //intake_top.move(127);
 
   pros::delay(1000);
 
@@ -208,7 +284,7 @@ void skills() {
   chassis.pid_drive_set(-9.8, 90, true);
   chassis.pid_wait_quick();
 
-  intake_counter_spin();
+  //intake_counter_spin();
 
   chassis.pid_turn_set(-90, 60, true);
   chassis.pid_wait();
@@ -263,8 +339,10 @@ void skills() {
   chassis.pid_turn_set(0, 60, true);
   chassis.pid_wait();
 
-  intake_top.move(127);
-  intake_bottom.move(127);
+  top_intake(127);
+  bottom_intake(127);
+  //intake_top.move(127);
+  //intake_bottom.move(127);
 
   chassis.pid_drive_set(-12, 60, true);
   chassis.pid_wait();
@@ -319,8 +397,10 @@ void skills() {
   Grab first 2 from mid
   */
 
-  intake_bottom.move(127);
-  intake_top.move(0);
+  bottom_intake(127);
+  top_intake(0);
+  //intake_bottom.move(127);
+  //intake_top.move(0);
 
   chassis.pid_drive_set(15, 40, true);
   chassis.pid_wait();
@@ -347,8 +427,10 @@ void skills() {
   // chassis.pid_drive_set(-2, 90, true);
   // chassis.pid_wait();
 
-  intake_top.move(-50);
-  intake_bottom.move(-50);
+  top_intake(-50);
+  bottom_intake(-50);
+  //intake_top.move(-50);
+  //intake_bottom.move(-50);
 
   chassis.pid_drive_set(-2, 60, true);
   chassis.pid_wait();
@@ -364,8 +446,10 @@ void skills() {
   chassis.pid_drive_set(13.8, 60, true);
   chassis.pid_wait();
 
-  intake_top.move(100);
-  intake_bottom.move(100);
+  top_intake(100);
+  bottom_intake(100);
+  //intake_top.move(100);
+  //intake_bottom.move(100);
 
   pros::delay(1500);
 
@@ -443,18 +527,21 @@ void skills() {
 
   chassis.pid_drive_set(15, 60, true);
   chassis.pid_wait();
+  
+  top_intake(127);
+  bottom_intake(127);
 
-  intake_top.move(127);
-  intake_bottom.move(127);
+  //intake_top.move(127);
+  //intake_bottom.move(127);
 
   pros::delay(1200);
 
   Little_Mech_Mac.set(0);
 
-  chassis.pid_drive_set(-10, 60, true);
+  chassis.pid_drive_set(-13, 60, true);
   chassis.pid_wait();
 
-  intake_counter_spin();
+  //intake_counter_spin();
 
   chassis.pid_odom_set({{12_in, 0_in}, rev, 100}, true);
   chassis.pid_wait();
@@ -516,7 +603,7 @@ void skills() {
   chassis.pid_drive_set(20, 60, true);
   chassis.pid_wait();
 
-  chassis.pid_odom_set({{-100, -40}, rev, 100}, true);
+  chassis.pid_odom_set({{-60, -100}, rev, 100}, true);
   chassis.pid_wait();
 
 
