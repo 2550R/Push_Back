@@ -6,6 +6,11 @@
 extern Drive chassis;
 
 // Your motors, sensors, etc. should go here.  Below are examples
+inline pros::Distance distance_front_r(20);
+inline pros::Distance distance_back_l(19);
+
+inline pros::Distance distance_front_l(18);
+inline pros::Distance distance_back_r(17);
 
 // inline pros::Motor intake(1);
 // inline pros::adi::DigitalIn limit_switch('A');

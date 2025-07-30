@@ -70,7 +70,7 @@ void initialize() {
       {"Pure Pursuit\n\nGo to (0, 30) and pass through (6, 10) on the way.  Come back to (0, 0)", odom_pure_pursuit_example},
       {"Pure Pursuit Wait Until\n\nGo to (24, 24) but start running an intake once the robot passes (12, 24)", odom_pure_pursuit_wait_until_example},
       {"Boomerang\n\nGo to (0, 24, 45) then come back to (0, 0, 0)", odom_boomerang_example},
-      {"Measuring the ODOM", c},
+      {"Measuring the ODOM", odom_boomerang_example},
       {"Measure Offsets\n\nThis will turn the robot a bunch of times and calculate your offsets for your tracking wheels.", measure_offsets},
   });
 
@@ -145,7 +145,7 @@ void screen_print_tracker(ez::tracking_wheel *tracker, std::string name, int lin
   if (tracker != nullptr) {
     tracker_value = name + " tracker: " + util::to_string_with_precision(tracker->get());             // Make text for the tracker value
     tracker_width = "  width: " + util::to_string_with_precision(tracker->distance_to_center_get());  // Make text for the distance to center
-  }
+  } 
   ez::screen_print(tracker_value + tracker_width, line);  // Print final tracker text
 }
 
