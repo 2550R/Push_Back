@@ -42,7 +42,7 @@ void anti_jam(){
     double current_threshold = 2000;
     double spin_time = 200;
     if (master.get_digital(DIGITAL_L1) || master.get_digital(DIGITAL_R1)) {
-      pros::delay(200);
+      pros::delay(400);
       double v_threshold_top = -127;
       double v_threshold_bottom = -127;
       if (((v_threshold_top+110)<velocity_top) && current_top > current_threshold){
@@ -67,7 +67,7 @@ void anti_jam(){
       }
 		} 
     else if (master.get_digital(DIGITAL_L2) || master.get_digital(DIGITAL_R2)) {
-      pros::delay(200);
+      pros::delay(400);
       double v_threshold_top = 127;
       double v_threshold_bottom = 127;
       if (((v_threshold_top-110)>velocity_top) && current_top > current_threshold){
@@ -93,21 +93,34 @@ void anti_jam(){
   }
 }
 std::string color = "x"; // against R or B; press UP+X to change; x for disabled
-int color_sorted = 0;
-void color_sort_S(void* param) {
+void color_sort_S() {
   
+  bool blue_color_sort = true;
+  color_sort.set_integration_time(3);
   while (true) {
-    color_sort.set_led_pwm(100); 
-    if (color_sort.get_hue() > 180 && color_sort.get_proximity() > 130) {
-      color_sorted += 1;
-      pros::delay(50);
+    int hue_lower;
+    int hue_higher;
+    color_sort.set_led_pwm(100);
+    if (color == "B") {
+      hue_lower = 210;
+      hue_higher = 250;
+    } else if (color == "R") {
+      hue_lower = 0;
+      hue_higher = 40;
+    } else {
+      continue;
+    }
+
+    bool in_proximity = color_sort.get_proximity() > 50;
+
+    if (in_proximity && (hue_lower < color_sort.get_hue() && color_sort.get_hue() < hue_higher)||(color == "R" && color_sort.get_hue() > 300)) {
       color_sort_piston.set(1);
-      pros::delay(350);
+      pros::delay(250);
       color_sort_piston.set(0);
     }
-    pros::delay(ez::util::DELAY_TIME);
+
+
   }
-  std::cout << "Color sort running\n";
 }
 
 void initialize() {
@@ -122,7 +135,7 @@ void initialize() {
   chassis.opcontrol_curve_default_set(0.0, 1);
 
   default_constants();
-  //pros::Task task1(anti_jam);
+  pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
     {"Skills", skills},
@@ -288,11 +301,6 @@ void opcontrol() {
     else {
       Little_Mech_Mac.set(0);
     }
-    if (master.get_digital(DIGITAL_A)) {
-      color_sort_piston.set(1);
-    }else {
-      color_sort_piston.set(0);
-    }
 
     if (master.get_digital_new_press(DIGITAL_X)) {
       Digital_X += 1;
@@ -328,7 +336,7 @@ void opcontrol() {
         intake_back = "N";
       }
 
-      master.print(0, 0, "%d/%d/%d/%s/%s         ", /*color_sort.get_hue()*//*dt_temps*/ color_sorted, color_sort.get_proximity()/*top_temp*/, bottom_temp, color, intake_back);
+      master.print(0, 0, "%d/%d/%d/%s/%s         ", /*color_sort.get_hue()*/dt_temps, color_sort.get_proximity()/*top_temp*/, bottom_temp, color, intake_back);
     }
 
 		count++;
