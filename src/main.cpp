@@ -42,93 +42,94 @@ void anti_jam(){
     double current_threshold = 2000;
     double spin_time = 200;
     if (master.get_digital(DIGITAL_L1) || master.get_digital(DIGITAL_R1)) {
+      pros::delay(200);
       double v_threshold_top = -127;
       double v_threshold_bottom = -127;
       if (((v_threshold_top+110)<velocity_top) && current_top > current_threshold){
+        int start_time = pros::millis();
         anti_jam_w = true;
-        intake_top.move(127);
-        pros::delay(spin_time);
+        while (pros::millis() - start_time < spin_time && intake_distance.get_distance() > 150){
+          intake_top.move(127);
+        }
+        
         anti_jam_w = false;
         
       }
       if (((v_threshold_bottom+110)<velocity_bottom) && current_bottom > current_threshold){
         
+        int start_time = pros::millis();
         anti_jam_w = true;
-        intake_bottom.move(127);
-        pros::delay(spin_time);
+        while (pros::millis() - start_time < spin_time && intake_distance.get_distance() > 150){
+          intake_bottom.move(127);
+        }
+        
         anti_jam_w = false;
       }
 		} 
     else if (master.get_digital(DIGITAL_L2) || master.get_digital(DIGITAL_R2)) {
+      pros::delay(200);
       double v_threshold_top = 127;
       double v_threshold_bottom = 127;
       if (((v_threshold_top-110)>velocity_top) && current_top > current_threshold){
+        int start_time = pros::millis();
         anti_jam_w = true;
-        intake_top.move(-127);
-        pros::delay(spin_time);
+        while (pros::millis() - start_time < spin_time && intake_distance.get_distance() > 150){
+          intake_top.move(-127);
+        }
+        
         anti_jam_w = false;
       }
       if (((v_threshold_bottom-110)>velocity_bottom) && current_bottom > current_threshold){
+        int start_time = pros::millis();
         anti_jam_w = true;
-        intake_bottom.move(-127);
-        pros::delay(spin_time);
+        while (pros::millis() - start_time < spin_time && intake_distance.get_distance() > 150){
+          intake_bottom.move(-127);
+        }
+        
         anti_jam_w = false;
       }
 		} 
-
+    pros::delay(ez::util::DELAY_TIME);
   }
 }
 std::string color = "x"; // against R or B; press UP+X to change; x for disabled
-
-void color_sort_task() {
+int color_sorted = 0;
+void color_sort_S(void* param) {
   
-  bool blue_color_sort = true;
-  color_sort.set_integration_time(3);
   while (true) {
-    int hue_lower;
-    int hue_higher;
-    color_sort.set_led_pwm(100);
-    if (color == "B") {
-      hue_lower = 210;
-      hue_higher = 270;
-    } else if (color == "R") {
-      hue_lower = 0;
-      hue_higher = 40;
-    } else {
-      continue;
-    }
-
-    bool in_proximity = color_sort.get_proximity() > 50;
-
-    if (in_proximity && (hue_lower < color_sort.get_hue() && color_sort.get_hue() < hue_higher)||(color == "R" && color_sort.get_hue() > 300)) {
+    color_sort.set_led_pwm(100); 
+    if (color_sort.get_hue() > 180 && color_sort.get_proximity() > 130) {
+      color_sorted += 1;
+      pros::delay(50);
       color_sort_piston.set(1);
-      pros::delay(250);
+      pros::delay(350);
       color_sort_piston.set(0);
     }
-
-
+    pros::delay(ez::util::DELAY_TIME);
   }
+  std::cout << "Color sort running\n";
 }
 
 void initialize() {
   ez::ez_template_print();
+  color_sort.set_led_pwm(100);
   pros::delay(500);  // Stop the user from doing anything while legacy ports configure
 	chassis.odom_tracker_back_set(&horiz_tracker);
   chassis.odom_tracker_right_set(&vert_tracker);
 
   chassis.opcontrol_curve_buttons_toggle(false);
   chassis.opcontrol_drive_activebrake_set(0.0);
-  chassis.opcontrol_curve_default_set(0.0, 0.0);
+  chassis.opcontrol_curve_default_set(0.0, 1);
 
   default_constants();
-  pros::Task task1(anti_jam);
+  //pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
     {"Skills", skills},
+    {"Blue Top Elims", blue_top_elims},
+    {"Solo AWP Left", solo_winpoint_left},
     {"Pid tune", pid_tune},
     {"Blue Top Quals", blue_top_quals},
-    {"Solo AWP Left", solo_winpoint_left},
-    {"Blue Top Elims", blue_top_elims},
     {"Red Top Elims", red_top_elims},
     {"Blue Bottom Elims", blue_bottom_elims},
     {"Red Bottom Elims", red_bottom_elims},
@@ -230,7 +231,7 @@ void opcontrol() {
 	int count = 0;
   bool intake_auto_reverse_enabled = true;
 
-  pros::Task color_sort_task_running(color_sort_task);
+  pros::Task color_sort_task_running (color_sort_S);
 
   while (true) {
     chassis.opcontrol_arcade_standard(ez::SPLIT);
@@ -327,7 +328,7 @@ void opcontrol() {
         intake_back = "N";
       }
 
-      master.print(0, 0, "%d/%d/%d/%s%s         ", /*(int)color_sort.get_hue()*/dt_temps, /*color_sort.get_proximity()*/top_temp, bottom_temp, color, intake_back);
+      master.print(0, 0, "%d/%d/%d/%s/%s         ", /*color_sort.get_hue()*//*dt_temps*/ color_sorted, color_sort.get_proximity()/*top_temp*/, bottom_temp, color, intake_back);
     }
 
 		count++;
