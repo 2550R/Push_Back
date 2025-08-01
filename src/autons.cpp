@@ -236,7 +236,7 @@ void blue_top_elims() {
   Little_Mech_Mac.set(1);
   pros::delay(100);
 
-  chassis.pid_drive_set(22, 65, true);
+  chassis.pid_drive_set(24, 65, true);
   chassis.pid_wait();
   bottom_intake(127);
   pros::delay(300);
@@ -664,63 +664,56 @@ void red_top_elims() {
 }
 
 void blue_top_quals() {
+  // pros::Task anti (anti_jam_auton);
   trapdoor.set(1);
   intake_top.move(127);
   chassis.odom_xyt_set(0_in, 0_in, 152.5_deg);
   chassis.pid_drive_constants_set(27, 0, 135);
   chassis.pid_drive_exit_condition_set(50_ms, 1_in, 100_ms, 3_in, 200_ms, 200_ms);
-  chassis.pid_odom_set({{{-7.6_in, 18_in}, rev, 127},
-                      {{-10_in, 22_in}, rev, 127},
-                      {{-12.5_in, 28_in}, rev, 127},
-                      {{-13.5_in, 43_in}, rev, 127}},
+  chassis.pid_odom_set({{{-10.6_in, 18_in}, rev, 127},
+                      {{-12.4_in, 22_in}, rev, 127},
+                      {{-13_in, 27_in}, rev, 127},
+                      {{-16_in, 42.5_in}, rev, 127}},
                       true);
 
-  pros::delay(1100);
+  pros::delay(1000);
   right_rush_mech.set(1);
   chassis.pid_wait_quick();
 
   chassis.pid_drive_constants_set(22, 0, 130);
-  pros::delay(200);
-
-  chassis.pid_swing_set(RIGHT_SWING, 100, 60,-5);
-  chassis.pid_wait();
 
   intake_bottom.move(127);
 
-  chassis.pid_swing_set(LEFT_SWING, 150, 60, 30);
-  chassis.pid_wait();
+  chassis.pid_swing_set(RIGHT_SWING, 80, 60, 17);
+  chassis.pid_wait_quick();
 
-  chassis.pid_swing_set(RIGHT_SWING, 100, 60, 20);
-  chassis.pid_wait();
-  pros::delay(400);
+  pros::delay(150);
   //Turn that on when we have the pump
   right_rush_mech.set(0);
-  pros::delay(200);
+  pros::delay(150);
 
-  chassis.pid_drive_set(-15, -40, true);
-  chassis.pid_wait();
+  chassis.pid_drive_set(-15, -60, true);
+  chassis.pid_wait_quick();
 
   intake_bottom.move(70);
   intake_top.move(0);
 
-  chassis.pid_turn_set(140, 60, true);
+  chassis.pid_turn_set(140, 80, true);
   chassis.pid_wait_quick();
 
-  chassis.pid_swing_set(RIGHT_SWING, 90, 60, 30, true);
+  chassis.pid_swing_set(RIGHT_SWING, 90, 80, 40, true);
   chassis.pid_wait_quick();
 
   intake_bottom.move(0);
 
-  chassis.pid_odom_set({{18.2, 39}, fwd, 60}, true);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(38, 60, true);
+  chassis.pid_odom_set({{15, 44}, fwd, 80}, true);
   chassis.pid_wait();
 
   middle_stage.set(1);
   Little_Mech_Mac.set(1);
 
-  pros::delay(1000);
+  chassis.pid_turn_set(38, 60, true);
+  chassis.pid_wait();
   
   chassis.pid_drive_set(7.5, 60, true);
   chassis.pid_wait();
@@ -728,28 +721,25 @@ void blue_top_quals() {
   intake_top.move(127);
   intake_bottom.move(127);
 
-  pros::delay(1500);
+  pros::delay(1000);
 
-  chassis.pid_odom_set({{-12.5_in, 13_in}, rev, 80}, true);
-  chassis.pid_wait();
+  chassis.pid_odom_set({{-13.5_in, 13_in}, rev, 80}, true);
+  chassis.pid_wait_quick();
   
   middle_stage.set(0);
-  Little_Mech_Mac.set(0);
 
-  pros::delay(250);
-
-  chassis.pid_turn_set(172, 60, true);
-  chassis.pid_wait();
+  chassis.pid_turn_set(172, 80, true);
+  chassis.pid_wait_quick();
 
   Little_Mech_Mac.set(1);
 
-  chassis.pid_drive_set(16, 60, true);
+  chassis.pid_drive_set(16, 80, true);
   chassis.pid_wait();
 
-  pros::delay(1500);
+  pros::delay(1000);
 
-  chassis.pid_turn_set(172, 60, true);
-  chassis.pid_wait();
+  chassis.pid_turn_set(172, 80, true);
+  chassis.pid_wait_quick();
 
   chassis.pid_drive_set(-29, 60, true);
   chassis.pid_wait();

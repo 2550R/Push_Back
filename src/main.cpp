@@ -92,7 +92,7 @@ void anti_jam(){
     pros::delay(ez::util::DELAY_TIME);
   }
 }
-std::string color = "x"; // against R or B; press UP+X to change; x for disabled
+std::string color = "B"; // against R or B; press UP+X to change; x for disabled
 void color_sort_S() {
   
   bool blue_color_sort = true;
@@ -138,11 +138,11 @@ void initialize() {
   pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"Skills", skills},
+    {"Blue Top Quals", blue_top_quals},
     {"Blue Top Elims", blue_top_elims},
     {"Solo AWP Left", solo_winpoint_left},
+    {"Skills", skills},
     {"Pid tune", pid_tune},
-    {"Blue Top Quals", blue_top_quals},
     {"Red Top Elims", red_top_elims},
     {"Blue Bottom Elims", blue_bottom_elims},
     {"Red Bottom Elims", red_bottom_elims},
