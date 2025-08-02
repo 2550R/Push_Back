@@ -36,6 +36,7 @@ void odom_boomerang_injected_pure_pursuit_example();
 void square_odom_test();
 void auton_setup_left();
 void auton_setup_right();
+void solo_right();
 
 /* Wall Tracking TEST */
 

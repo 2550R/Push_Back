@@ -92,9 +92,9 @@ void anti_jam(){
     pros::delay(ez::util::DELAY_TIME);
   }
 }
-std::string color = "B"; // against R or B; press UP+X to change; x for disabled
+std::string color = "x"; // against R or B; press UP+X to change; x for disabled
+int color_count = 0;
 void color_sort_S() {
-  
   bool blue_color_sort = true;
   color_sort.set_integration_time(3);
   while (true) {
@@ -113,13 +113,12 @@ void color_sort_S() {
 
     bool in_proximity = color_sort.get_proximity() > 50;
 
-    if (in_proximity && (hue_lower < color_sort.get_hue() && color_sort.get_hue() < hue_higher)||(color == "R" && color_sort.get_hue() > 300)) {
+    if (in_proximity && ((hue_lower < color_sort.get_hue() && color_sort.get_hue() < hue_higher)||(color == "R" && color_sort.get_hue() > 300)) && color_count < 17) {
       color_sort_piston.set(1);
       pros::delay(250);
       color_sort_piston.set(0);
+      color_count += 1;
     }
-
-
   }
 }
 
@@ -138,10 +137,10 @@ void initialize() {
   pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"Blue Top Quals", blue_top_quals},
     {"Blue Top Elims", blue_top_elims},
-    {"Solo AWP Left", solo_winpoint_left},
     {"Skills", skills},
+    {"Solo AWP Right", solo_right},
+    {"Blue Top Quals", blue_top_quals},
     {"Pid tune", pid_tune},
     {"Red Top Elims", red_top_elims},
     {"Blue Bottom Elims", blue_bottom_elims},
@@ -157,6 +156,10 @@ void initialize() {
   master.rumble(chassis.drive_imu_calibrated() ? "." : "-");
 }
 
+void odom_reset(){
+  
+}
+
 void disabled() { }
 
 void competition_initialize() { }
@@ -167,6 +170,7 @@ void autonomous() {
   chassis.drive_sensor_reset();
   chassis.odom_xyt_set(0_in, 0_in, 0_deg);
   chassis.drive_brake_set(MOTOR_BRAKE_HOLD);
+  odom_reset();
 
   ez::as::auton_selector.selected_auton_call();
 }
@@ -243,7 +247,7 @@ void opcontrol() {
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
 	int count = 0;
   bool intake_auto_reverse_enabled = true;
-
+  pros::Task anti_jam_T(anti_jam);
   pros::Task color_sort_task_running (color_sort_S);
 
   while (true) {
