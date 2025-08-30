@@ -162,12 +162,10 @@ void default_constants() {
   chassis.pid_angle_behavior_set(ez::shortest);
 }
 void pid_tune(){
-  pros::Task anti (anti_jam_auton);
-  top_intake(127);
-  bottom_intake(127);
-  pros::delay(6000);
-  top_intake(-127);
-  bottom_intake(-127);
+  pros::Task controller (controller_update);
+  chassis.pid_drive_set(odom_scaling * 24, 90, true);
+  chassis.pid_wait();
+
 }
 
 void solo_right (){
@@ -255,7 +253,7 @@ void blue_top_elims() {
   trapdoor.set(1);
   // intake_top.move(127);
   top_intake(127);
-  chassis.odom_xyt_set(0_in, 0_in, 152.5_deg);
+  // chassis.odom_xyt_set(0_in, 0_in, 152.5_deg);
   chassis.pid_drive_constants_set(27, 0, 135);
   chassis.pid_drive_exit_condition_set(50_ms, 1_in, 100_ms, 3_in, 200_ms, 200_ms);
   chassis.pid_odom_set({{{-10.6_in, 18_in}, rev, 127},
@@ -1135,16 +1133,17 @@ void odom_boomerang_injected_pure_pursuit_example() {
 }
 
 void square_odom_test() {
-  chassis.pid_odom_set({{ 0_in, 24_in }, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  chassis.pid_odom_set({{ 24_in, 24_in }, rev, DRIVE_SPEED});
-  chassis.pid_wait();
-  chassis.pid_odom_set({{ 24_in, 0_in }, rev, DRIVE_SPEED});
-  chassis.pid_wait();
-  chassis.pid_odom_set({{ 0_in, 0_in }, fwd, DRIVE_SPEED});
-  chassis.pid_wait();
-  chassis.pid_turn_set(0_deg, TURN_SPEED);
-  chassis.pid_wait();
+  
+  // chassis.pid_odom_set({{ 0_in, 24_in }, fwd, DRIVE_SPEED});
+  // chassis.pid_wait();
+  // chassis.pid_odom_set({{ 24_in, 24_in }, rev, DRIVE_SPEED});
+  // chassis.pid_wait();
+  // chassis.pid_odom_set({{ 24_in, 0_in }, rev, DRIVE_SPEED});
+  // chassis.pid_wait();
+  // chassis.pid_odom_set({{ 0_in, 0_in }, fwd, DRIVE_SPEED});
+  // chassis.pid_wait();
+  // chassis.pid_turn_set(0_deg, TURN_SPEED);
+  // chassis.pid_wait();
 }
 
 void auton_setup_left() {
@@ -1171,7 +1170,11 @@ void auton_setup_right(){
 }
 
 /* Wall Tracking TEST */
+void empty(){
+  pros::delay(100);
+  L1.brake();
 
+}
 void wall_tracking_test() {
   wall_tracking_with_alignment(150, 50, 1);
 }

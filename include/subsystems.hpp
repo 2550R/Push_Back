@@ -45,3 +45,5 @@ inline ez::Piston right_rush_mech('F');
 inline ez::Piston left_rush_mech('F');
 
 inline pros::Distance intake_distance(16);
+
+inline pros::Rotation vertical_tracker(12);

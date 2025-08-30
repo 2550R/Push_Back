@@ -41,6 +41,9 @@ void initialize(void);
 void disabled(void);
 void competition_initialize(void);
 void opcontrol(void);
+void odom_scale(void);
+void controller_update_main(void);
+extern double odom_scaling;
 #ifdef __cplusplus
 }
 #endif

@@ -56,6 +56,7 @@ void drive_wall(float distance) {
   R3.brake();
 }
 
+
 void wall_alignment_R(float timeout) {
   float error;
   float prev_error;

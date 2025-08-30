@@ -137,9 +137,9 @@ void initialize() {
   pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"Blue Top Elims", blue_top_elims},
-    {"Skills", skills},
+    {"Blue Top Elims", IMU},
     {"Solo AWP Right", solo_right},
+    {"Skills", skills},
     {"Blue Top Quals", blue_top_quals},
     {"Pid tune", pid_tune},
     {"Red Top Elims", red_top_elims},
@@ -156,8 +156,28 @@ void initialize() {
   master.rumble(chassis.drive_imu_calibrated() ? "." : "-");
 }
 
+void controller_update_main() {
+  while (true) {
+    master.print(0, 0, "%f       ", (vertical_tracker.get_position()/36000.0)* 2.0/*The diameter of the wheel*/ * 3.14 );
+    pros::delay(100);
+  }
+
+}
+
+double odom_distace;
+double odom_scaling;
+double distance_desired = 45;
 void odom_reset(){
+  pros::Task controller (controller_update_main);
+  chassis.odom_xyt_set(0_in, 0_in, 0_deg);
+  while (!master.get_digital(DIGITAL_UP)){
+    controller_update_main;
+  }
+  odom_distace = (vertical_tracker.get_position()/36000.0)* 2.0/*The diameter of the wheel*/ * 3.14 ;
+  odom_scaling = odom_distace / distance_desired;
+  master.print(0,0, "%f%f         ", odom_scaling, odom_distace);
   
+
 }
 
 void disabled() { }
@@ -169,7 +189,7 @@ void autonomous() {
   chassis.drive_imu_reset();
   chassis.drive_sensor_reset();
   chassis.odom_xyt_set(0_in, 0_in, 0_deg);
-  chassis.drive_brake_set(MOTOR_BRAKE_HOLD);
+  chassis.drive_brake_set(MOTOR_BRAKE_COAST);
   odom_reset();
 
   ez::as::auton_selector.selected_auton_call();

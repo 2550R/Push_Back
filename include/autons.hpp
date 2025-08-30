@@ -15,7 +15,7 @@
 #pragma once
 
 void default_constants();
-
+void empty();
 void skills();
 
 void blue_top_elims();
