@@ -18,7 +18,7 @@ void default_constants();
 void empty();
 void skills();
 
-void blue_top_elims();
+void left_elims();
 void red_top_elims();
 void blue_top_quals();
 
@@ -26,6 +26,8 @@ void blue_bottom_elims();
 void red_bottom_elims();
 void blue_bottom_quals();
 void red_bottom_quals();
+
+void new_elim_auton();
 
 void solo_winpoint_left();
 
@@ -43,3 +45,10 @@ void solo_right();
 void wall_tracking_test();
 void wall_alignment_test();
 void pid_tune();
+
+/* safe routes */
+void left_safe();
+void right_safe();
+
+/* Color Sort tests */
+void color_sort_test();

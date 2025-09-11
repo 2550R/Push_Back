@@ -27,9 +27,8 @@ ez::Drive chassis(
   450
 );
 
-ez::tracking_wheel horiz_tracker(9, 2, 0);
-ez::tracking_wheel vert_tracker(12, 2, 0);
-
+//ez::tracking_wheel horiz_tracker(9, 2, 0);
+ez::tracking_wheel vert_tracker(-12, 2, 0);
 
 bool anti_jam_w = false;
 void anti_jam(){
@@ -115,7 +114,7 @@ void color_sort_S() {
 
     if (in_proximity && ((hue_lower < color_sort.get_hue() && color_sort.get_hue() < hue_higher)||(color == "R" && color_sort.get_hue() > 300)) && color_count < 17) {
       color_sort_piston.set(1);
-      pros::delay(250);
+      pros::delay(200);
       color_sort_piston.set(0);
       color_count += 1;
     }
@@ -126,7 +125,7 @@ void initialize() {
   ez::ez_template_print();
   color_sort.set_led_pwm(100);
   pros::delay(500);  // Stop the user from doing anything while legacy ports configure
-	chassis.odom_tracker_back_set(&horiz_tracker);
+	//chassis.odom_tracker_back_set(&horiz_tracker);
   chassis.odom_tracker_right_set(&vert_tracker);
 
   chassis.opcontrol_curve_buttons_toggle(false);
@@ -137,12 +136,13 @@ void initialize() {
   pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"Blue Top Elims", IMU},
-    {"Solo AWP Right", solo_right},
+    {"Red Top Elims", solo_winpoint_left},
+    {"Solo AWP Right", new_elim_auton /*solo_winpoint_left*/},
+    {"left safe auton", left_elims},
+    {"Blue Top Elims", square_odom_test},
     {"Skills", skills},
     {"Blue Top Quals", blue_top_quals},
     {"Pid tune", pid_tune},
-    {"Red Top Elims", red_top_elims},
     {"Blue Bottom Elims", blue_bottom_elims},
     {"Red Bottom Elims", red_bottom_elims},
     {"Blue Bottom Quals", blue_bottom_quals},
@@ -189,8 +189,8 @@ void autonomous() {
   chassis.drive_imu_reset();
   chassis.drive_sensor_reset();
   chassis.odom_xyt_set(0_in, 0_in, 0_deg);
-  chassis.drive_brake_set(MOTOR_BRAKE_COAST);
-  odom_reset();
+  chassis.drive_brake_set(MOTOR_BRAKE_HOLD);
+  //odom_reset();
 
   ez::as::auton_selector.selected_auton_call();
 }
@@ -269,7 +269,6 @@ void opcontrol() {
   bool intake_auto_reverse_enabled = true;
   pros::Task anti_jam_T(anti_jam);
   pros::Task color_sort_task_running (color_sort_S);
-
   while (true) {
     chassis.opcontrol_arcade_standard(ez::SPLIT);
     if (anti_jam_w){
@@ -345,7 +344,7 @@ void opcontrol() {
     // middle_stage.button_toggle(master.get_digital_new_press(DIGITAL_Y));
     // Little_Mech_Mac.button_toggle(master.get_digital_new_press(DIGITAL_B));
     // color_sort_piston.button_toggle(master.get_digital_new_press(DIGITAL_X));
-    // left_rush_mech.button_toggle(master.get_digital_new_press(DIGITAL_UP));
+    // left_rush_mech.button_toggle(master.get_digital_new_press(DIGITAL_RIGHT));
 
 
     if (count == 80) {
