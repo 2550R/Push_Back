@@ -136,8 +136,8 @@ void initialize() {
   pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
+    {"Solo AWP Right", left_safe /*solo_winpoint_left*/},
     {"Red Top Elims", solo_winpoint_left},
-    {"Solo AWP Right", new_elim_auton /*solo_winpoint_left*/},
     {"left safe auton", left_elims},
     {"Blue Top Elims", square_odom_test},
     {"Skills", skills},

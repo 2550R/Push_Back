@@ -198,7 +198,7 @@ void left_safe(){
 
   // get 3 middle balls
   pros::Task controller (controller_update); 
-  color = "R";
+  color = "B";
   pros::Task color_sor(color_sort_S);
   chassis.pid_odom_set({{0_in, 14_in}, fwd, 100}, true);
   chassis.pid_wait();
@@ -212,22 +212,26 @@ void left_safe(){
   chassis.pid_wait();
 
   //score 3 in middle goal
+  chassis.pid_drive_set(-5.6, 60, true);
+  chassis.pid_wait();
 
-  chassis.pid_odom_set({{-9.9_in, 31.9_in}, fwd, 60}, true);
-  pros::delay(100);
-  chassis.pid_wait_quick_chain();
+  // chassis.pid_odom_set({{-9.9_in, 26_in}, fwd, 60}, true);
+  // pros::delay(100);
+  // chassis.pid_wait_quick_chain();
 
-  chassis.pid_turn_set(42, 80);
+  chassis.pid_turn_set(45, 80);
+  intake_top.move(-30);
+  intake_bottom.move(-30);
+  chassis.pid_wait();
   middle_stage.set(1);
   Little_Mech_Mac.set(1);
+
+
+  chassis.pid_drive_set(15.4, 80);
   chassis.pid_wait();
 
   intake_top.move(70);
   intake_bottom.move(70);
-
-  chassis.pid_drive_set(5.8, 80);
-  chassis.pid_wait();
-
   pros::delay(1000);
   intake_top.move(0);
   intake_bottom.move(0);
