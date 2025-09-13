@@ -49,6 +49,7 @@ void pid_tune();
 /* safe routes */
 void left_safe();
 void right_safe();
+void right_safe1();
 
 /* Color Sort tests */
 void color_sort_test();
