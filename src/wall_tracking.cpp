@@ -19,22 +19,34 @@ float wa_kP = .4;
 float wa_kI = 0;
 float wa_kD = 0.5;
 
-float d_KP = 0.12;
+float d_KP = 0.2;
 float d_KI = 0.00002;
 float d_KD = 0;
 
 void drive_wall(float distance) {
   float error;
+  float new_error;
   float prev_error;
+  float prev_output;
   float integral;
   float derivative;
+  float slue_value = 10;
 
+  float imu_error;
+  float imu_sensor_value = inertial.get_heading();
   while (distance_front.get_distance() > distance) {
     error = distance_front.get_distance() - distance;
     derivative = error - prev_error;
+    if (error == 0){
+      error = 300;
+    }
+    //imu_error = imu_sensor_value - inertial.get_heading();
+    //float turn_output = imu_error*0.1;
     float output = (error * d_KP + error * derivative * d_KD + error * integral * d_KI);
-
-    L1.move_velocity(output);
+    if (true && (output -  prev_output) > slue_value){
+      output = prev_output + slue_value;
+    }
+    L1.move_velocity(output );
     L2.move_velocity(output);
     L3.move_velocity(output);
     R1.move_velocity(output);
@@ -45,9 +57,11 @@ void drive_wall(float distance) {
     if (error < 600){
       integral += error;
     }
+    prev_output = output;
 
     pros::delay(50);
   }
+  intake_top.move_velocity(127);
   L1.brake();
   L2.brake();
   L3.brake();
@@ -64,8 +78,8 @@ void wall_alignment_R(float timeout) {
   float derivative;
 
   float currentTime = float(pros::millis());
-  float kp = 0.3;
-  float kd = 1;
+  float kp = 0.35;
+  float kd = 2;
 
   while ((pros::millis() - currentTime) < timeout) {
     error = distance_front_r.get_distance()+5 - distance_back_r.get_distance();

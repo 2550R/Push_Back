@@ -29,7 +29,7 @@ void red_bottom_quals();
 
 void new_elim_auton();
 
-void solo_winpoint_left();
+void solo_left();
 
 /* Odom TESTING Functions */
 
@@ -49,7 +49,14 @@ void pid_tune();
 /* safe routes */
 void left_safe();
 void right_safe();
+
+/* old */
 void right_safe1();
+void right_auton_new();
+
+void left_elims_quick();
+void right_elims_quick();
 
 /* Color Sort tests */
 void color_sort_test();
+void PIDvsODOM();

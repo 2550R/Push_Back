@@ -36,13 +36,15 @@ inline pros::Optical color_sort(15);
 inline pros::Motor intake_bottom(20);
 inline pros::Motor intake_top(11);
 
-inline ez::Piston trapdoor('A');
+inline ez::Piston trapdoor('G');
 inline ez::Piston middle_stage('C');
 inline ez::Piston Little_Mech_Mac('B');
-inline ez::Piston color_sort_piston('G');
+inline ez::Piston color_sort_piston('H');
 
 inline ez::Piston right_rush_mech('F');
 inline ez::Piston left_rush_mech('F');
+
+inline ez::Piston discore_mech('A');
 
 inline pros::Distance intake_distance(16);
 

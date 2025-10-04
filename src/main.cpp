@@ -28,7 +28,7 @@ ez::Drive chassis(
 );
 
 //ez::tracking_wheel horiz_tracker(9, 2, 0);
-ez::tracking_wheel vert_tracker(-12, 2, 0);
+ez::tracking_wheel vert_tracker(-9, 2, 0);
 
 bool anti_jam_w = false;
 void anti_jam(){
@@ -105,7 +105,7 @@ void color_sort_S() {
       hue_higher = 250;
     } else if (color == "R") {
       hue_lower = 0;
-      hue_higher = 40;
+      hue_higher = 10;
     } else {
       continue;
     }
@@ -136,18 +136,19 @@ void initialize() {
   pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    // {"Solo AWP Right", right_safe1 /*solo_winpoint_left*/},
+    // {"Solo AWP Right", skills /*solo_left*/},
+    {"left elims", left_safe},
+    // {"left safe auton", wall_tracking_test},
+    {"Red Top Elims", solo_left},
+    {"Testing PID VS Odom", wall_alignment_test},
     {"Skills", skills},
-
-    {"Red Top Elims", solo_winpoint_left},
-    {"left safe auton", left_elims},
-    {"Blue Top Elims", square_odom_test},
+    /*{"Blue Top Elims", square_odom_test},
     {"Blue Top Quals", blue_top_quals},
     {"Pid tune", pid_tune},
     {"Blue Bottom Elims", blue_bottom_elims},
     {"Red Bottom Elims", red_bottom_elims},
     {"Blue Bottom Quals", blue_bottom_quals},
-    {"Red Bottom Quals", red_bottom_quals},
+    {"Red Bottom Quals", red_bottom_quals},*/
     {"Pure Pursuit Wait Until\n\nGo to (24, 24) but start running an intake once the robot passes (12, 24)", odom_pure_pursuit_wait_until_example},
     {"Injected Boomerang Example", odom_boomerang_injected_pure_pursuit_example}
   });
@@ -272,9 +273,9 @@ void opcontrol() {
   pros::Task color_sort_task_running (color_sort_S);
   while (true) {
     chassis.opcontrol_arcade_standard(ez::SPLIT);
-    if (anti_jam_w){
-      continue;
-    } else if (master.get_digital(DIGITAL_L1)) {
+      
+    
+    if (master.get_digital(DIGITAL_L1)) {
 			intake_bottom.move(-127);
 			intake_top.move(-127);
 		} 
@@ -290,26 +291,24 @@ void opcontrol() {
 			intake_bottom.move(127);
 			intake_top.move(0);
 		} 
-    else if (intake_auto_reverse_enabled) {
-      if (intake_distance.get_distance() < 150){
+
+      else {
         intake_bottom.move(0);
 			  intake_top.move(0);
-      } else {
-		  	intake_bottom.move(-40);
-			  intake_top.move(-60);
       }
-		} 
-    else if (!intake_auto_reverse_enabled){
-      intake_bottom.move(0);
-			intake_top.move(0);
-    }
+      // } 
+    //   else {
+		//   	intake_bottom.move(-40);
+		// 	  intake_top.move(-60);
+    //   }
+    // }
 
 
     if (master.get_digital(DIGITAL_RIGHT)) {
-      trapdoor.set(0);
+      trapdoor.set(1);
     }
     else {
-      trapdoor.set(1);
+      trapdoor.set(0);
     }
 
     if (master.get_digital(DIGITAL_Y)) {
@@ -324,6 +323,12 @@ void opcontrol() {
     }
     else {
       Little_Mech_Mac.set(0);
+    }
+    if (master.get_digital(DIGITAL_DOWN)) {
+      discore_mech.set(0);
+    }
+    else {
+      discore_mech.set(1);
     }
 
     if (master.get_digital_new_press(DIGITAL_X)) {
