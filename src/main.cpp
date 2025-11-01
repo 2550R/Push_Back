@@ -20,15 +20,15 @@
  */
 
 ez::Drive chassis(
-  {10, -7, -4},
-  {-3, 6, 1},
+  {10, -7, -4}, //left
+  {-3, 6, 1}, //right
   2,
   3.25,
   450
 );
 
 //ez::tracking_wheel horiz_tracker(9, 2, 0);
-ez::tracking_wheel vert_tracker(-9, 2, 0);
+ez::tracking_wheel vert_tracker(-12, 2, 0);
 
 bool anti_jam_w = false;
 void anti_jam(){
@@ -136,19 +136,14 @@ void initialize() {
   pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    // {"Solo AWP Right", skills /*solo_left*/},
-    {"left elims", left_safe},
-    // {"left safe auton", wall_tracking_test},
-    {"Red Top Elims", solo_left},
+    {"Left Safe", solo_left},
+    {"Left Side Solo", left_elims_quick},
+    {"Right Safe", right_safe},
+    {"Left Elims Quick", left_elims_quick},
+    {"Skills", skills},
+    {"Right Elims Quick", right_elims_quick},
     {"Testing PID VS Odom", wall_alignment_test},
     {"Skills", skills},
-    /*{"Blue Top Elims", square_odom_test},
-    {"Blue Top Quals", blue_top_quals},
-    {"Pid tune", pid_tune},
-    {"Blue Bottom Elims", blue_bottom_elims},
-    {"Red Bottom Elims", red_bottom_elims},
-    {"Blue Bottom Quals", blue_bottom_quals},
-    {"Red Bottom Quals", red_bottom_quals},*/
     {"Pure Pursuit Wait Until\n\nGo to (24, 24) but start running an intake once the robot passes (12, 24)", odom_pure_pursuit_wait_until_example},
     {"Injected Boomerang Example", odom_boomerang_injected_pure_pursuit_example}
   });
@@ -365,7 +360,7 @@ void opcontrol() {
         intake_back = "N";
       }
 
-      master.print(0, 0, "%d/%d/%d/%s/%s         ", /*color_sort.get_hue()*/dt_temps, color_sort.get_proximity()/*top_temp*/, bottom_temp, color, intake_back);
+      master.print(0, 0, "%f/%d/%d/%s/%s         ", L1.get_temperature()/*color_sort.get_hue()dt_temps*//*(int)vertical_tracker.get_position()/100*/ , color_sort.get_proximity()/*top_temp*/, bottom_temp, color, intake_back);
     }
 
 		count++;

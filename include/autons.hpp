@@ -17,6 +17,7 @@
 void default_constants();
 void empty();
 void skills();
+void skills_without_odom();
 
 void left_elims();
 void red_top_elims();

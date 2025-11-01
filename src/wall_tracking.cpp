@@ -31,22 +31,26 @@ void drive_wall(float distance) {
   float integral;
   float derivative;
   float slue_value = 10;
-
-  float imu_error;
-  float imu_sensor_value = inertial.get_heading();
+  pros::delay(100);
+  L1.brake();
+  L2.brake();
+  L3.brake();
+  R1.brake();
+  R2.brake();
+  R3.brake();
   while (distance_front.get_distance() > distance) {
     error = distance_front.get_distance() - distance;
     derivative = error - prev_error;
-    if (error == 0){
-      error = 300;
-    }
+    // if (error == 0){
+    //   error = 300;
+    // }
     //imu_error = imu_sensor_value - inertial.get_heading();
     //float turn_output = imu_error*0.1;
     float output = (error * d_KP + error * derivative * d_KD + error * integral * d_KI);
-    if (true && (output -  prev_output) > slue_value){
+    if ((output -  prev_output) > slue_value){
       output = prev_output + slue_value;
     }
-    L1.move_velocity(output );
+    L1.move_velocity(output);
     L2.move_velocity(output);
     L3.move_velocity(output);
     R1.move_velocity(output);
