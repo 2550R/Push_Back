@@ -136,12 +136,14 @@ void initialize() {
   pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"Skills", skills},
-    {"Left Safe", solo_left},
-    {"Left Side Solo", left_elims_quick},
+    {"Skills", solo_left
+    }, 
     {"Right Safe", right_safe},
-    {"Left Elims Quick", left_elims_quick},
     {"Right Elims Quick", right_elims_quick},
+    {"left safe", left_safe},
+    {"Left Side Solo", left_elims_quick},
+    {"Left Safe", solo_left},
+    {"Left Elims Quick", left_elims_quick},
     {"Testing PID VS Odom", wall_alignment_test},
     {"Skills", skills},
     {"Pure Pursuit Wait Until\n\nGo to (24, 24) but start running an intake once the robot passes (12, 24)", odom_pure_pursuit_wait_until_example},
