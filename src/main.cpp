@@ -136,11 +136,11 @@ void initialize() {
   pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
+    {"Skills", skills},
     {"Left Safe", solo_left},
     {"Left Side Solo", left_elims_quick},
     {"Right Safe", right_safe},
     {"Left Elims Quick", left_elims_quick},
-    {"Skills", skills},
     {"Right Elims Quick", right_elims_quick},
     {"Testing PID VS Odom", wall_alignment_test},
     {"Skills", skills},

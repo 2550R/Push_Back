@@ -613,7 +613,7 @@ void solo_left() {
   chassis.pid_wait();
   */
   
-  chassis.pid_swing_set(RIGHT_SWING, 92, 110, -27, true); 
+  chassis.pid_swing_set(RIGHT_SWING, 92, 110, -24, true); 
   chassis.pid_wait();
   intake_top.brake();
 
@@ -873,7 +873,7 @@ void skills_without_odom(){
 void skills() {  
   pros::Task task1(controller_update);
   //pros::Task color_sort_task_running(color_sort_S);
-  drive_wall(510);
+  drive_wall(600);
   discore_mech.set(1);
   chassis.odom_xyt_set(0_in, 0_in, -90_deg);
   trapdoor.set(0);
@@ -913,8 +913,8 @@ void skills() {
 
   //intake_bottom.move(127);
   //intake_top.move(127);
-
-  pros::delay(1350);
+  chassis.pid_drive_set(13, 60, true);
+  pros::delay(1000);
 
   /*
   Back up from match loader
@@ -972,7 +972,7 @@ void skills() {
   // chassis.pid_odom_set({{6.7_in, 0_in}, fwd, 110}, true);
   // chassis.pid_wait();
   // screen = 1;
-  chassis.pid_drive_set(12_in, 100);
+  chassis.pid_drive_set(11_in, 100);
   chassis.pid_wait();
   /*
   Score first match loader
@@ -998,27 +998,28 @@ void skills() {
   trapdoor.set(1);
   pros::delay(100);
   trapdoor.set(1);
-  pros::delay(1700);
+  pros::delay(1900);
 
   /*
   empty second match loader
   */
 
-  chassis.pid_drive_set(31.5, 100, true);
+  chassis.pid_drive_set(45.5, 100, true);
+  chassis.pid_wait();
 
-  pros::delay(1800);
-
+  chassis.pid_drive_set(13, 60, true);
+  chassis.pid_wait();
+  pros::delay(1000);
   /*
   Score second 6 on long goal
   */
   trapdoor.set(0);
-
-  Little_Mech_Mac.set(0);
-
   pros::delay(100);
 
   chassis.pid_drive_set(-29.5, 60, true);
   chassis.pid_wait();
+
+  Little_Mech_Mac.set(0);
 
   top_intake(-15);
   bottom_intake(-15);
@@ -1122,13 +1123,13 @@ void skills() {
   //intake_top.move(127);
   //intake_bottom.move(127);
 
-  pros::delay(1300);
-
-  Little_Mech_Mac.set(0);
+  chassis.pid_drive_set(13, 60, true);
+  pros::delay(1000);
 
   chassis.pid_drive_set(-20, 60, true);
   chassis.pid_wait();
 
+  Little_Mech_Mac.set(0);
   top_intake(0);
   bottom_intake(0);
 
@@ -1179,10 +1180,12 @@ void skills() {
   
   Little_Mech_Mac.set(1);
 
-  chassis.pid_drive_set(35, 80, true);
+  chassis.pid_drive_set(45, 80, true);
+  chassis.pid_wait();
   trapdoor.set(0);
-
-  pros::delay(2200);
+  chassis.pid_drive_set(13, 60, true);
+  chassis.pid_wait();
+  pros::delay(1000);
 
   /*
   Score second 6 on long goal
