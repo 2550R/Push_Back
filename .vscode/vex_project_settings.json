@@ -1,0 +1,18 @@
+{
+	"project": {
+		"name": "Berkeley",
+		"slot": 1,
+		"description": "V5 C++ Project",
+		"platform": "V5",
+		"creationDate": "Thu, 06 Nov 2025 00:32:36 GMT",
+		"language": "cpp",
+		"sdkVersion": "V5_20240802_15_00_00",
+		"cpp": {
+			"includePath": []
+		}
+	},
+	"extension": {
+		"version": "0.7.2025041600",
+		"json": 1
+	}
+}
