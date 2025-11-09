@@ -2,46 +2,55 @@
 #include "motor-control.h"
 #include "../custom/include/autonomous.h"
 
-// Modify autonomous, driver, or pre-auton code below
-bool anti_jam_w = false;
-bool anti_jam_wait = false;
+using namespace vex;
 
-void anti_jam(){
+bool anti_jam_running = false;
+bool anti_jam_wait = false;
+int anti_jam_spin_time = 200; // msec
+
+void reverse_shuffle_motor(motor device) {
+	anti_jam_running = true;
+
+	device.spin(fwd, 12, voltageUnits::volt);
+	wait(anti_jam_spin_time, msec);
+
+	device.spin(reverse, 12, voltageUnits::volt);
+	wait(anti_jam_spin_time, msec);
+
+	anti_jam_running = false;
+}
+
+void anti_jam() {
   while(true){
     float currentTime = Brain.timer(msec);
-    double current_top1 = top_stage1.torque();
-    double current_top2 = top_stage2.torque();
-    double current_bottom = low_stage.torque();
-    double current_threshold = 0.4;
-    double spin_time = 200;
-    if (current_top1 > current_threshold && !anti_jam_wait){
-      anti_jam_w = true;
-      top_stage1.spin(fwd,12,voltageUnits::volt);
-      wait(200,msec);
-      top_stage1.spin(reverse,12,voltageUnits::volt);
-      wait(200,msec);
-      anti_jam_w = false;
-    }
-    if (current_top2 > current_threshold && !anti_jam_wait){
-      anti_jam_w = true;
-      top_stage2.spin(fwd,12,voltageUnits::volt);
-      wait(200,msec);
-      top_stage2.spin(reverse,12,voltageUnits::volt);
-      wait(200,msec);
-      anti_jam_w = false;
-    }
-    if (current_bottom > 0.1 && !anti_jam_wait){
-      anti_jam_w = true;
-      low_stage.spin(fwd,12,voltageUnits::volt);
-      wait(200,msec);
-      low_stage.spin(reverse,12,voltageUnits::volt);
-      wait(200,msec);
-      anti_jam_w = false;
-    }
-    if (anti_jam_wait){
-      wait(200,msec);
+
+    double top_stage1_torque = top_stage1.torque();
+    double top_stage2_torque = top_stage2.torque();
+    double low_stage_torque = low_stage.torque();
+
+    double top_stage1_max_torque = 0.4;
+		double top_stage2_max_torque = 0.4;
+		double low_stage_max_torque = 0.25;
+
+    if (anti_jam_wait) {
+      wait(spin_time, msec);
       anti_jam_wait = false;
+
+			continue;
     }
+
+		if (top_stage1_torque > top_stage1_max_torque){
+			reverse_shuffle_motor(top_stage1);
+    }
+
+    if (top_stage2_torque > top_stage2_max_torque){
+			reverse_shuffle_motor(top_stage2);
+    }
+
+    if (low_stage_torque > low_stage_max_torque){
+			reverse_shuffle_motor(low_stage);
+    }
+
   }
 }
 
@@ -107,44 +116,49 @@ void runDriver() {
     button_down_arrow = controller_1.ButtonDown.pressing();
     button_left_arrow = controller_1.ButtonLeft.pressing();
     button_right_arrow = controller_1.ButtonRight.pressing();
-    if ((l1 || l2 || r1 || r2) && was_pressed){
+
+    if ((l1 || l2 || r1 || r2) && was_pressed) {
       anti_jam_wait = true;
       was_pressed = false;
     }
-    if (!(l1 && l2 && r1 && r2)){
+    if (!(l1 && l2 && r1 && r2)) {
       was_pressed = true;
     }
-    if(l2 && !anti_jam_w){
+
+    if(l2 && !anti_jam_running){
       top_stage1.spin(fwd,12,voltageUnits::volt);
-      if (control_to_controller)(top_stage2.spin(fwd,12,voltageUnits::volt));
+      if (control_to_controller) top_stage2.spin(fwd,12,voltageUnits::volt);
       low_stage.spin(fwd,12,voltageUnits::volt);
-    }else if(l1 && !anti_jam_w){
+    } else if(l1 && !anti_jam_running){
       top_stage1.spin(reverse,12,voltageUnits::volt);
-      if (control_to_controller)(top_stage2.spin(reverse,12,voltageUnits::volt));
+      if (control_to_controller) top_stage2.spin(reverse,12,voltageUnits::volt);
       low_stage.spin(reverse,12,voltageUnits::volt);
-    }else if (r2 && !anti_jam_w){
+    } else if (r2 && !anti_jam_running){
       top_stage1.spin(fwd,12,voltageUnits::volt);
-      if (control_to_controller)(top_stage2.spin(reverse,12,voltageUnits::volt));
+      if (control_to_controller) top_stage2.spin(reverse,12,voltageUnits::volt);
       low_stage.spin(fwd,12,voltageUnits::volt);
-    }else if(control_to_controller && !anti_jam_w){
+    } else if (control_to_controller && !anti_jam_running){
       top_stage1.stop();
-      if (control_to_controller)(top_stage2.stop());
+      if (control_to_controller) top_stage2.stop();
       low_stage.stop();
     }
+
     controller_1.Screen.setCursor(1, 1);
     controller_1.Screen.print("%c",color_sorted);
-    if (controller_1.ButtonX.pressing() && was_pressed){
+
+    if (controller_1.ButtonX.pressing() && was_pressed) {
       Digital_X ++;
       was_pressed_x = false;
     }
-    if (!controller_1.ButtonX.pressing()){
+    if (!controller_1.ButtonX.pressing()) {
       was_pressed_x = true;
     }
-    if (Digital_X == 4){Digital_X = 1;}
-    if (Digital_X == 1){color_sorted = 'B';}
-    if (Digital_X == 2){color_sorted = 'x';}
-    if (Digital_X == 3){color_sorted = 'R';}
-    // default tank drive or replace it with your preferred driver code here: 
+
+    if (Digital_X == 4) Digital_X = 1;
+    if (Digital_X == 1) color_sorted = 'B';
+    if (Digital_X == 2) color_sorted = 'x';
+    if (Digital_X == 3) color_sorted = 'R';
+
     driveChassis(ch3 * 0.12 + ch1 * 0.12 , ch3 * 0.12 - ch1 * 0.12);
 
     wait(10, msec); 
