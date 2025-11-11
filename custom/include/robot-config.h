@@ -19,6 +19,7 @@ extern motor top_stage2;
 extern motor low_stage;
 extern inertial inertial_sensor;
 extern optical top_colorsort;
+extern digital_out matchloader;
 extern distance example_distance_sensor;
 extern digital_out example_piston;
 extern rotation horizontal_tracker;

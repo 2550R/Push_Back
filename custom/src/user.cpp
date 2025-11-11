@@ -7,7 +7,7 @@ using namespace vex;
 bool anti_jam_running = false;
 bool anti_jam_wait = false;
 int anti_jam_spin_time = 200; // msec
-
+bool anti_jam_work = true;
 void reverse_shuffle_motor(motor device) {
 	anti_jam_running = true;
 
@@ -21,7 +21,7 @@ void reverse_shuffle_motor(motor device) {
 }
 
 void anti_jam() {
-  while(true){
+  while(true && anti_jam_work){
     float currentTime = Brain.timer(msec);
 
     double top_stage1_torque = top_stage1.torque();
@@ -30,10 +30,10 @@ void anti_jam() {
 
     double top_stage1_max_torque = 0.4;
 		double top_stage2_max_torque = 0.4;
-		double low_stage_max_torque = 0.25;
+		double low_stage_max_torque = 0.4;
 
     if (anti_jam_wait) {
-      wait(spin_time, msec);
+      wait(anti_jam_spin_time, msec);
       anti_jam_wait = false;
 
 			continue;
@@ -90,6 +90,7 @@ char color_sorted = 'x';
 int Digital_X = 0;
 bool was_pressed = true;
 bool was_pressed_x = true;
+bool was_pressed_a = true;
 bool anti_wait = false;
 bool control_to_controller = true;
 void runDriver() {
@@ -117,6 +118,12 @@ void runDriver() {
     button_left_arrow = controller_1.ButtonLeft.pressing();
     button_right_arrow = controller_1.ButtonRight.pressing();
 
+
+    //Mach loader controll
+    if (button_b){matchloader.set(false);}
+    else{matchloader.set(true);}
+
+    //Anti jam stops if buttons are pressed
     if ((l1 || l2 || r1 || r2) && was_pressed) {
       anti_jam_wait = true;
       was_pressed = false;
@@ -125,6 +132,7 @@ void runDriver() {
       was_pressed = true;
     }
 
+    //Intake controll
     if(l2 && !anti_jam_running){
       top_stage1.spin(fwd,12,voltageUnits::volt);
       if (control_to_controller) top_stage2.spin(fwd,12,voltageUnits::volt);
@@ -145,13 +153,26 @@ void runDriver() {
 
     controller_1.Screen.setCursor(1, 1);
     controller_1.Screen.print("%c",color_sorted);
+    controller_1.Screen.setCursor(1, 4);
+    controller_1.Screen.print("%d", (int)anti_jam_work);
 
-    if (controller_1.ButtonX.pressing() && was_pressed) {
+    if (controller_1.ButtonX.pressing() && was_pressed_x) {
       Digital_X ++;
       was_pressed_x = false;
     }
     if (!controller_1.ButtonX.pressing()) {
       was_pressed_x = true;
+    }
+
+    if (controller_1.ButtonA.pressing() && was_pressed_a) {
+      if (anti_jam_work == false){anti_jam_work = true;}
+      else {anti_jam_work = false;}
+
+
+      was_pressed_a = false;
+    }
+    if (!controller_1.ButtonA.pressing()) {
+      was_pressed_a = true;
     }
 
     if (Digital_X == 4) Digital_X = 1;

@@ -6,7 +6,7 @@ extern bool is_turning;
 
 extern double xpos, ypos;
 extern double correct_angle;
-
+extern double IMU_scale;
 // --- Function Declarations (lowerCamelCase) ---
 void driveChassis(double left_power, double right_power);
 
@@ -17,6 +17,7 @@ void turnToAngle(double turn_angle, double time_limit_msec, bool exit = true, do
 void driveTo(double distance_in, double time_limit_msec, bool exit = true, double max_output = 12);
 void curveCircle(double result_angle_deg, double center_radius, double time_limit_msec, bool exit = true, double max_output = 12);
 void swing(double swing_angle, double drive_direction, double time_limit_msec, bool exit = true, double max_output = 12);
+
 
 void stopChassis(vex::brakeType type = vex::brake);
 void resetChassis();

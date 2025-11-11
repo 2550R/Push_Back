@@ -41,10 +41,10 @@ optical top_colorsort = optical(PORT9);
 motor top_stage1 = motor(PORT17, ratio6_1, true);
 motor top_stage2 = motor(PORT20, ratio6_1, true);
 motor low_stage = motor(PORT7, ratio6_1, false);
-digital_out matchloader = digital_out(Brain.ThreeWirePort.C);
-digital_out middleGoal = digital_out(Brain.ThreeWirePort.B);
-digital_out leftWing = digital_out(Brain.ThreeWirePort.A);
-digital_out middleGoalHood = digital_out(Brain.ThreeWirePort.B);
+digital_out matchloader = digital_out(Brain.ThreeWirePort.A);
+digital_out middleGoal = digital_out(Brain.ThreeWirePort.G);
+digital_out leftWing = digital_out(Brain.ThreeWirePort.G);
+digital_out middleGoalHood = digital_out(Brain.ThreeWirePort.G);
 distance backDistanceSensor = distance(PORT1);
 distance frontDistanceSensor = distance(PORT1);
 distance leftDistanceSensor = distance(PORT1);
@@ -64,8 +64,8 @@ double wheel_distance_in = (36.0 / 48.0) * 3.17 * M_PI;
 // distance_* : Linear PID for straight driving
 // turn_*     : PID for turning in place
 // heading_correction_* : PID for heading correction during linear movement
-double distance_kp = 0.4, distance_ki = 0, distance_kd = 0;
-double turn_kp = 0.4, turn_ki = 0, turn_kd = 2.9;
+double distance_kp = 1.9, distance_ki = 0, distance_kd = 200;
+double turn_kp = .3, turn_ki = 0, turn_kd = 3;
 double heading_correction_kp = 1.1, heading_correction_ki = 0, heading_correction_kd = 4;
 
 // Enable or disable the use of tracking wheels
@@ -95,9 +95,9 @@ double min_output = 6; // Minimum output voltage to motors while chaining moveme
 
 // Maximum allowed change in voltage output per 10 msec during movement
 double max_slew_accel_fwd = 0.3;
-double max_slew_decel_fwd = 0.1;
-double max_slew_accel_rev = 24;
-double max_slew_decel_rev = 2;
+double max_slew_decel_fwd = 0.115;
+double max_slew_accel_rev = 0.3;
+double max_slew_decel_rev = 0.1;
 
 // Prevents too much slipping during boomerang movements
 // Decrease if there is too much drifting and inconsistency during boomerang

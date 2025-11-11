@@ -11,10 +11,13 @@
 // IMPORTANT: Remember to add respective function declarations to custom/include/autonomous.h
 // Call these functions from custom/include/user.cpp
 // Format: returnType functionName() { code }
+
 void pid_tune_auton_drive(){
-  moveToPoint(0, 24, 1, 2000, true);
-  moveToPoint(0, 12, -1, 2000, true);
-  moveToPoint(0, 0, -1, 2000, true);
+  IMU_scale = 0.98;
+  // moveToPoint(0, 48, 1, 2000, true);
+  turnToAngle(90, 2000, true, 12);
+  // moveToPoint(0, 12, -1, 2000, true);
+  // moveToPoint(0, 0, -1, 2000, true); 
   //boomerang(24,24,1,45,0.1,2000,true,12,false);
   //moveToPoint(0, 12, 1, 2000, true);
   // moveToPoint(12, 12, 1, 2000, true);
