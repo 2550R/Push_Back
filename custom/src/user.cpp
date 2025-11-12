@@ -7,7 +7,8 @@ using namespace vex;
 bool anti_jam_running = false;
 bool anti_jam_wait = false;
 int anti_jam_spin_time = 200; // msec
-bool anti_jam_work = true;
+bool anti_jam_enabled = true;
+
 void reverse_shuffle_motor(motor device) {
 	anti_jam_running = true;
 
@@ -21,7 +22,7 @@ void reverse_shuffle_motor(motor device) {
 }
 
 void anti_jam() {
-  while(true && anti_jam_work){
+  while(anti_jam_enabled) {
     float currentTime = Brain.timer(msec);
 
     double top_stage1_torque = top_stage1.torque();
@@ -88,11 +89,14 @@ int chassis_flag = 0;
 
 char color_sorted = 'x';
 int Digital_X = 0;
+
 bool was_pressed = true;
 bool was_pressed_x = true;
 bool was_pressed_a = true;
+
 bool anti_wait = false;
 bool control_to_controller = true;
+
 void runDriver() {
   thread anti_jam_task(anti_jam);
   stopChassis(coast);
@@ -120,8 +124,8 @@ void runDriver() {
 
 
     //Mach loader controll
-    if (button_b){matchloader.set(false);}
-    else{matchloader.set(true);}
+    if (button_b) matchloader.set(false);
+    else matchloader.set(true);
 
     //Anti jam stops if buttons are pressed
     if ((l1 || l2 || r1 || r2) && was_pressed) {
@@ -133,19 +137,19 @@ void runDriver() {
     }
 
     //Intake controll
-    if(l2 && !anti_jam_running){
-      top_stage1.spin(fwd,12,voltageUnits::volt);
-      if (control_to_controller) top_stage2.spin(fwd,12,voltageUnits::volt);
-      low_stage.spin(fwd,12,voltageUnits::volt);
-    } else if(l1 && !anti_jam_running){
-      top_stage1.spin(reverse,12,voltageUnits::volt);
-      if (control_to_controller) top_stage2.spin(reverse,12,voltageUnits::volt);
-      low_stage.spin(reverse,12,voltageUnits::volt);
-    } else if (r2 && !anti_jam_running){
-      top_stage1.spin(fwd,12,voltageUnits::volt);
-      if (control_to_controller) top_stage2.spin(reverse,12,voltageUnits::volt);
-      low_stage.spin(fwd,12,voltageUnits::volt);
-    } else if (control_to_controller && !anti_jam_running){
+    if (l2 && !anti_jam_running) {
+      top_stage1.spin(fwd, 12, voltageUnits::volt);
+      if (control_to_controller) top_stage2.spin(fwd, 12, voltageUnits::volt);
+      low_stage.spin(fwd, 12, voltageUnits::volt);
+    } else if (l1 && !anti_jam_running) {
+      top_stage1.spin(reverse, 12, voltageUnits::volt);
+      if (control_to_controller) top_stage2.spin(reverse, 12, voltageUnits::volt);
+      low_stage.spin(reverse, 12, voltageUnits::volt);
+    } else if (r2 && !anti_jam_running) {
+      top_stage1.spin(fwd, 12, voltageUnits::volt);
+      if (control_to_controller) top_stage2.spin(reverse, 12, voltageUnits::volt);
+      low_stage.spin(fwd, 12, voltageUnits::volt);
+    } else if (control_to_controller && !anti_jam_running) {
       top_stage1.stop();
       if (control_to_controller) top_stage2.stop();
       low_stage.stop();
@@ -154,7 +158,7 @@ void runDriver() {
     controller_1.Screen.setCursor(1, 1);
     controller_1.Screen.print("%c",color_sorted);
     controller_1.Screen.setCursor(1, 4);
-    controller_1.Screen.print("%d", (int)anti_jam_work);
+    controller_1.Screen.print("%d", (int)anti_jam_enabled);
 
     if (controller_1.ButtonX.pressing() && was_pressed_x) {
       Digital_X ++;
@@ -165,10 +169,7 @@ void runDriver() {
     }
 
     if (controller_1.ButtonA.pressing() && was_pressed_a) {
-      if (anti_jam_work == false){anti_jam_work = true;}
-      else {anti_jam_work = false;}
-
-
+			anti_jam_work = !anti_jam_work;
       was_pressed_a = false;
     }
     if (!controller_1.ButtonA.pressing()) {
@@ -187,7 +188,7 @@ void runDriver() {
 }
 
 void runPreAutonomous() {
-    // Initializing Robot Configuration. DO NOT REMOVE!
+  // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
   
   // Calibrate inertial sensor
@@ -203,13 +204,5 @@ void runPreAutonomous() {
   
   // odom tracking
   resetChassis();
-  if(using_horizontal_tracker && using_vertical_tracker) {
-    thread odom = thread(trackXYOdomWheel);
-  } else if (using_horizontal_tracker) {
-    thread odom = thread(trackXOdomWheel);
-  } else if (using_vertical_tracker) {
-    thread odom = thread(trackYOdomWheel);
-  } else {
-    thread odom = thread(trackNoOdomWheel);
-  }
+  thread odom = thread(trackNoOdomWheel);
 }
