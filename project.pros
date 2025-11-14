@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "BeSt PrOG evEr",
+    "project_name": "Best Pog",
     "target": "v5",
     "templates": {
       "EZ-Template": {
@@ -425,7 +425,7 @@
     },
     "upload_options": {
       "description": "roboticsisez.com",
-      "icon": "X",
+      "icon": "alien",
       "slot": 1
     },
     "use_early_access": false

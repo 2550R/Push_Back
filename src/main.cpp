@@ -20,15 +20,15 @@
  */
 
 ez::Drive chassis(
-  {10, -7, -4}, //left
-  {-3, 6, 1}, //right
-  2,
+  {-11, -15, -16}, //left
+  {5, 8, 21}, //right
+  1,
   3.25,
   450
 );
 
 //ez::tracking_wheel horiz_tracker(9, 2, 0);
-ez::tracking_wheel vert_tracker(-12, 2, 0);
+// ez::tracking_wheel vert_tracker(-12, 2, 0);
 
 bool anti_jam_w = false;
 void anti_jam(){
@@ -126,7 +126,7 @@ void initialize() {
   color_sort.set_led_pwm(100);
   pros::delay(500);  // Stop the user from doing anything while legacy ports configure
 	//chassis.odom_tracker_back_set(&horiz_tracker);
-  chassis.odom_tracker_right_set(&vert_tracker);
+  // chassis.odom_tracker_right_set(&vert_tracker);
 
   chassis.opcontrol_curve_buttons_toggle(false);
   chassis.opcontrol_drive_activebrake_set(0.0);
@@ -136,10 +136,10 @@ void initialize() {
   pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"Skills", skills},
-    {"Left Safe", solo_left},
+    {"Left Safe", skills},
+    {"Right Safe", skills_before_changing_the_wall},
+    {"Skills", left_safe},
     {"Left Side Solo", left_elims_quick},
-    {"Right Safe", right_safe},
     {"Left Elims Quick", left_elims_quick},
     {"Right Elims Quick", right_elims_quick},
     {"Testing PID VS Odom", wall_alignment_test},
@@ -256,16 +256,17 @@ double avg_motor_temps() {
   double mean = sum / 6;
 
   return mean;
-}
+} 
 
 
 int Digital_X;
 void opcontrol() {
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
 	int count = 0;
-  bool intake_auto_reverse_enabled = true;
-  pros::Task anti_jam_T(anti_jam);
-  pros::Task color_sort_task_running (color_sort_S);
+  bool intake_auto_reverse_enabled = false;
+  // pros::Task anti_jam_T(anti_jam);
+  // pros::Task color_sort_task_running (color_sort_S);
+  color = "x";
   while (true) {
     chassis.opcontrol_arcade_standard(ez::SPLIT);
       
@@ -273,23 +274,32 @@ void opcontrol() {
     if (master.get_digital(DIGITAL_L1)) {
 			intake_bottom.move(-127);
 			intake_top.move(-127);
+      intake_top_score.move(-127);
+
 		} 
     else if (master.get_digital(DIGITAL_L2)) {
 			intake_bottom.move(127);
 			intake_top.move(127);
+      intake_top_score.move(127);
+
 		} 
     else if (master.get_digital(DIGITAL_R1)) {
-			intake_bottom.move(-60);
-			intake_top.move(-127);
+			intake_bottom.move(127);
+			intake_top.move(127);
+      intake_top_score.move(-75);
 		} 
     else if (master.get_digital(DIGITAL_R2)) {
-			intake_bottom.move(127);
-			intake_top.move(0);
+			intake_bottom.move(-127);
+			intake_top.move(-127);
+      intake_top_score.move(-127);
+      intake_piston.set(1);
 		} 
 
       else {
         intake_bottom.move(0);
 			  intake_top.move(0);
+        intake_top_score.move(0);
+        intake_piston.set(0);
       }
       // } 
     //   else {
@@ -307,10 +317,10 @@ void opcontrol() {
     }
 
     if (master.get_digital(DIGITAL_Y)) {
-      middle_stage.set(1);
+      middle_stage.set(0);
     }
     else {
-      middle_stage.set(0);
+      middle_stage.set(1);
     }
 
     if (master.get_digital(DIGITAL_B)) {
@@ -360,7 +370,7 @@ void opcontrol() {
         intake_back = "N";
       }
 
-      master.print(0, 0, "%f/%d/%d/%s/%s         ", L1.get_temperature()/*color_sort.get_hue()dt_temps*//*(int)vertical_tracker.get_position()/100*/ , color_sort.get_proximity()/*top_temp*/, bottom_temp, color, intake_back);
+      master.print(0, 0, "%d/%d/%d/%s/%s         ", /*L1.get_temperature*//*color_sort.get_hue()*//*dt_temps*/(int)vertical_tracker.get_position()/100 , color_sort.get_proximity()/*top_temp*/, bottom_temp, color, intake_back);
     }
 
 		count++;
