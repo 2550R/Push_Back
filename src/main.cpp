@@ -31,8 +31,10 @@ ez::Drive chassis(
 // ez::tracking_wheel vert_tracker(-12, 2, 0);
 
 bool anti_jam_w = false;
+int anti_jam_is_working = 0;
+int color_count = 0;
 void anti_jam(){
-  while(true){
+  while(true && anti_jam_is_working==1){
     float currentTime = float(pros::millis());
     double current_top = intake_top.get_current_draw();
     double velocity_top = intake_top.get_actual_velocity();
@@ -91,10 +93,11 @@ void anti_jam(){
     pros::delay(ez::util::DELAY_TIME);
   }
 }
+
 std::string color = "x"; // against R or B; press UP+X to change; x for disabled
-int color_count = 0;
-void color_sort_S() {
-  bool blue_color_sort = true;
+bool control_to_controller = true;
+
+void color_sort_top() {
   color_sort.set_integration_time(3);
   while (true) {
     int hue_lower;
@@ -106,6 +109,36 @@ void color_sort_S() {
     } else if (color == "R") {
       hue_lower = 0;
       hue_higher = 10;
+    } else {
+      continue;
+    }
+
+    bool in_proximity = color_sort.get_proximity() > 220;
+
+    if (in_proximity && (hue_lower < color_sort.get_hue() && color_sort.get_hue() < hue_higher)) {
+      control_to_controller = false;
+      intake_top_score.move(-127);
+      intake_top.move(30);
+      pros::delay(300);
+      control_to_controller = true;
+
+    }
+  }
+}
+
+
+void color_sort_bottom() {
+  color_sort.set_integration_time(3);
+  while (true) {
+    int hue_lower;
+    int hue_higher;
+    color_sort.set_led_pwm(100);
+    if (color == "B") {
+      hue_lower = 180;
+      hue_higher = 260;
+    } else if (color == "R") {
+      hue_lower = 0;
+      hue_higher = 30;
     } else {
       continue;
     }
@@ -122,6 +155,7 @@ void color_sort_S() {
 }
 
 void initialize() {
+  discore_mech.set(1);
   ez::ez_template_print();
   color_sort.set_led_pwm(100);
   pros::delay(500);  // Stop the user from doing anything while legacy ports configure
@@ -136,7 +170,7 @@ void initialize() {
   pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"Left Safe", skills},
+    {"solo_right", skills},
     {"Right Safe", skills_before_changing_the_wall},
     {"Skills", left_safe},
     {"Left Side Solo", left_elims_quick},
@@ -179,7 +213,10 @@ void odom_reset(){
 
 void disabled() { }
 
-void competition_initialize() { }
+void competition_initialize() {
+
+  discore_mech.set(1);
+ }
 
 void autonomous() {
   chassis.pid_targets_reset();
@@ -265,7 +302,7 @@ void opcontrol() {
 	int count = 0;
   bool intake_auto_reverse_enabled = false;
   // pros::Task anti_jam_T(anti_jam);
-  // pros::Task color_sort_task_running (color_sort_S);
+  pros::Task color_sort_task_running (color_sort_top);
   color = "x";
   while (true) {
     chassis.opcontrol_arcade_standard(ez::SPLIT);
@@ -279,8 +316,8 @@ void opcontrol() {
 		} 
     else if (master.get_digital(DIGITAL_L2)) {
 			intake_bottom.move(127);
-			intake_top.move(127);
-      intake_top_score.move(127);
+      if  (control_to_controller)(intake_top.move(127));
+      if  (control_to_controller)(intake_top_score.move(127));
 
 		} 
     else if (master.get_digital(DIGITAL_R1)) {
@@ -295,13 +332,13 @@ void opcontrol() {
       intake_piston.set(1);
 		} 
 
-      else {
-        intake_bottom.move(0);
-			  intake_top.move(0);
-        intake_top_score.move(0);
-        intake_piston.set(0);
-      }
-      // } 
+    else if (control_to_controller){
+      intake_bottom.move(0);
+		  intake_top.move(0);
+      intake_top_score.move(0);
+      intake_piston.set(0);
+    }
+    // } 
     //   else {
 		//   	intake_bottom.move(-40);
 		// 	  intake_top.move(-60);
@@ -310,10 +347,10 @@ void opcontrol() {
 
 
     if (master.get_digital(DIGITAL_RIGHT)) {
-      trapdoor.set(1);
+      trapdoor.set(0);
     }
     else {
-      trapdoor.set(0);
+      trapdoor.set(1);
     }
 
     if (master.get_digital(DIGITAL_Y)) {
@@ -329,11 +366,12 @@ void opcontrol() {
     else {
       Little_Mech_Mac.set(0);
     }
+
     if (master.get_digital(DIGITAL_DOWN)) {
-      discore_mech.set(0);
+      discore_mech.set(1);
     }
     else {
-      discore_mech.set(1);
+      discore_mech.set(0);
     }
 
     if (master.get_digital_new_press(DIGITAL_X)) {
@@ -342,6 +380,10 @@ void opcontrol() {
       if (Digital_X == 1){color = "B";}
       if (Digital_X == 2){color = "x";}
       if (Digital_X == 3){color = "R";}
+    }
+    if (master.get_digital_new_press(DIGITAL_UP)){
+      if (anti_jam_is_working == 1){anti_jam_is_working = 0;}
+      else {anti_jam_is_working = 1;}
     }
     
     if (
@@ -370,7 +412,7 @@ void opcontrol() {
         intake_back = "N";
       }
 
-      master.print(0, 0, "%d/%d/%d/%s/%s         ", /*L1.get_temperature*//*color_sort.get_hue()*//*dt_temps*/(int)vertical_tracker.get_position()/100 , color_sort.get_proximity()/*top_temp*/, bottom_temp, color, intake_back);
+      master.print(0, 0, "%d/%d/%d/%s            ", /*L1.get_temperature(int)color_sort.get_hue()*//*anti_jam_is_working(int)vertical_tracker.get_position()/100 */dt_temps , color_sort.get_proximity()/*top_temp*/, bottom_temp, color, intake_back);
     }
 
 		count++;

@@ -24,6 +24,8 @@ void left_elims();
 void red_top_elims();
 void blue_top_quals();
 
+void intake_test();
+
 void blue_bottom_elims();
 void red_bottom_elims();
 void blue_bottom_quals();

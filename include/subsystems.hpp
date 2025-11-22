@@ -29,9 +29,9 @@ inline pros::Distance distance_back_l(13);
 inline pros::Distance distance_front_l(19);
 inline pros::Distance distance_back_r(17);
 inline pros::Distance distance_front_r(18);
-inline pros::Distance distance_front(14);
+inline pros::Distance distance_front(13);
 
-inline pros::Optical color_sort(15);
+inline pros::Optical color_sort(9);
 
 inline pros::Motor intake_bottom(7);
 inline pros::Motor intake_top(-17);
@@ -46,7 +46,7 @@ inline ez::Piston intake_piston('H');
 inline ez::Piston right_rush_mech('F');
 inline ez::Piston left_rush_mech('B');
 
-inline ez::Piston discore_mech('A');
+inline ez::Piston discore_mech('B');
 
 inline pros::Distance intake_distance(16);
 
