@@ -37,6 +37,7 @@ extern std::string color;
 void autonomous(void);
 //void color_sort_task(void);
 void color_sort_S(void);
+void color_sort_bottom(void);
 void initialize(void);
 void disabled(void);
 void competition_initialize(void);

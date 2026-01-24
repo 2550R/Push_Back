@@ -15,39 +15,42 @@ inline pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 extern Drive chassis;
 
-inline pros::Motor L1(-11);
-inline pros::Motor L2(-15);
-inline pros::Motor L3(-16);
+inline pros::Motor L1(-6);
+inline pros::Motor L2(-5);
+inline pros::Motor L3(-8);
 
-inline pros::Motor R1(5);
-inline pros::Motor R2(8);
-inline pros::Motor R3(21);
+inline pros::Motor R1(12);
+inline pros::Motor R2(19);
+inline pros::Motor R3(20);
 
-inline pros::Imu inertial(1);
+inline pros::Imu inertial(11);
 
-inline pros::Distance distance_back_l(13);
-inline pros::Distance distance_front_l(19);
-inline pros::Distance distance_back_r(17);
-inline pros::Distance distance_front_r(18);
-inline pros::Distance distance_front(13);
+inline pros::Distance distance_back_l(13); // removed sensor
+inline pros::Distance distance_front_l(9);
+inline pros::Distance distance_back_r(17); // removed sensor
+inline pros::Distance distance_front_r(13); // removed sensor
+inline pros::Distance distance_front(13); // removed sensor
 
-inline pros::Optical color_sort(9);
+inline pros::Optical color_sort(16);
 
-inline pros::Motor intake_bottom(7);
-inline pros::Motor intake_top(-17);
-inline pros::Motor intake_top_score(-20);
+inline pros::Motor intake_bottom(21);
+inline pros::Motor intake_top(-2);
+inline pros::Motor intake_top_score(-10);
+inline pros::Motor vertical_tracker('Z');
 
-inline ez::Piston trapdoor('A');
-inline ez::Piston middle_stage('C');
-inline ez::Piston Little_Mech_Mac('C');
-inline ez::Piston color_sort_piston('D');
-inline ez::Piston intake_piston('H');
+inline ez::Piston trapdoor('B');
+inline ez::Piston middle_stage('C'); // removed mech
+inline ez::Piston Little_Mech_Mac('H'); 
+inline ez::Piston color_sort_piston('D'); // removed mech
+inline ez::Piston intake_piston('C');
 
-inline ez::Piston right_rush_mech('F');
-inline ez::Piston left_rush_mech('B');
+inline ez::Piston mid_descore('G');
 
-inline ez::Piston discore_mech('B');
+inline ez::Piston right_rush_mech('F'); // removed mech
+inline ez::Piston left_rush_mech('B'); // removed mech
+
+inline ez::Piston discore_mech('A');
 
 inline pros::Distance intake_distance(16);
 
-inline pros::Rotation vertical_tracker(12);
+//inline pros::Rotation vertical_tracker(12);

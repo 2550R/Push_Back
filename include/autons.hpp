@@ -24,6 +24,8 @@ void left_elims();
 void red_top_elims();
 void blue_top_quals();
 
+void left_elims_7ball();
+
 void intake_test();
 
 void blue_bottom_elims();
@@ -34,6 +36,8 @@ void red_bottom_quals();
 void new_elim_auton();
 
 void solo_left();
+
+void pid_test();
 
 /* Odom TESTING Functions */
 
@@ -51,7 +55,7 @@ void wall_alignment_test();
 void pid_tune();
 
 /* safe routes */
-void left_safe();
+void left_middle_top();
 void right_safe();
 
 /* old */

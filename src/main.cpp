@@ -20,15 +20,15 @@
  */
 
 ez::Drive chassis(
-  {-11, -15, -16}, //left
-  {5, 8, 21}, //right
-  1,
+  {-6, -5, -8}, //left
+  {12, 19, 20}, //right
+  11,
   3.25,
   450
 );
 
-//ez::tracking_wheel horiz_tracker(9, 2, 0);
-// ez::tracking_wheel vert_tracker(-12, 2, 0);
+// NOTE 1/20
+// DISTANCE ON PORT 9
 
 bool anti_jam_w = false;
 int anti_jam_is_working = 0;
@@ -98,14 +98,14 @@ std::string color = "x"; // against R or B; press UP+X to change; x for disabled
 bool control_to_controller = true;
 
 void color_sort_top() {
-  color_sort.set_integration_time(3);
+  color_sort.set_integration_time(10);
   while (true) {
     int hue_lower;
     int hue_higher;
     color_sort.set_led_pwm(100);
     if (color == "B") {
       hue_lower = 210;
-      hue_higher = 250;
+      hue_higher = 240;
     } else if (color == "R") {
       hue_lower = 0;
       hue_higher = 10;
@@ -155,7 +155,15 @@ void color_sort_bottom() {
 }
 
 void initialize() {
+
+  // Set the color of the balls you want to throw out here
+
+  color = "R";
+
+  
+
   discore_mech.set(1);
+  // intake_piston.set(1);
   ez::ez_template_print();
   color_sort.set_led_pwm(100);
   pros::delay(500);  // Stop the user from doing anything while legacy ports configure
@@ -170,9 +178,10 @@ void initialize() {
   pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"solo_right", skills},
-    {"Right Safe", skills_before_changing_the_wall},
-    {"Skills", left_safe},
+    {"3 4 push", left_middle_top},
+    {"left side 7 ball", left_elims_7ball},
+    {"left side 4 push", left_elims_quick},
+    {"Skills", left_elims_quick},
     {"Left Side Solo", left_elims_quick},
     {"Left Elims Quick", left_elims_quick},
     {"Right Elims Quick", right_elims_quick},
@@ -183,8 +192,13 @@ void initialize() {
   });
   
   chassis.initialize();
+  bool broken = false;
+  double initialise = chassis.drive_imu_get();
+  pros::delay(500);
+  if(initialise > chassis.drive_imu_get())(broken = true);
   ez::as::initialize();
   master.rumble(chassis.drive_imu_calibrated() ? "." : "-");
+  master.rumble(broken ? "." : "-");
 }
 
 void controller_update_main() {
@@ -215,7 +229,8 @@ void disabled() { }
 
 void competition_initialize() {
 
-  discore_mech.set(1);
+  // discore_mech.set(1);
+  // intake_piston.set(1);
  }
 
 void autonomous() {
@@ -303,7 +318,7 @@ void opcontrol() {
   bool intake_auto_reverse_enabled = false;
   // pros::Task anti_jam_T(anti_jam);
   pros::Task color_sort_task_running (color_sort_top);
-  color = "x";
+  //color = "B";
   while (true) {
     chassis.opcontrol_arcade_standard(ez::SPLIT);
       
@@ -315,6 +330,7 @@ void opcontrol() {
 
 		} 
     else if (master.get_digital(DIGITAL_L2)) {
+      intake_piston.set(0);
 			intake_bottom.move(127);
       if  (control_to_controller)(intake_top.move(127));
       if  (control_to_controller)(intake_top_score.move(127));
@@ -323,7 +339,12 @@ void opcontrol() {
     else if (master.get_digital(DIGITAL_R1)) {
 			intake_bottom.move(127);
 			intake_top.move(127);
-      intake_top_score.move(-75);
+      intake_top_score.move(-60);
+		} 
+    else if (master.get_digital(DIGITAL_A)) {
+			intake_bottom.move(127);
+			intake_top.move(60);
+      intake_top_score.move(-40);
 		} 
     else if (master.get_digital(DIGITAL_R2)) {
 			intake_bottom.move(-127);
@@ -354,10 +375,10 @@ void opcontrol() {
     }
 
     if (master.get_digital(DIGITAL_Y)) {
-      middle_stage.set(0);
+      mid_descore.set(1);
     }
     else {
-      middle_stage.set(1);
+      mid_descore.set(0);
     }
 
     if (master.get_digital(DIGITAL_B)) {
@@ -406,13 +427,14 @@ void opcontrol() {
 
       int dt_temps = (int) to_fahrenheit(avg_motor_temps());
       int top_temp = (int) to_fahrenheit(intake_top.get_temperature());
+      int top_score_temp = (int) to_fahrenheit(intake_top_score.get_temperature());
       int bottom_temp = (int) to_fahrenheit(intake_bottom.get_temperature());
       std::string intake_back = "";
       if (intake_auto_reverse_enabled){
         intake_back = "N";
       }
 
-      master.print(0, 0, "%d/%d/%d/%s            ", /*L1.get_temperature(int)color_sort.get_hue()*//*anti_jam_is_working(int)vertical_tracker.get_position()/100 */dt_temps , color_sort.get_proximity()/*top_temp*/, bottom_temp, color, intake_back);
+      master.print(0, 0, "%d/%d/%d/%s            ", /*L1.get_temperature(int)color_sort.get_hue()*//*anti_jam_is_working(int)vertical_tracker.get_position()/100 */dt_temps , color_sort.get_proximity()/*top_temp*/, top_temp, color, intake_back);
     }
 
 		count++;
