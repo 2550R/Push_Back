@@ -20,6 +20,7 @@ void skills();
 void skills_before_changing_the_wall();
 void skills_without_odom();
 void new_skills();
+void nor_call_skills();
 
 void left_elims();
 void red_top_elims();

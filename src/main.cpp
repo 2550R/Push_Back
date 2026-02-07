@@ -149,7 +149,7 @@ void initialize() {
   // Set the color of the balls you want to throw out here
 
   color = "R";
-  intake_piston.set(1);
+  //intake_piston.set(1);
 
   
 
@@ -169,8 +169,8 @@ void initialize() {
   pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"right safe", new_skills},
-    {"right solo", solo_right},
+    {"right safe", skills},
+    {"right solo", pid_tune},
     {"elims auton 3 goals", elims_mid_control},
     {"elims left", left_elims_7ball},
     {"left side 4 push", left_elims_quick},
