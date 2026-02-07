@@ -66,8 +66,9 @@ void intake_counter_spin(){
 
 int top_speed_intake = 0;
 int top_speed_score_intake = 0;
-int bottom_stage_intake = 0;
+int bottom_speed_intake = 0;
 bool change = false;
+
 void anti_jam_auton(){
   float spin_time = 200;
   int v_threshold_top;
@@ -75,28 +76,46 @@ void anti_jam_auton(){
   int current_top;
   int velocity_bottom;
   int current_bottom;
-  int current_threshold = 2000;
-  bool is_jammed_fwd = false;
-  bool is_jammed_bcwd = false;
+  int current_threshold = 1600;
+  bool is_jammed_top = false;
+  bool is_jammed_bottom = false;
   while(true){
     velocity_bottom = intake_bottom.get_actual_velocity();
+    velocity_top = intake_top.get_actual_velocity();
     if (change){pros::delay(300); change = false;}
     current_bottom = intake_bottom.get_current_draw();
+    current_top = intake_top.get_current_draw();
 
-    if (current_bottom > current_threshold && velocity_bottom < 10){
-      is_jammed_fwd = true;
+    if (current_bottom > current_threshold && abs(velocity_bottom) < 10){
+      is_jammed_bottom = true;
     }
 
-    if (is_jammed_fwd){
+    if (current_top > current_threshold && abs(velocity_top) < 10){
+      is_jammed_top = true;
+    }
+
+    //This one chacks the top motor
+    if (is_jammed_top){
       float start_time = pros::millis();
       while (intake_distance.get_distance() > 150 && ((float)pros::millis() - start_time) < spin_time){
-        intake_top.move(-127);
-        intake_bottom.move(-127);
+        intake_top.move(-top_speed_intake*127);
       }
-      is_jammed_fwd = false;
-      intake_bottom.move(bottom_stage_intake);
+      is_jammed_top = false;
+      intake_top.move(bottom_speed_intake);
       pros::delay(300);
     }
+
+    // This one checks the bottom motor
+    if (is_jammed_bottom){
+      float start_time = pros::millis();
+      while ( ((float)pros::millis() - start_time) < spin_time){
+        intake_bottom.move(-bottom_speed_intake*127);
+      }
+      is_jammed_bottom = false;
+      intake_bottom.move(top_speed_intake);
+      pros::delay(300);
+    }
+
   }
 }
 
@@ -157,7 +176,7 @@ void top_intake_score(int speed_top){
 void bottom_intake(int speed_bt){
   change = true;
   intake_bottom.move(speed_bt);
-  bottom_stage_intake = speed_bt;
+  bottom_speed_intake = speed_bt;
 }
 
 
@@ -232,6 +251,11 @@ void intake_test(){
 
 // FINISHED
 void left_middle_top(){
+  //Colorsort color set
+  color = "B";
+  pros::Task color_sor(color_sort_top_auton);
+
+
    chassis.odom_xyt_set(0_in, 0_in, -30_deg);
 
    trapdoor.set(1);
@@ -239,9 +263,9 @@ void left_middle_top(){
   intake_bottom.move(127);
   intake_top.move(127);
 
-  chassis.pid_drive_set(24.8, 80, true);
+  chassis.pid_drive_set(25.5, 80, true); //24.8 with little bill activation
   pros::delay(500);
-  Little_Mech_Mac.set(true);
+  //temp test Little_Mech_Mac.set(true);
   chassis.pid_wait_quick();
   Little_Mech_Mac.set(0);
 
@@ -256,17 +280,17 @@ void left_middle_top(){
   chassis.pid_drive_set(-16, 80, true);
   chassis.pid_wait();
 
-    intake_top_score.move(-127);
+    intake_top_score.move(-100);
 
   pros::delay(1200);
 
-  chassis.pid_drive_set(42, 80, true);
+  chassis.pid_drive_set(38.5, 80, true);
   chassis.pid_wait_quick_chain();
 
   chassis.pid_turn_set(179, 80, true);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_drive_set(15.7, 70, true);
+  chassis.pid_drive_set(12.5, 70, true);
     Little_Mech_Mac.set(1);
     intake_bottom.move(127);
     top_intake(127);
@@ -275,24 +299,23 @@ void left_middle_top(){
     //intake_top_score.move(127);
   chassis.pid_wait();
 
-  pros::delay(200);
+  chassis.pid_drive_set(6.8, 50, true);
 
-  chassis.pid_turn_set(179, 80, true);
-  chassis.pid_wait_quick_chain();
+  pros::delay(850);
 
   chassis.pid_drive_set(-27.8, 75, true);
   intake_bottom.move(-20);
     pros::delay(300);
     // pros::Task  color_sort_safe(color_sort_top_auton);
-    trapdoor.set(0);
     intake_bottom.move(127);
   chassis.pid_wait();
 
+  trapdoor.set(0);
   Little_Mech_Mac.set(0);
 
-  pros::delay(1100);
+  pros::delay(1400);
 
-  chassis.pid_swing_set(RIGHT_SWING, 100, 80, -10, true);
+  chassis.pid_swing_set(RIGHT_SWING, 68, 90, 2.5, true);
   chassis.pid_wait_quick_chain();
 
   chassis.pid_turn_set(180, 100, true);
@@ -300,8 +323,11 @@ void left_middle_top(){
 
   right_rush_mech.set(1);
 
-  chassis.pid_drive_set(-20, 80, true);
+  chassis.pid_drive_set(-28, 80, true);
   chassis.pid_wait_quick();
+
+  chassis.pid_turn_set(-145, 60, true);
+
 }
 
 
@@ -553,34 +579,32 @@ void left_elims_quick(){
 
 
 void right_safe(){
-  trapdoor.set(1);
 
-  chassis.pid_drive_set(22, 90, true);
+  color = "R";
+  pros::Task color_sor(color_sort_top_auton);
+  trapdoor.set(1);
+  chassis.pid_drive_set(22.6, 90, true);
   chassis.pid_wait_quick_chain();
 
   chassis.pid_turn_set(90, 80, true);
   chassis.pid_wait_quick_chain();
 
-  //Going into the machloader
-  Little_Mech_Mac.set(1);
-  chassis.pid_drive_set(11, 60, true);
-    intake_bottom.move(127);
+  chassis.pid_drive_set(12.3, 70, true);
+    Little_Mech_Mac.set(1);
+    bottom_intake(127);
     intake_top.move(127);
     intake_top_score.move(127);
   chassis.pid_wait();
 
-  //intaking the balls from the machloader
+  pros::delay(400);
 
-  pros::delay(300);
-
-  
-  chassis.pid_drive_set(-28.5, 75, true);
+  chassis.pid_drive_set(-26.8, 75, true);
   chassis.pid_wait();
-  Little_Mech_Mac.set(0);
-
-  //Scoring the balls
   trapdoor.set(0);
-  pros::delay(1300);
+
+  pros::delay(1100);
+  trapdoor.set(1);
+  Little_Mech_Mac.set(0);
 
   chassis.pid_drive_set(9, 80, true);
   chassis.pid_wait_quick_chain();
@@ -609,7 +633,7 @@ void right_safe(){
   //Scoring in the middle goal
 
   
-  pros::delay(700);
+  pros::delay(900);
 
   intake_piston.set(0);
 
@@ -619,7 +643,7 @@ void right_safe(){
   chassis.pid_turn_set(-92, 80, true);
   chassis.pid_wait();
   
-  chassis.pid_drive_set(21, 127, true);
+  chassis.pid_drive_set(22, 127, true);
   chassis.pid_wait();
   
   chassis.pid_turn_set(-135, 80, true);
@@ -855,17 +879,117 @@ void solo_left1() {
 
 }
 
-//done
-void solo_right (){
-  //pros::Task anti_jam_auton1 (anti_jam_auton);
+void elims_mid_control (){
+
+  color = "B";
+  pros::Task color_sor(color_sort_top_auton);
+
   trapdoor.set(1);
+
   chassis.pid_drive_set(21, 90, true);
   chassis.pid_wait_quick_chain();
 
   chassis.pid_turn_set(90, 80, true);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_drive_set(11.2, 70, true);
+  //Going into the machloader
+  Little_Mech_Mac.set(1);
+  chassis.pid_drive_set(14.5, 80, true);
+    intake_bottom.move(80);
+    intake_top.move(127);
+    intake_top_score.move(127);
+  chassis.pid_wait();
+
+  pros::delay(200);
+
+  //intaking the balls from the machloader
+  
+  chassis.pid_drive_set(-28.5, 75, true);
+  chassis.pid_wait();
+  Little_Mech_Mac.set(0);
+
+  //Scoring the balls
+  trapdoor.set(0);
+  pros::delay(1100);
+
+  chassis.pid_drive_set(9, 80, true);
+  chassis.pid_wait_quick_chain();
+    trapdoor.set(1);
+
+  chassis.pid_turn_set(-138.5, 80, true);
+
+  chassis.pid_wait_quick_chain();
+
+  //Intaking the balls
+  chassis.pid_drive_set(30, 80, true);
+    pros::delay(650);
+  chassis.pid_drive_set(12, 60, true);
+  chassis.pid_wait();
+
+  Little_Mech_Mac.set(0);
+
+  chassis.pid_drive_set(20, 60, true);
+  chassis.pid_wait();
+      pros::delay(100);
+    intake_bottom.move(-100);
+    intake_top.move(-127);
+    intake_top_score.move(0);
+  //Scoring in the middle goal
+
+  
+  pros::delay(1000);
+
+  intake_piston.set(0);
+
+  chassis.pid_drive_set(-18, 127, true);
+  chassis.pid_wait();
+
+  intake_bottom.move(127);
+  intake_top.move(100);
+  intake_top_score.move(100);
+
+  chassis.pid_turn_set(180, 100, true);
+  chassis.pid_wait_quick_chain();
+  
+  chassis.pid_drive_set(43, 127, true);
+  pros::delay(700);
+  chassis.pid_drive_set(21, 60, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(132, 80, true);
+  chassis.pid_wait_quick();
+
+  chassis.pid_drive_set(-15, 80, true);
+  chassis.pid_wait(); 
+  intake_top_score.move(-127);
+  pros::delay(1000);
+
+  chassis.pid_drive_set(8, 80, true);
+  chassis.pid_wait();
+  pros::delay(100);
+  mid_descore.set(1);
+
+  chassis.pid_drive_set(-15, 40, true);
+  pros::delay(800);
+  chassis.pid_drive_set(0, 0, true);
+
+
+
+}
+
+//done
+void solo_right (){
+  //pros::Task anti_jam_auton1 (anti_jam_auton);
+  color = "R";
+  pros::Task color_sor(color_sort_top_auton);
+  trapdoor.set(1);
+  chassis.pid_drive_set(22.6, 90, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_turn_set(90, 80, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_drive_set(12.3, 70, true);
     Little_Mech_Mac.set(1);
     bottom_intake(127);
     intake_top.move(127);
@@ -874,18 +998,18 @@ void solo_right (){
 
   pros::delay(200);
 
-  chassis.pid_drive_set(-26.5, 75, true);
+  chassis.pid_drive_set(-26.8, 75, true);
   chassis.pid_wait();
   trapdoor.set(0);
 
   pros::delay(1000);
+  trapdoor.set(1);
 
   // chassis.pid_swing_set(LEFT_SWING, -135, 127, -20, true);
   // chassis.pid_wait_quick();
 
   chassis.pid_drive_set(5, 80, true);
   chassis.pid_wait_quick_chain();
-    trapdoor.set(1);
 
   chassis.pid_turn_set(-143, 80, true);
   Little_Mech_Mac.set(0);
@@ -900,27 +1024,27 @@ void solo_right (){
   chassis.pid_turn_set(179, 80, true);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_drive_set(48, 65, true);
+  chassis.pid_drive_set(47, 65, true);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_drive_set(-5.6, 80, true);
+  chassis.pid_drive_set(-6.5, 80, true);
   chassis.pid_wait_quick();
 
-  chassis.pid_turn_set(132, 80, true);
+  chassis.pid_turn_set(135, 80, true);
   pros::delay(200);
     intake_top.move(-30);
     intake_top_score.move(-30);
     bottom_intake(-30);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_drive_set(-10, 60, true);
+  chassis.pid_drive_set(-14.8, 60, true);
     pros::delay(400);
     intake_top.move(127);
     intake_top_score.move(-127);
     bottom_intake(127);
   chassis.pid_wait();
 
-    pros::delay(850);
+    pros::delay(500);
 
     intake_top.move(0);
     bottom_intake(0);
@@ -933,7 +1057,7 @@ void solo_right (){
 
     intake_top_score.move(127);
 
-  chassis.pid_drive_set(10.8, 60, true);
+  chassis.pid_drive_set(14, 60, true);
     intake_top.move(127);
     intake_top_score.move(127);
     bottom_intake(127);
@@ -942,7 +1066,7 @@ void solo_right (){
 
   pros::delay(200);
 
-  chassis.pid_drive_set(-26.5, 75, true);
+  chassis.pid_drive_set(-27, 75, true);
   chassis.pid_wait();
     trapdoor.set(0);
 
@@ -1367,15 +1491,126 @@ void skills_before_changing_the_wall() {
 
 }
 
+void new_skills(){
+  discore_mech.set(0);
+  trapdoor.set(1);
+  intake_piston.set(0);
+
+  intake_top.move(127);
+  intake_bottom.move(127);
+  intake_top_score.move(127);
+
+  chassis.pid_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 100_ms, 100_ms);
+
+  //start wiggle
+
+  chassis.pid_turn_set(5, 30, true);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_turn_set(-5 , 30, true);
+  chassis.pid_wait_quick_chain();
+  pros::delay(200);
+  chassis.pid_turn_set(0, 60, true);
+  chassis.pid_wait_quick_chain();
+
+  //drive in and back out and back in
+
+  chassis.pid_drive_set(5, 100, true);
+  chassis.pid_wait_quick_chain();
+
+  //wiggle part 2
+
+  chassis.pid_turn_set(5, 30, true);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_turn_set(-5 , 30, true);
+  chassis.pid_wait_quick_chain();
+  pros::delay(200);
+  chassis.pid_turn_set(0, 60, true);
+  chassis.pid_wait_quick_chain();
+
+  //back out
+
+  chassis.pid_drive_set(-30, 80, true);
+  chassis.pid_wait_quick_chain();
+
+  //line up on the wall
+
+  chassis.pid_turn_set(0, 80, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms,500_ms);
+
+  
+  while (distance_front_l.get_distance() < 800){
+    chassis.pid_drive_set(-1000000, -40);
+  }
+  L1.brake();
+  L2.brake();
+  L3.brake();
+  R1.brake();
+  R2.brake();
+  R3.brake();
+
+  pros::delay(200);
+
+  //line up on mid goal
+
+  chassis.pid_turn_set(-25, 80, true);
+  chassis.pid_wait();
+
+  chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 200_ms, 300_ms);
+
+
+  chassis.pid_drive_set(-16, 80, true);
+  chassis.pid_wait_quick_chain(); 
+
+  chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 400_ms, 300_ms);
+
+
+  chassis.pid_swing_set(RIGHT_SWING, 45, -80, 0, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_turn_set(45, 80, true);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-5, 80, true);
+  chassis.pid_wait_quick_chain();
+
+  /*7 ball score*/
+  intake_top_score.move(-80);
+  chassis.pid_drive_set(1, 60, true);
+  chassis.pid_wait();
+  pros::delay(2000);
+
+  //grab 7th ball
+
+  chassis.pid_drive_set(5, 80, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_drive_set(-4.5, 80, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_drive_set(1, 60, true);
+  chassis.pid_wait();
+
+}
+
+
+
+
+
+
 void skills() {
   discore_mech.set(0);
   //grab middle balls
   trapdoor.set(1);
   intake_top.move(127);
   intake_bottom.move(127);
-  intake_top_score.move(127);
+  intake_top_score.move(100);
 
-  chassis.pid_turn_set(-44, 80, true);
+  chassis.pid_drive_set(2, 80, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_turn_set(-46, 80, true);
   chassis.pid_wait_quick_chain();
 
   chassis.pid_drive_set(28, 80, true);
@@ -1385,12 +1620,12 @@ void skills() {
   // TO make shure that we are grabbing all 4 balls
   pros::delay(100);
 
-  chassis.pid_drive_set(-3, 80, true);
+  chassis.pid_drive_set(-2, 80, true);
   chassis.pid_wait_quick_chain();
 
   //score middle balls
   Little_Mech_Mac.set(0);
-  chassis.pid_turn_set(-140, 80, true);
+  chassis.pid_turn_set(-135, 80, true);
   chassis.pid_wait_quick_chain();
   //Moving the intake backwards to prevent jamming
   intake_top.move(-10);
@@ -1401,7 +1636,7 @@ void skills() {
 
   intake_top.move(127);
   intake_bottom.move(127);
-  intake_top_score.move(-127);
+  intake_top_score.move(-100);
 
   //Little_Mech_Mac.set(0);
 
@@ -1414,24 +1649,42 @@ void skills() {
 
   intake_top_score.move(127);
 
-  chassis.pid_turn_set(-90, 80, true); 
+  chassis.pid_turn_set(180, 80, true);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_drive_set(9.5, 80, true);
+  while (distance_front_l.get_distance() > 600){
+    chassis.pid_drive_set(1000000, 40);
+  }
+  L1.brake();
+  L2.brake();
+  L3.brake();
+  R1.brake();
+  R2.brake();
+  R3.brake();
+
+  chassis.pid_turn_set(-90, 60, true);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_turn_set(-179, 60, true);
+  while (distance_front_l.get_distance() > 600){
+    chassis.pid_drive_set(1000000, 40);
+  }
+  L1.brake();
+  L2.brake();
+  L3.brake();
+  R1.brake();
+  R2.brake();
+  R3.brake();
+
+  chassis.pid_turn_set(180, 80, true);
   chassis.pid_wait_quick_chain();
 
   Little_Mech_Mac.set(1);
 
   trapdoor.set(1);
 
-  chassis.pid_drive_set(25.6, 60, true);
+  chassis.pid_drive_set(13, 60, true);
   chassis.pid_wait();
-
-  chassis.pid_drive_set(1000, 60, true);
-  pros::delay(1100); 
+  pros::delay(750); 
 
   //cross to other side
 
@@ -1461,13 +1714,13 @@ void skills() {
   chassis.pid_turn_set(90, 80, true);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_drive_set(4.7, 80, true);
+  chassis.pid_drive_set(4.2, 80, true);
   chassis.pid_wait_quick_chain();
 
   chassis.pid_turn_set(0, 80, true);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_drive_set(-10, 80, true);  
+  chassis.pid_drive_set(-13, 80, true);  
   
   pros::delay(100);
   intake_top.move(-20);
@@ -1489,18 +1742,16 @@ void skills() {
 
   trapdoor.set(1);
 
-  chassis.pid_drive_set(28.6, 80, true);
+  chassis.pid_drive_set(28, 60, true);
   chassis.pid_wait();
-
-  chassis.pid_drive_set(1000, 60, true);
-  pros::delay(1100); 
+  pros::delay(750); 
 
   //score second match loader
 
   chassis.pid_turn_set(2, 80, true);
   chassis.pid_wait_quick_chain();
   
-  chassis.pid_drive_set(-35.5, 60, true);
+  chassis.pid_drive_set(-35.5, 80, true);
   pros::delay(800);
   intake_top.move(-30);
   intake_bottom.move(-30);
@@ -1508,34 +1759,40 @@ void skills() {
   chassis.pid_wait();
 
   trapdoor.set(0);
-  Little_Mech_Mac.set(0);
   intake_top.move(127);
   intake_bottom.move(127);
   intake_top_score.move(127);
   pros::delay(2000);
+  Little_Mech_Mac.set(0);
 
   //The part were we line up for clearing
 
   chassis.pid_drive_set(8, 127, true);
   chassis.pid_wait_quick_chain();
 
+  trapdoor.set(1);
+
   chassis.pid_turn_set(50, 80, true);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_drive_set(19.5, 127, true);
+  chassis.pid_drive_set(20, 127, true);
   chassis.pid_wait_quick_chain();
 
   chassis.pid_swing_set(LEFT_SWING, 87, 85, 0, true);
   chassis.pid_wait_quick_chain();
 
+  chassis.pid_turn_set(86, 80, true);
+  chassis.pid_wait_quick_chain();
+
   // chassis.pid_drive_set(5, 127, true);
   // chassis.pid_wait_quick_chain();
 
-
-
   intake_bottom.move(127);
+  intake_top.move(127);
+  intake_top_score.move(127);
+
   chassis.pid_drive_set(70, 127, true);
-  pros::delay(250);
+  pros::delay(300);
   Little_Mech_Mac.set(1);
   pros::delay(800);
   Little_Mech_Mac.set(0);
@@ -1552,7 +1809,7 @@ void skills() {
   chassis.pid_wait_quick_chain();
 
 
-  while (distance_front.get_distance() < 600){
+  while (distance_front_l.get_distance() < 600){
     chassis.pid_drive_set(-1000000, 40);
   }
   L1.brake();
@@ -1565,7 +1822,7 @@ void skills() {
   chassis.pid_turn_set(90, 60, true);
   chassis.pid_wait_quick_chain();
 
-  while (distance_front.get_distance() > 600){
+  while (distance_front_l.get_distance() > 600){
     chassis.pid_drive_set(1000000, 40);
   }
   L1.brake();
@@ -1579,14 +1836,11 @@ void skills() {
   chassis.pid_wait_quick_chain();
 
   Little_Mech_Mac.set(1);
-
-  chassis.pid_drive_set(20.6, 60, true);
-  chassis.pid_wait();
   trapdoor.set(1);
 
-  chassis.pid_drive_set(1000, 60, true);
-  pros::delay(1000); 
-
+  chassis.pid_drive_set(20.5, 60, true);
+  chassis.pid_wait();
+  pros::delay(1050); 
 
   //cross to other side
 
@@ -1623,7 +1877,7 @@ void skills() {
   chassis.pid_turn_set(180, 80, true);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_drive_set(-10, 80, true);    
+  chassis.pid_drive_set(-12, 80, true);    
   pros::delay(200);
   intake_top.move(-40);
   intake_bottom.move(-40);
@@ -1644,12 +1898,9 @@ void skills() {
 
   trapdoor.set(1);
 
-  chassis.pid_drive_set(28.6, 80, true);
+  chassis.pid_drive_set(27.5, 80, true);
   chassis.pid_wait();
-
-  chassis.pid_drive_set(1000, 60, true);
-  pros::delay(1000); 
-
+  pros::delay(1450);
 
   //score second match loader
   
@@ -1666,7 +1917,7 @@ void skills() {
   intake_bottom.move(127);
   intake_top_score.move(127);
 
-  trapdoor.set(0);
+  trapdoor.set(1);
   Little_Mech_Mac.set(0);
   pros::delay(2000);
   
@@ -1703,6 +1954,7 @@ void skills() {
 
 
 }
+
 
 /*   old
 void new_elim_auton(){
@@ -2107,14 +2359,89 @@ void wall_alignment_test() {
   R3.brake();
 }
 void pid_tune(){
-  pros::Task controller (color_sort_top_auton);
-  intake_bottom.move(127);
+  //pros::Task controller (color_sort_top_auton);
+  //pros::Task controller1 (anti_jam_auton);
+  int intake1 = 60;
+  trapdoor.set(1);
+  bottom_intake(127);
   top_intake(127);
   top_intake_score(127);
+  
+  pros::delay(3000);  
+
+  top_intake(-50);
+  top_intake_score(-50);
+  pros::delay(600);
+  top_intake_score(0);
+  top_intake(-80);
+  pros::delay(300);
+  //0 pauses
+  top_intake(intake1);
+  top_intake_score(-40);
 
 
+  // //1 pause
+  // top_intake(0);
+  // top_intake_score(0);
+  // pros::delay(200);
+  // //Continue
+  // top_intake(intake1);
+  // top_intake_score(-40);
+  // pros::delay(300);
+  // //second pause
+  // top_intake(0);
+  // top_intake_score(0);
+  // pros::delay(200);
+  // //Continue
+  // top_intake(intake1);
+  // top_intake_score(-40);
+  // pros::delay(300);
+  // //third pause
+  // top_intake(0);
+  // top_intake_score(0);
+  // pros::delay(200);
+  // //Continue
+  // top_intake(intake1);
+  // top_intake_score(-40);
+  // pros::delay(300);
+  // //fourth pause
+  // top_intake(0);
+  // top_intake_score(0);
+  // pros::delay(200);
+  // //Continue
+  // top_intake(intake1);
+  // top_intake_score(-40);
+  // pros::delay(300);
+  // //fifth pause
+  // top_intake(0);
+  // top_intake_score(0);
+  // pros::delay(200);
+  // //Continue
+  // top_intake(intake1);
+  // top_intake_score(-40);
+  // pros::delay(300);
+  // // sixth pause
+  // top_intake(0);
+  // top_intake_score(0);
+  // pros::delay(200);
+  // //Continue
+  // top_intake(intake1);
+  // top_intake_score(-40);
+  // pros::delay(300);
+  // //seventh pause
+  // top_intake(0);
+  // top_intake_score(0);
+  // pros::delay(200);
+  // //Continue
+  // top_intake(intake1);
+  // top_intake_score(-40);
+  // pros::delay(300);
+  // //final stop
+  // top_intake(0);
+  // top_intake_score(0);
 }
 void color_sort_test(){
+  color = "B";
   pros::Task color_sor(color_sort_S);
   pros::Task antij(anti_jam_auton);
   top_intake(120);

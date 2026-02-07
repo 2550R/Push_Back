@@ -425,7 +425,7 @@
     },
     "upload_options": {
       "description": "roboticsisez.com",
-      "icon": "clawbot",
+      "icon": "ufo",
       "slot": 1
     },
     "use_early_access": false

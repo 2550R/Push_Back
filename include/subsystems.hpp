@@ -28,8 +28,8 @@ inline pros::Imu inertial(11);
 inline pros::Distance distance_back_l(13); // removed sensor
 inline pros::Distance distance_front_l(9);
 inline pros::Distance distance_back_r(17); // removed sensor
-inline pros::Distance distance_front_r(13); // removed sensor
-inline pros::Distance distance_front(13); // removed sensor
+inline pros::Distance distance_front_r(99); // removed sensor
+inline pros::Distance distance_front(99); // removed sensor
 
 inline pros::Optical color_sort(16);
 
