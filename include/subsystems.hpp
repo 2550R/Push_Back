@@ -19,7 +19,7 @@ inline pros::Motor L1(-6);
 inline pros::Motor L2(-5);
 inline pros::Motor L3(-8);
 
-inline pros::Motor R1(12);
+inline pros::Motor R1(14);
 inline pros::Motor R2(19);
 inline pros::Motor R3(20);
 

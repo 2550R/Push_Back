@@ -21,7 +21,7 @@
 
 ez::Drive chassis(
   {-6, -5, -8}, //left
-  {12, 19, 20}, //right
+  {14, 19, 20}, //right
   11,
   3.25,
   450
@@ -166,11 +166,11 @@ void initialize() {
   chassis.opcontrol_curve_default_set(0.0, 1);
 
   default_constants();
-  pros::Task task1(anti_jam);
+  //pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"right safe", skills},
-    {"right solo", pid_tune},
+    {"right safe", new_skills  },
+    {"right solo", pid_tune },
     {"elims auton 3 goals", elims_mid_control},
     {"elims left", left_elims_7ball},
     {"left side 4 push", left_elims_quick},
@@ -344,6 +344,11 @@ void opcontrol() {
       intake_top_score.move(-127);
       intake_piston.set(1);
 		}
+    else if (master.get_digital(DIGITAL_A)) {
+      intake_bottom.move(127);
+			intake_top.move(50);
+      intake_top_score.move(-40);
+    }
     else if (control_to_controller){
       intake_bottom.move(0);
 		  intake_top.move(0);
@@ -393,9 +398,6 @@ void opcontrol() {
       discore_mech.set(0);
     }
 
-    if (master.get_digital_new_press(DIGITAL_A)) {
-      intake_piston.set(!intake_piston.get());
-    }
     if (master.get_digital_new_press(DIGITAL_X)) {
       Digital_X += 1;
       if (Digital_X == 4){Digital_X = 1;}

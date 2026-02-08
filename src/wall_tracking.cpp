@@ -23,7 +23,31 @@ float d_KP = 0.2;
 float d_KI = 0.00002;
 float d_KD = 0;
 
-void drive_wall(float distance) {
+bool stop_task = false; 
+float targer_distance = 0;
+
+void chassis_drive_wall(float distance, float DRIVE_SPEED){
+
+  float distance_for_chassis = (distance_front_l.get_distance() - distance)/24.4;
+  master.print(0, 0, "%d", distance_front_l.get_distance() );
+  master.print(0, 0, "%.1f", distance_for_chassis);
+  chassis.pid_drive_set(distance_for_chassis, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+}
+
+void drive_wall(float distance){
+  targer_distance = distance;
+  pros::Task drive_wall_task_running (drive_wall_task);
+  while (stop_task){
+    pros::delay(10);
+  }
+  drive_wall_task_running.remove();
+}
+
+
+void drive_wall_task() {
+  stop_task = true;
   float error;
   float new_error;
   float prev_error;
@@ -32,14 +56,9 @@ void drive_wall(float distance) {
   float derivative;
   float slue_value = 10;
   pros::delay(100);
-  L1.brake();
-  L2.brake();
-  L3.brake();
-  R1.brake();
-  R2.brake();
-  R3.brake();
-  while (distance_front.get_distance() > distance) {
-    error = distance_front.get_distance() - distance;
+  chassis_brake();
+  while (distance_front_l.get_distance() > targer_distance) {
+    error = distance_front_l.get_distance() - targer_distance;
     derivative = error - prev_error;
     // if (error == 0){
     //   error = 300;
@@ -56,6 +75,7 @@ void drive_wall(float distance) {
     R1.move_velocity(output);
     R2.move_velocity(output);
     R3.move_velocity(output);
+    
 
     prev_error = error;
     if (error < 600){
@@ -65,13 +85,8 @@ void drive_wall(float distance) {
 
     pros::delay(50);
   }
-  intake_top.move_velocity(127);
-  L1.brake();
-  L2.brake();
-  L3.brake();
-  R1.brake();
-  R2.brake();
-  R3.brake();
+  stop_task = false;
+  chassis_brake();
 }
 
 
@@ -259,4 +274,13 @@ void wall_riding(float target_distance, float DRIVE_SPEED, float drive_distance)
     prev_error = error;
     integral += error;
   }
+}
+
+void chassis_brake() {
+  L1.brake();
+  L2.brake();
+  L3.brake();
+  R1.brake();
+  R2.brake();
+  R3.brake();
 }
