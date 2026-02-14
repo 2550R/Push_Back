@@ -26,15 +26,26 @@ float d_KD = 0;
 bool stop_task = false; 
 float targer_distance = 0;
 
-void chassis_drive_wall(float distance, float DRIVE_SPEED){
+void chassis_drive_wall(float distance, float DRIVE_SPEED, bool match_loader) {
 
-  float distance_for_chassis = (distance_front_l.get_distance() - distance)/24.4;
-  master.print(0, 0, "%d", distance_front_l.get_distance() );
-  master.print(0, 0, "%.1f", distance_for_chassis);
-  chassis.pid_drive_set(distance_for_chassis, DRIVE_SPEED, true);
-  chassis.pid_wait();
+  if (match_loader){
+      float distance_for_chassis_ml = (distance_match_loader.get_distance() - distance)/24.4;
+      master.print(0, 0, "%d", distance_match_loader.get_distance() );
+      master.print(0, 0, "%.1f", distance_for_chassis_ml);
+      chassis.pid_drive_set(distance_for_chassis_ml, DRIVE_SPEED, true);
+      chassis.pid_wait();
+    
+  }
 
+  if (!match_loader){
+      float distance_for_chassis = (distance_front_l.get_distance() - distance)/24.4;
+      master.print(0, 0, "%d", distance_front_l.get_distance() );
+      master.print(0, 0, "%.1f", distance_for_chassis);
+      chassis.pid_drive_set(distance_for_chassis, DRIVE_SPEED, true);
+      chassis.pid_wait();
 }
+}
+
 
 void drive_wall(float distance){
   targer_distance = distance;

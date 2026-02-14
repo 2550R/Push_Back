@@ -21,7 +21,7 @@
 
 ez::Drive chassis(
   {-6, -5, -8}, //left
-  {14, 19, 20}, //right
+  {14, 19, 18}, //right
   11,
   3.25,
   450
@@ -142,18 +142,17 @@ void color_sort_top() {
 }
 
 
-
-
 void initialize() {
 
   // Set the color of the balls you want to throw out here
 
-  color = "R";
+  color = "x";
+  discore_mech.set(1);
   //intake_piston.set(1);
 
   
 
-  discore_mech.set(1);
+  // discore_mech.set(1);
   // intake_piston.set(1);
   ez::ez_template_print();
   color_sort.set_led_pwm(100);
@@ -169,7 +168,7 @@ void initialize() {
   //pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"right safe", new_skills  },
+    {"right safe", solo_right },
     {"right solo", pid_tune },
     {"elims auton 3 goals", elims_mid_control},
     {"elims left", left_elims_7ball},
@@ -303,19 +302,32 @@ double avg_motor_temps() {
   return mean;
 } 
 
-
+bool r2_active = false;
+uint32_t r2_time = 0;
+bool r1_active = false;
+uint32_t r1_time = 0;
 int Digital_X;
 void opcontrol() {
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
 	int count = 0;
   bool intake_auto_reverse_enabled = false;
   // pros::Task anti_jam_T(anti_jam);
-  pros::Task color_sort_task_running (color_sort_top);
+  pros::Task color_sort_task_running(color_sort_top);
   //color = "B";
   while (true) {
     chassis.opcontrol_arcade_standard(ez::SPLIT);
+
+    if (master.get_digital_new_press(DIGITAL_R2)) {
+      r2_active = true;
+      r2_time = pros::millis();
+      intake_piston.set(1);
+    }
+    else if (master.get_digital_new_press(DIGITAL_R1)) {
+      r1_active = true;
+      r1_time = pros::millis();
+    }
     
-    if (master.get_digital(DIGITAL_L1)) {
+    else if (master.get_digital(DIGITAL_L1)) {
 			intake_bottom.move(-127);
 			intake_top.move(-127);
       intake_top_score.move(-127);
@@ -326,48 +338,56 @@ void opcontrol() {
 			intake_bottom.move(127);
       if  (control_to_controller)(intake_top.move(127));
       if  (control_to_controller)(intake_top_score.move(127));
+		} 
 
-		} 
-    else if (master.get_digital(DIGITAL_R1)) {
-			intake_bottom.move(127);
-      if  (control_to_controller)(intake_top.move(127));
-      if  (control_to_controller)(intake_top_score.move(-60));
-		} 
-    // else if (master.get_digital(DIGITAL_A)) {
-		// 	intake_bottom.move(127);
-		// 	intake_top.move(60);
-    //   intake_top_score.move(-40);
-		// } 
-    else if (master.get_digital(DIGITAL_R2)) {
-			intake_bottom.move(-50);
-			intake_top.move(-127);
-      intake_top_score.move(-127);
-      intake_piston.set(1);
-		}
+
     else if (master.get_digital(DIGITAL_A)) {
       intake_bottom.move(127);
-			intake_top.move(50);
+			intake_top.move(65);
       intake_top_score.move(-40);
     }
     else if (control_to_controller){
       intake_bottom.move(0);
 		  intake_top.move(0);
       intake_top_score.move(0);
-      //intake_piston.set(0);
     }
 
-    if (master.get_digital(DIGITAL_R2)) {
-      intake_piston.set(1);
-    }
-    else{
-      intake_piston.set(0);
-    }
     // } 
     //   else {
 		//   	intake_bottom.move(-40);
 		// 	  intake_top.move(-60);
     //   }
     // }
+
+    if (r2_active) {
+      if (pros::millis() - r2_time >= 1000) {
+        intake_bottom.move(-40);
+        intake_top.move(-127);
+        intake_top_score.move(-127);
+      }
+
+      if (!master.get_digital(DIGITAL_R2)) {
+        r2_active = false;
+        intake_piston.set(0);
+      }
+    }
+    if (r1_active) {
+      if (pros::millis() - r1_time >= 300) {
+        intake_bottom.move(127);
+        intake_top.move(65);
+        intake_top_score.move(-50);
+      }
+      else {
+        intake_bottom.move(-80);
+        intake_top.move(-80);
+        intake_top_score.move(-70);
+      }
+
+      if (!master.get_digital(DIGITAL_R1)) {
+        r1_active = false;
+        intake_piston.set(0);
+      }
+    }
 
 
     if (master.get_digital(DIGITAL_RIGHT)) {

@@ -21,19 +21,20 @@ inline pros::Motor L3(-8);
 
 inline pros::Motor R1(14);
 inline pros::Motor R2(19);
-inline pros::Motor R3(20);
+inline pros::Motor R3(18);
 
 inline pros::Imu inertial(11);
 
 inline pros::Distance distance_back_l(13); // removed sensor
 inline pros::Distance distance_front_l(9);
-inline pros::Distance distance_back_r(17); // removed sensor
+inline pros::Distance distance_match_loader(21);
+inline pros::Distance distance_back_r(99); // removed sensor
 inline pros::Distance distance_front_r(99); // removed sensor
 inline pros::Distance distance_front(99); // removed sensor
 
 inline pros::Optical color_sort(16);
 
-inline pros::Motor intake_bottom(21);
+inline pros::Motor intake_bottom(17);
 inline pros::Motor intake_top(-2);
 inline pros::Motor intake_top_score(-10);
 inline pros::Motor vertical_tracker('Z');
