@@ -22,6 +22,7 @@ void skills_without_odom();
 void new_skills();
 void nor_call_skills();
 
+void left_elims_quick_ml();
 void left_elims();
 void red_top_elims();
 void blue_top_quals();

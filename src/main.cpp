@@ -146,8 +146,9 @@ void initialize() {
 
   // Set the color of the balls you want to throw out here
 
-  color = "x";
+  color = "R";
   discore_mech.set(1);
+  trapdoor.set(1);
   //intake_piston.set(1);
 
   
@@ -168,7 +169,7 @@ void initialize() {
   //pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"right safe", solo_right },
+    {"right safe", new_skills},
     {"right solo", pid_tune },
     {"elims auton 3 goals", elims_mid_control},
     {"elims left", left_elims_7ball},
@@ -372,14 +373,14 @@ void opcontrol() {
       }
     }
     if (r1_active) {
-      if (pros::millis() - r1_time >= 300) {
+      if (pros::millis() - r1_time >= 50) {
         intake_bottom.move(127);
         intake_top.move(65);
         intake_top_score.move(-50);
       }
       else {
-        intake_bottom.move(-80);
-        intake_top.move(-80);
+        intake_bottom.move(-75);
+        intake_top.move(-75);
         intake_top_score.move(-70);
       }
 

@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "blue left 4",
+    "project_name": "left_ml_b",
     "target": "v5",
     "templates": {
       "EZ-Template": {
