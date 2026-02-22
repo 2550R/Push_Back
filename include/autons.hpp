@@ -27,6 +27,7 @@ void left_elims();
 void red_top_elims();
 void blue_top_quals();
 
+void push_solo();
 void left_elims_7ball();
 
 void intake_test();

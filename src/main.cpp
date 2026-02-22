@@ -98,7 +98,7 @@ std::string color = "R"; // against R or B; press UP+X to change; x for disabled
 bool control_to_controller = true;
 int middgoal_Srore = 0;
 void color_sort_top() {
-  color_sort.set_integration_time(10);
+  color_sort.set_integration_time(3);
   while (true) {
     int hue_lower;
     int hue_higher;
@@ -119,7 +119,7 @@ void color_sort_top() {
       middgoal_Srore = 0;
     }
 
-    bool in_proximity = color_sort.get_proximity() > 220;
+    bool in_proximity = color_sort.get_proximity() > 200;
 
     if (middgoal_Srore == 0 && in_proximity && (hue_lower < color_sort.get_hue() && color_sort.get_hue() < hue_higher)) {
       control_to_controller = false;
@@ -146,7 +146,7 @@ void initialize() {
 
   // Set the color of the balls you want to throw out here
 
-  color = "R";
+  color = "B";
   discore_mech.set(1);
   trapdoor.set(1);
   //intake_piston.set(1);
@@ -169,19 +169,10 @@ void initialize() {
   //pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"right safe", new_skills},
+    {"right safe", skills},
     {"right solo", pid_tune },
     {"elims auton 3 goals", elims_mid_control},
     {"elims left", left_elims_7ball},
-    {"left side 4 push", left_elims_quick},
-    {"Skills", left_elims_quick},
-    {"Left Side Solo", left_elims_quick},
-    {"Left Elims Quick", left_elims_quick},
-    {"Right Elims Quick", right_elims_quick},
-    {"Testing PID VS Odom", wall_alignment_test},
-    {"Skills", skills},
-    {"Pure Pursuit Wait Until\n\nGo to (24, 24) but start running an intake once the robot passes (12, 24)", odom_pure_pursuit_wait_until_example},
-    {"Injected Boomerang Example", odom_boomerang_injected_pure_pursuit_example}
   });
   
   chassis.initialize();
@@ -344,8 +335,8 @@ void opcontrol() {
 
     else if (master.get_digital(DIGITAL_A)) {
       intake_bottom.move(127);
-			intake_top.move(65);
-      intake_top_score.move(-40);
+			intake_top.move(55);
+      intake_top_score.move(-30);
     }
     else if (control_to_controller){
       intake_bottom.move(0);
@@ -364,7 +355,7 @@ void opcontrol() {
       if (pros::millis() - r2_time >= 1000) {
         intake_bottom.move(-40);
         intake_top.move(-127);
-        intake_top_score.move(-127);
+        intake_top_score.move(-40);
       }
 
       if (!master.get_digital(DIGITAL_R2)) {
@@ -373,10 +364,10 @@ void opcontrol() {
       }
     }
     if (r1_active) {
-      if (pros::millis() - r1_time >= 50) {
+      if (pros::millis() - r1_time >= 150) {
         intake_bottom.move(127);
         intake_top.move(65);
-        intake_top_score.move(-50);
+        intake_top_score.move(-40);
       }
       else {
         intake_bottom.move(-75);

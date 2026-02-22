@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "left_ml_b",
+    "project_name": "2550R",
     "target": "v5",
     "templates": {
       "EZ-Template": {
@@ -424,8 +424,8 @@
       }
     },
     "upload_options": {
-      "description": "roboticsisez.com",
-      "icon": "ufo",
+      "description": "2550R",
+      "icon": "power",
       "slot": 1
     },
     "use_early_access": false
