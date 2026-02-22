@@ -146,7 +146,7 @@ void initialize() {
 
   // Set the color of the balls you want to throw out here
 
-  color = "B";
+  color = "x";
   discore_mech.set(1);
   trapdoor.set(1);
   //intake_piston.set(1);
@@ -355,7 +355,8 @@ void opcontrol() {
       if (pros::millis() - r2_time >= 1000) {
         intake_bottom.move(-40);
         intake_top.move(-127);
-        intake_top_score.move(-40);
+        pros::delay(200);
+        intake_top_score.move(-30);
       }
 
       if (!master.get_digital(DIGITAL_R2)) {

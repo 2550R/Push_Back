@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "2550R",
+    "project_name": "2550R Skills",
     "target": "v5",
     "templates": {
       "EZ-Template": {
@@ -426,7 +426,7 @@
     "upload_options": {
       "description": "2550R",
       "icon": "power",
-      "slot": 1
+      "slot": 2
     },
     "use_early_access": false
   }
