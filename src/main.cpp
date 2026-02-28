@@ -94,9 +94,10 @@ void anti_jam(){
   }
 }
 
-std::string color = "R"; // against R or B; press UP+X to change; x for disabled
+std::string color = "x"; // against R or B; press UP+X to change; x for disabled
 bool control_to_controller = true;
 int middgoal_Srore = 0;
+int count_color = 0;
 void color_sort_top() {
   color_sort.set_integration_time(3);
   while (true) {
@@ -108,7 +109,7 @@ void color_sort_top() {
       hue_higher = 240;
     } else if (color == "R") {
       hue_lower = 0;
-      hue_higher = 10;
+      hue_higher = 20;
     } else {
       continue;
     }
@@ -119,16 +120,24 @@ void color_sort_top() {
       middgoal_Srore = 0;
     }
 
-    bool in_proximity = color_sort.get_proximity() > 200;
-
-    if (middgoal_Srore == 0 && in_proximity && (hue_lower < color_sort.get_hue() && color_sort.get_hue() < hue_higher)) {
+    bool in_proximity = color_sort.get_proximity() > 240;
+    
+    if (in_proximity && ((hue_lower < color_sort.get_hue() && color_sort.get_hue() < hue_higher) || (color == "R" && color_sort.get_hue() > 340))){
+      count_color ++;
+    } else {
+      count_color = 0;
+    }
+    if (middgoal_Srore == 0 && count_color >= 4 ) {
+      count_color = 0;
+      pros::delay(50);
       control_to_controller = false;
       intake_top_score.move(-127);
-      intake_top.move(30);
-      pros::delay(300);
+      intake_top.move(20);
+      pros::delay(350);
       control_to_controller = true;
 
-    } else if (middgoal_Srore == 1 && in_proximity && (hue_lower < color_sort.get_hue() && color_sort.get_hue() < hue_higher)){
+    } else if (middgoal_Srore == 1 && count_color >= 4){
+      count_color = 0;
       control_to_controller = false;
       trapdoor.set(0);
       intake_top_score.move(127);
@@ -169,7 +178,7 @@ void initialize() {
   //pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"right safe", skills},
+    {"right safe", pid_tune},
     {"right solo", pid_tune },
     {"elims auton 3 goals", elims_mid_control},
     {"elims left", left_elims_7ball},
@@ -305,7 +314,6 @@ void opcontrol() {
   bool intake_auto_reverse_enabled = false;
   // pros::Task anti_jam_T(anti_jam);
   pros::Task color_sort_task_running(color_sort_top);
-  //color = "B";
   while (true) {
     chassis.opcontrol_arcade_standard(ez::SPLIT);
 
@@ -326,7 +334,7 @@ void opcontrol() {
 
 		} 
     else if (master.get_digital(DIGITAL_L2)) {
-      intake_piston.set(0);
+      //intake_piston.set(0);
 			intake_bottom.move(127);
       if  (control_to_controller)(intake_top.move(127));
       if  (control_to_controller)(intake_top_score.move(127));
@@ -353,10 +361,11 @@ void opcontrol() {
 
     if (r2_active) {
       if (pros::millis() - r2_time >= 1000) {
-        intake_bottom.move(-40);
-        intake_top.move(-127);
-        pros::delay(200);
-        intake_top_score.move(-30);
+        if (!master.get_digital(DIGITAL_L1) && !master.get_digital(DIGITAL_L2)){
+          intake_bottom.move(-40);
+          intake_top.move(-127);
+          intake_top_score.move(-10);
+        }
       }
 
       if (!master.get_digital(DIGITAL_R2)) {
@@ -437,7 +446,7 @@ void opcontrol() {
     // left_rush_mech.button_toggle(master.get_digital_new_press(DIGITAL_RIGHT));
 
 
-    if (count == 80) {
+    if (count == 10) {
       // only update controller screen every 80 cycles
       count = 0;
 
@@ -466,7 +475,7 @@ void opcontrol() {
 
       
 
-      master.print(0, 0, "%d/%d/%d/%s/%d            ", /*L1.get_temperature(int)color_sort.get_hue()*//*anti_jam_is_working(int)vertical_tracker.get_position()/100 */dt_temps , color_sort.get_proximity()/*top_temp*/, top_temp, color, middgoal_Srore);
+      master.print(0, 0, "%d/%d/%d/%s/%d            ", /*L1.get_temperature*/(int)color_sort.get_hue()/*anti_jam_is_working(int)vertical_tracker.get_position()/100 dt_temps */, color_sort.get_proximity()/*top_temp*/, top_temp, color, middgoal_Srore);
     }
 
 		count++;
@@ -480,3 +489,5 @@ void opcontrol() {
 		pros::delay(ez::util::DELAY_TIME);
   }
 }
+
+

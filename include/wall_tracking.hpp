@@ -19,7 +19,7 @@ void wall_tracking(float target_distance, float DRIVE_SPEED, float drive_distanc
 void wall_riding(float target_distance, float DRIVE_SPEED, float drive_distance);
 void wall_tracking_with_alignment(float target_distance, float DRIVE_SPEED, float drive_distance);
 void wall_tracking_with_alignment_B(float target_distance, float DRIVE_SPEED, float drive_distance);
-void drive_wall(float distance);
+void drive_wall(float distance, float DRIVE_SPEED);
 void chassis_drive_wall(float distance, float DRIVE_SPEED, bool chain, bool back_sensor);
 void chassis_brake();
 void drive_wall_task();

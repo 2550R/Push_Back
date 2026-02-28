@@ -16,11 +16,8 @@
 
 void default_constants();
 void empty();
-void skills();
-void skills_before_changing_the_wall();
-void skills_without_odom();
-void new_skills();
-void nor_call_skills();
+void norcal_skills();
+void safe_skills();
 
 void left_elims_quick_ml();
 void left_elims();

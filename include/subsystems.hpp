@@ -27,6 +27,7 @@ inline pros::Imu inertial(11);
 
 inline pros::Distance distance_back_l(13); // removed sensor
 inline pros::Distance distance_front_l(9);
+inline pros::Distance distance_back(3);
 inline pros::Distance distance_match_loader(21);
 inline pros::Distance distance_back_r(99); // removed sensor
 inline pros::Distance distance_front_r(99); // removed sensor
