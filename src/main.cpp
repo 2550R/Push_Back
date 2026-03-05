@@ -22,7 +22,7 @@
 ez::Drive chassis(
   {-6, -5, -8}, //left
   {14, 19, 18}, //right
-  11,
+  21,
   3.25,
   450
 );
@@ -178,9 +178,9 @@ void initialize() {
   //pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"right safe", pid_tune},
+    {"right safe", safe_skills},
     {"right solo", pid_tune },
-    {"elims auton 3 goals", elims_mid_control},
+    {"elims auton 3 goals", left_elims_quick_ml},
     {"elims left", left_elims_7ball},
   });
   
@@ -330,7 +330,7 @@ void opcontrol() {
     else if (master.get_digital(DIGITAL_L1)) {
 			intake_bottom.move(-127);
 			intake_top.move(-127);
-      intake_top_score.move(-127);
+      // intake_top_score.move(-127);
 
 		} 
     else if (master.get_digital(DIGITAL_L2)) {
@@ -362,7 +362,7 @@ void opcontrol() {
     if (r2_active) {
       if (pros::millis() - r2_time >= 1000) {
         if (!master.get_digital(DIGITAL_L1) && !master.get_digital(DIGITAL_L2)){
-          intake_bottom.move(-40);
+          intake_bottom.move(-44);
           intake_top.move(-127);
           intake_top_score.move(-10);
         }

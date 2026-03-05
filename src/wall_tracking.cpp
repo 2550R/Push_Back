@@ -63,7 +63,7 @@ void chassis_drive_wall(float distance, float DRIVE_SPEED, bool chain, bool back
 // }
 
 float d_KP = 0.3;
-float d_KI = 0.001;
+float d_KI = 0;
 float d_KD = 0.0021;
 
 void drive_wall(float distance, float DRIVE_SPEED) {
@@ -77,33 +77,35 @@ void drive_wall(float distance, float DRIVE_SPEED) {
   float derivative;
   float arrival_time_B = 0;
   float arrival_time_S = 0;
+  float arrival_distance_S = 5;
+  float arrival_distance_B = 15;
+  float time_out_S = 10;
+  float time_out_B = 100;
   //float slue_value = 10;
 
   chassis_brake();
   while (true) {
 
     //Big error timeout
-    if (distance_front_l.get_distance() < distance + 15 && distance_front_l.get_distance() > distance - 15){
+    if (distance_front_l.get_distance() < distance + arrival_distance_B && distance_front_l.get_distance() > distance - arrival_distance_B){
       if (arrival_time_B == 0){
         arrival_time_B = pros::millis();
       }
     }else {
       arrival_time_B = 0;
     }
-    if (arrival_time_B != 0 && (pros::millis() - arrival_time_B) > 100){
+    if (arrival_time_B != 0 && (pros::millis() - arrival_time_B) > time_out_B){
       break;
     }
-
     //Small error timeout
-    if (distance_front_l.get_distance() < distance + 5 && distance_front_l.get_distance() > distance - 5 ){
+    if (distance_front_l.get_distance() < distance + arrival_distance_S && distance_front_l.get_distance() > distance - arrival_distance_S ){
       if (arrival_time_S == 0){
         arrival_time_S = pros::millis();
       }
     }else {
       arrival_time_S = 0;
     }
-
-    if (arrival_time_S != 0 && (pros::millis() - arrival_time_S) > 10){
+    if (arrival_time_S != 0 && (pros::millis() - arrival_time_S) > time_out_S){
       break;
     }
 

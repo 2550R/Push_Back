@@ -19,11 +19,14 @@ void empty();
 void norcal_skills();
 void safe_skills();
 
+void left_4_3_push();
+void top_middle_bottom();
 void left_elims_quick_ml();
 void left_elims();
 void red_top_elims();
 void blue_top_quals();
 
+void left_7_mid();
 void push_solo();
 void left_elims_7ball();
 
@@ -58,14 +61,14 @@ void pid_tune();
 
 /* safe routes */
 void left_middle_top();
-void right_safe();
+void right_4_3_push();
 
 /* old */
 void right_safe1();
 void right_auton_new();
 
 void left_elims_quick();
-void right_elims_quick();
+void right_elims_7ball();
 
 /* Color Sort tests */
 void color_sort_test();

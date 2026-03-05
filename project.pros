@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "2550R S",
+    "project_name": "2550R TMB",
     "target": "v5",
     "templates": {
       "EZ-Template": {
@@ -426,7 +426,7 @@
     "upload_options": {
       "description": "2550R",
       "icon": "power",
-      "slot": 2
+      "slot": 1
     },
     "use_early_access": false
   }
