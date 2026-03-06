@@ -22,7 +22,7 @@
 ez::Drive chassis(
   {-6, -5, -8}, //left
   {14, 19, 18}, //right
-  21,
+  15,
   3.25,
   450
 );
@@ -156,8 +156,8 @@ void initialize() {
   // Set the color of the balls you want to throw out here
 
   color = "x";
-  discore_mech.set(1);
-  trapdoor.set(1);
+  // discore_mech.set(1);
+  // trapdoor.set(1);
   //intake_piston.set(1);
 
   
@@ -179,7 +179,7 @@ void initialize() {
 
   ez::as::auton_selector.autons_add({
     {"right safe", safe_skills},
-    {"right solo", pid_tune },
+    {"right solo", pid_tune},
     {"elims auton 3 goals", left_elims_quick_ml},
     {"elims left", left_elims_7ball},
   });
@@ -475,7 +475,7 @@ void opcontrol() {
 
       
 
-      master.print(0, 0, "%d/%d/%d/%s/%d            ", /*L1.get_temperature*/(int)color_sort.get_hue()/*anti_jam_is_working(int)vertical_tracker.get_position()/100 dt_temps */, color_sort.get_proximity()/*top_temp*/, top_temp, color, middgoal_Srore);
+      master.print(0, 0, "%d/%d/%d/%s/%d            ", /*L1.get_temperature*/(int)inertial.get_heading()/*color_sort.get_hue()*//*anti_jam_is_working(int)vertical_tracker.get_position()/100 dt_temps */, color_sort.get_proximity()/*top_temp*/, top_temp, color, middgoal_Srore);
     }
 
 		count++;

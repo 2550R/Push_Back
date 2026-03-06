@@ -23,7 +23,7 @@ inline pros::Motor R1(14);
 inline pros::Motor R2(19);
 inline pros::Motor R3(18);
 
-inline pros::Imu inertial(21);
+inline pros::Imu inertial(15);
 
 inline pros::Distance distance_back_l(13); // removed sensor
 inline pros::Distance distance_front_l(9);

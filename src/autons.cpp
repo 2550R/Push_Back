@@ -38,16 +38,14 @@ int screen = 0;
 void controller_update() {
   while (true) {
     if (screen == 0) {
-      master.print(0, 0, "%d          ", (vertical_tracker.get_position()/100 * 2 * 3.14 * 3.25)/*, intake_bottom.get_current_draw(),distance_front.get_distance()*/);
+      master.print(0, 0, "%f          ", (inertial.get_heading())/*, intake_bottom.get_current_draw(),distance_front.get_distance()*/);
       pros::delay(100);
     } else {
       master.print(0, 0, "%f/%f      ", p_x, p_y);
       pros::delay(100);
     }
-    pros::delay(100);
   }
 
-  std::cout << "Controller output running\n";
 }
 bool intake_auto_reverse_enabled = true;
 void intake_counter_spin(){
@@ -1236,6 +1234,7 @@ void safe_skills(){
   //line up for clear
   
   discore_mech.set(0);
+
   intake_bottom.move(127);
   intake_top.move(127);
   intake_top_score.move(127);
@@ -1255,7 +1254,7 @@ void safe_skills(){
 
   //clear the 6 ball from the park zone
   
-  chassis.pid_drive_set(75, 65, true);
+  chassis.pid_drive_set(75, 75, true);
   intake_top_score.move(127);
   chassis.pid_wait();
 
@@ -1277,6 +1276,8 @@ void safe_skills(){
   chassis.pid_wait_quick_chain();
 
   chassis.pid_drive_set(2, 1, true);
+
+
 
   intake_bottom.move(-80);
   intake_top.move(-80);
@@ -1833,15 +1834,24 @@ void auton_setup_right(){
 
 /* TESTS */
 void pid_test(){
+  chassis.pid_drive_constants_set(23, 0, 150); // 22 0 150
+  chassis.pid_turn_constants_set(3.4, 0, 22, 12.0); // 3.2 0 22 12.0
 
-  chassis.pid_drive_set(24, 127, true);
+  chassis.pid_turn_set(90, 100, true);
+  chassis.pid_wait();
+  pros::delay(1000);
+
+  chassis.pid_turn_set(180, 100, true);
+  chassis.pid_wait();
+  pros::delay(1000);
+
+  chassis.pid_turn_set(-90, 100, true);
+  chassis.pid_wait();
+  pros::delay(1000);
+
+  chassis.pid_turn_set(0, 100, true);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-12, 127, true);
-  chassis.pid_wait();
-
-  chassis.pid_drive_set(-12, 127, true);
-  chassis.pid_wait();
 }
 void wall_tracking_test() {
   drive_wall(450,127);
@@ -1858,23 +1868,33 @@ void wall_alignment_test() {
   R3.brake();
 }
 void pid_tune(){
-
-  chassis.pid_drive_set(24,  85, true);
+  pros::Task Task (controller_update);
+  chassis.drive_imu_scaler_set(1);
+  chassis.pid_turn_exit_condition_set(90_ms, 1_deg, 250_ms, 7_deg, 500_ms, 500_ms);
+  //pros::delay(5000);
+  chassis.pid_turn_set(90_deg, 40);
   chassis.pid_wait();
-  chassis.pid_turn_set(90, 85, true);
+  pros::delay(100);
+  chassis.pid_turn_set(180_deg, 40);
   chassis.pid_wait();
+  pros::delay(100);
+  chassis.pid_turn_set(270_deg, 40);
+  chassis.pid_wait();
+  chassis.pid_turn_set(0_deg, 40);
+  chassis.pid_wait();
+  pros::delay(1999999999);
 
-  //chassis.pid_drive_set(-30, 127, true);
-  //chassis.pid_wait();
-  // trapdoor.set(1);
-  // intake_top.move(-100);
-  // intake_top_score.move(127);
-  // pros::delay(200);
-  // intake_top_score.move(-60);
-  // pros::delay(300);
-  // intake_top.move(127);
-  // intake_top_score.move(127);
-  // trapdoor.set(0);
+  chassis.pid_turn_set(360_deg, 40, ez::raw);
+  chassis.pid_wait();
+  pros::delay(1000);
+
+  chassis.pid_turn_set(360*2_deg, 40, ez::raw);
+  chassis.pid_wait();
+  pros::delay(1000);
+
+  chassis.pid_turn_set(360*3_deg, 80, ez::raw);
+  chassis.pid_wait();
+  pros::delay(1000);
 }
 
 void intake_test(){
