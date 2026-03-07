@@ -155,8 +155,8 @@ void initialize() {
 
   // Set the color of the balls you want to throw out here
 
-  color = "x";
-  // discore_mech.set(1);
+  color = "R";
+  discore_mech.set(1);
   // trapdoor.set(1);
   //intake_piston.set(1);
 
@@ -178,10 +178,14 @@ void initialize() {
   //pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"right safe", safe_skills},
-    {"right solo", pid_tune},
-    {"elims auton 3 goals", left_elims_quick_ml},
-    {"elims left", left_elims_7ball},
+    {"96 skills; Color we're sorting = " + color, safe_skills},
+    {"Left side 4 long 3 top & push; Color we're sorting = " + color, left_4_3_push},
+    {"Right 4 3 push; Color we're sorting = " + color, right_4_3_push},
+    {"Push solo; Color we're sorting = " + color, push_solo},
+    {"Left 7 mid (secret weapon); Color we're sorting = " + color, left_7_mid},
+    {"Left 7 long; Color we're sorting = " + color, left_elims_7ball},
+    {"Left 4 long rush; Color we're sorting = " + color, left_elims_quick},
+    {"Right 7 long; Color we're sorting = " + color, right_elims_7ball},
   });
   
   chassis.initialize();
@@ -330,7 +334,8 @@ void opcontrol() {
     else if (master.get_digital(DIGITAL_L1)) {
 			intake_bottom.move(-127);
 			intake_top.move(-127);
-      // intake_top_score.move(-127);
+      intake_top_score.move(-127);
+      intake_piston.set(1);
 
 		} 
     else if (master.get_digital(DIGITAL_L2)) {
@@ -339,7 +344,6 @@ void opcontrol() {
       if  (control_to_controller)(intake_top.move(127));
       if  (control_to_controller)(intake_top_score.move(127));
 		} 
-
 
     else if (master.get_digital(DIGITAL_A)) {
       intake_bottom.move(127);
@@ -350,6 +354,7 @@ void opcontrol() {
       intake_bottom.move(0);
 		  intake_top.move(0);
       intake_top_score.move(0);
+      intake_piston.set(0);
     }
 
     // } 
@@ -475,7 +480,7 @@ void opcontrol() {
 
       
 
-      master.print(0, 0, "%d/%d/%d/%s/%d            ", /*L1.get_temperature*/(int)inertial.get_heading()/*color_sort.get_hue()*//*anti_jam_is_working(int)vertical_tracker.get_position()/100 dt_temps */, color_sort.get_proximity()/*top_temp*/, top_temp, color, middgoal_Srore);
+      master.print(0, 0, "%d/%d/%d/%s/%d            ", /*L1.get_temperature*/(int)inertial.get_heading()/*color_sort.get_hue()*//*anti_jam_is_working(int)vertical_tracker.get_position()/100 dt_temps */,top_score_temp, dt_temps, color, middgoal_Srore);
     }
 
 		count++;

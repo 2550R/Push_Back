@@ -83,7 +83,6 @@ void drive_wall(float distance, float DRIVE_SPEED) {
   float time_out_B = 100;
   //float slue_value = 10;
 
-  chassis_brake();
   while (true) {
 
     //Big error timeout
