@@ -34,6 +34,7 @@ inline pros::Distance distance_front_r(99); // removed sensor
 inline pros::Distance distance_front(99); // removed sensor
 
 inline pros::Optical color_sort(16);
+inline pros::Distance matchloader_distace(21);
 
 inline pros::Motor intake_bottom(17);
 inline pros::Motor intake_top(-2);

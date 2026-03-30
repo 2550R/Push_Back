@@ -62,12 +62,13 @@ void chassis_drive_wall(float distance, float DRIVE_SPEED, bool chain, bool back
 //   drive_wall_task_running.remove();
 // }
 
+
 float d_KP = 0.3;
 float d_KI = 0;
-float d_KD = 0.0021;
+float d_KD = 0.35;
 
 void drive_wall(float distance, float DRIVE_SPEED) {
-  chassis.drive_brake_set(pros::E_MOTOR_BRAKE_HOLD);
+  //chassis.drive_brake_set(pros::E_MOTOR_BRAKE_HOLD);
   stop_task = true;
   float error;
   float new_error;
@@ -77,14 +78,16 @@ void drive_wall(float distance, float DRIVE_SPEED) {
   float derivative;
   float arrival_time_B = 0;
   float arrival_time_S = 0;
-  float arrival_distance_S = 5;
-  float arrival_distance_B = 15;
-  float time_out_S = 10;
-  float time_out_B = 100;
+  float arrival_distance_S = 10;
+  float arrival_distance_B = 40;
+  float time_out_S = 50;
+  float time_out_B = 150;
+  float slue_value = 60;
+
+  float imu_sensor_value = inertial.get_heading();
   //float slue_value = 10;
 
   while (true) {
-
     //Big error timeout
     if (distance_front_l.get_distance() < distance + arrival_distance_B && distance_front_l.get_distance() > distance - arrival_distance_B){
       if (arrival_time_B == 0){
@@ -113,18 +116,23 @@ void drive_wall(float distance, float DRIVE_SPEED) {
     // if (error == 0){
     //   error = 300;
     // }
-    //imu_error = imu_sensor_value - inertial.get_heading();
-    //float turn_output = imu_error*0.1;
-    float output = (error * d_KP + error * derivative * d_KD + error * integral * d_KI);
-    // if ((output -  prev_output) > slue_value){
-    //   output = prev_output + slue_value;
-    // }
+    float imu_error = imu_sensor_value - inertial.get_heading();
+    float turn_output = imu_error*0.5;
+
+    float output = (error * d_KP + derivative * d_KD + integral * d_KI);
+    if (output > DRIVE_SPEED){
+      output = DRIVE_SPEED;
+    }
+    if (output < -DRIVE_SPEED){
+      output = -DRIVE_SPEED;
+    }
+
     chassis.drive_set(output,output);
 
     prev_error = error;
-    //if (error < 600){
+    if (error < 300 && error > -300){
       integral += error;
-    //}
+    }
 
     pros::delay(50);
   }

@@ -59,6 +59,8 @@ void wall_tracking_test();
 void wall_alignment_test();
 void pid_tune();
 
+void elims_auto();
+
 /* safe routes */
 void left_middle_top();
 void right_4_3_push();
@@ -73,3 +75,6 @@ void right_elims_7ball();
 /* Color Sort tests */
 void color_sort_test();
 void PIDvsODOM();
+
+/* New Skills*/
+void full_skills_auton();

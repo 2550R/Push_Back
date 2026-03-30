@@ -155,7 +155,7 @@ void initialize() {
 
   // Set the color of the balls you want to throw out here
 
-  color = "R";
+  color = "B";
   discore_mech.set(1);
   // trapdoor.set(1);
   //intake_piston.set(1);
@@ -178,13 +178,15 @@ void initialize() {
   //pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"96 skills; Color we're sorting = " + color, safe_skills},
-    {"Left side 4 long 3 top & push; Color we're sorting = " + color, left_4_3_push},
-    {"Right 4 3 push; Color we're sorting = " + color, right_4_3_push},
-    {"Push solo; Color we're sorting = " + color, push_solo},
-    {"Left 7 mid (secret weapon); Color we're sorting = " + color, left_7_mid},
+    {"Inake test", intake_test},
+    {"Skills, Color we are sorting = " + color, full_skills_auton},
     {"Left 7 long; Color we're sorting = " + color, left_elims_7ball},
+        {"Left 7 mid (secret weapon); Color we're sorting = " + color, left_7_mid},
     {"Left 4 long rush; Color we're sorting = " + color, left_elims_quick},
+    {"Left side 4 long 3 top & push; Color we're sorting = " + color, left_4_3_push},
+    {"Push solo; Color we're sorting = " + color, push_solo},
+    {"96 skills; Color we're sorting = " + color, safe_skills},
+    {"Right 4 3 push; Color we're sorting = " + color, right_4_3_push},
     {"Right 7 long; Color we're sorting = " + color, right_elims_7ball},
   });
   
@@ -480,7 +482,7 @@ void opcontrol() {
 
       
 
-      master.print(0, 0, "%d/%d/%d/%s/%d            ", /*L1.get_temperature*/(int)inertial.get_heading()/*color_sort.get_hue()*//*anti_jam_is_working(int)vertical_tracker.get_position()/100 dt_temps */,top_score_temp, dt_temps, color, middgoal_Srore);
+      master.print(0, 0,"%d/%d/%d/%s/%d             ",dt_temps, matchloader_distace.get_distance(), dt_temps, color, middgoal_Srore);
     }
 
 		count++;

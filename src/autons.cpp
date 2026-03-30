@@ -37,15 +37,27 @@ int screen = 0;
 
 void controller_update() {
   while (true) {
-    if (screen == 0) {
-      master.print(0, 0, "%f          ", (inertial.get_heading())/*, intake_bottom.get_current_draw(),distance_front.get_distance()*/);
-      pros::delay(100);
-    } else {
-      master.print(0, 0, "%f/%f      ", p_x, p_y);
-      pros::delay(100);
-    }
+    master.print(0,0, "%d          " , (int)matchloader_distace.get_distance());
+    pros::delay(10);
   }
 
+}
+void matchloader(){
+  bool condition = matchloader_distace.get_distance() < 150;
+  int time_detected = pros::millis();
+  int time_started = pros::millis();
+  bool first_ball = false;
+  while(pros::millis() - time_detected < 150 /*was 200*/ && pros::millis() - time_started < 700){
+    condition = matchloader_distace.get_distance() < 150;
+    if (condition){first_ball = true;}
+
+    if (first_ball){
+      if (condition){time_detected = pros::millis();}
+    } else {
+      time_detected = pros::millis();
+    }
+
+  }
 }
 bool intake_auto_reverse_enabled = true;
 void intake_counter_spin(){
@@ -225,6 +237,182 @@ void default_constants() {
 ////////////////////////////////////////////////////////
 
 // unfinished
+
+void full_skills_auton(){
+  chassis.odom_xyt_set(0_in, 0_in, 180_deg);
+  pros::Task d (controller_update);
+
+  discore_mech.set(0);
+  trapdoor.set(1);
+
+
+  drive_wall(600, 60);
+  bottom_intake(127);
+  top_intake(127);
+  chassis.pid_turn_set(55,80);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(30,100); 
+  chassis.pid_wait();
+  //pros::delay(1000);
+
+  chassis.pid_turn_set(-45, 80);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(17.5, 100);
+  chassis.pid_wait();
+  intake_piston.set(1);
+  int time = pros::millis();
+  intake_top.move(-127);
+  pros::delay(50);
+  top_intake_score(-50);
+  bool forward_switch = false;
+  while (pros::millis() - time < 100){
+    // if (!forward_switch){
+    // chassis.pid_drive_set(-1.5,30);
+    // }
+    // if (forward_switch){
+    //   chassis.pid_drive_set(1.5, 30, false);
+    // }
+    intake_top_score.move(-80);
+    intake_top.move(-127);
+    intake_bottom.move(-44);
+    // pros::delay(300);
+    // bottom_intake(80);
+    // top_intake(80);
+    // pros::delay(50);
+    forward_switch = !forward_switch;
+  }
+
+  intake_piston.set(0);
+
+  chassis.pid_drive_set(-5, 80, true);
+  chassis.pid_wait_quick_chain();
+
+  intake_top.move(127);
+  intake_bottom.move(127);
+  intake_top_score.move(127);
+
+  chassis.pid_turn_set(-95, 100, true);
+  chassis.pid_wait_quick_chain();
+  
+  chassis.pid_drive_set(27, 100, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_swing_set(RIGHT_SWING, -130, 100, 20, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_drive_set(21, 100, true);
+  chassis.pid_wait_quick_chain();
+
+  Little_Mech_Mac.set(1);
+
+  chassis.pid_turn_set(180, 100, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_drive_set(15, 60, true);
+  pros::delay(2000);
+
+  chassis.pid_drive_set(-8, 100, true);
+  chassis.pid_wait_quick_chain();
+
+  Little_Mech_Mac.set(0);
+
+  chassis.pid_turn_set(150, 80, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_drive_set(-11.5, 100, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_turn_set(182, 80, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_drive_set(-31, 127, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 50_ms, 50_ms);
+  chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 40_ms, 30_ms);
+  chassis.pid_turn_set(200, 80, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_drive_set(-7, 80, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_swing_set(RIGHT_SWING, 0, -100, -10, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_drive_set(-5, 100, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
+  chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 400_ms, 300_ms);
+
+  top_intake(127);
+  top_intake_score(127);
+  pros::delay(700);
+
+  Little_Mech_Mac.set(1);
+
+  chassis.pid_drive_set(15,127);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 40_ms, 30_ms);
+  chassis.pid_drive_set(20, 60);
+  chassis.pid_wait_quick();
+
+  pros::delay(700);
+
+  chassis.pid_drive_set(-27, 100);
+  chassis.pid_wait_quick();
+  
+
+
+  /* The old code with the 
+  chassis.pid_turn_set(-39, 100, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_drive_set(10, 100, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_turn_set(1, 100, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_drive_constants_set(11, 0, 175, 10.0);
+  chassis.pid_drive_set(59, 100, true);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_constants_set(22, 0, 150);
+  
+  //score match loader
+  chassis.pid_turn_set(60, 100, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_drive_set(6.2, 100, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_turn_set(0, 100, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 100_ms, 300_ms);
+  chassis.pid_drive_set(-10.2, 100, true);
+  pros::delay(500);
+  trapdoor.set(0);
+  chassis.pid_wait_quick_chain();  
+  chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 400_ms, 300_ms);
+
+  pros::delay(1700);
+  trapdoor.set(1);
+
+  chassis.pid_drive_set(10, 80, true);
+  */
+
+
+  
+
+
+
+}
+
+
 void top_middle_bottom(){
   chassis.odom_xyt_set(0_in, 0_in, -90_deg);
   trapdoor.set(1);
@@ -344,7 +532,7 @@ void left_4_3_push(){
   chassis.pid_turn_set(-138, 100, true);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_drive_set(24, 100, true);
+  chassis.pid_drive_set(25, 100, true);
   chassis.pid_wait_quick_chain();
 
   chassis.pid_turn_constants_set(3.7, 0, 22, 12.0); // 3.2 0 22 12.0
@@ -368,7 +556,7 @@ void left_4_3_push(){
   chassis.pid_drive_constants_set(22, 0, 150);
 
   trapdoor.set(0);
-  pros::delay(800);
+  pros::delay(350);
   trapdoor.set(1);
 
   chassis.pid_drive_set(4.5, 80, true);
@@ -376,7 +564,7 @@ void left_4_3_push(){
 
   discore_mech.set(1);
 
-  chassis.pid_turn_set(-131, 80, true);
+  chassis.pid_turn_set(-130, 80, true);
   chassis.pid_wait_quick_chain();
 
   chassis.pid_swing_exit_condition_set(0_ms, 4_deg, 250_ms, 7_deg, 500_ms, 100_ms);
@@ -385,7 +573,7 @@ void left_4_3_push(){
   chassis.pid_wait_quick_chain();
 
   chassis.pid_drive_set(-14, 80, true);
-  chassis.pid_wait();
+  chassis.pid_wait_quick();
 
   Little_Mech_Mac.set(0);
 
@@ -399,15 +587,14 @@ void left_4_3_push(){
   chassis.pid_wait_quick_chain();
 
   chassis.pid_drive_set(-35, 80, true);
-  chassis.pid_wait_quick();
-
-  chassis.pid_drive_set(2, 1, true);
-
+  pros::delay(1100);
   intake_bottom.move(-80);
   intake_top.move(-80);
   intake_top_score.move(-80);
+  chassis.pid_wait_quick();
 
-  pros::delay(200);
+  chassis.pid_drive_set(2, 2, true);
+
 
   intake_bottom.move(127);
   intake_top.move(50);
@@ -416,7 +603,7 @@ void left_4_3_push(){
 
   int waittime = pros::millis();
 
-  while (pros::millis() - waittime  <= 1200) { 
+  while (pros::millis() - waittime  <= 1400) { 
     if(color == "R"){
       if (color_sort.get_hue() > 0 && color_sort.get_hue() < 10){
         top_intake_score(127);
@@ -487,19 +674,19 @@ void left_7_mid(){
   chassis.pid_wait_quick_chain();
 
   chassis.pid_drive_set(1000, 40, true);
-  pros::delay(660);
-  chassis.pid_drive_set(-13, 40, true);
+  pros::delay(640);
+  chassis.pid_drive_set(-12, 40, true);
   chassis.pid_wait_quick_chain();
 
   Little_Mech_Mac.set(0);
 
-  chassis.pid_turn_set(-130, 80, true);
+  chassis.pid_turn_set(-128, 80, true);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_swing_set(LEFT_SWING, 175, 90, 20, true);
+  chassis.pid_swing_set(LEFT_SWING, 175, 90, 30, true);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_drive_set(-17, 80, true);
+  chassis.pid_drive_set(-11, 80, true);
   chassis.pid_wait_quick_chain();
 
   chassis.pid_turn_set(-180, 60, true);
@@ -509,8 +696,10 @@ void left_7_mid(){
 
   discore_mech.set(1);
 
-  chassis.pid_drive_set(19, 80, true);
+  chassis.pid_drive_set(18, 80, true);
   chassis.pid_wait_quick_chain();
+
+  chassis_drive_wall(815, 80, false, false);
 
   chassis.pid_turn_set(-135, 60, true);
   chassis.pid_wait_quick_chain();
@@ -528,7 +717,7 @@ void left_7_mid(){
 
   intake_bottom.move(127);
   intake_top.move(50);
-  intake_top_score.move(-30);
+  intake_top_score.move(-35);
 
   int waittime = pros::millis();
 
@@ -613,7 +802,7 @@ void left_elims_7ball(){
 
   int waittime = pros::millis();
   
-  while (pros::millis() - waittime  <= 2000) { 
+  while (pros::millis() - waittime  <= 2200) { 
     if(color == "R"){
       if (color_sort.get_hue() > 0 && color_sort.get_hue() < 10){
         top_intake_score(127);
@@ -634,6 +823,23 @@ void left_elims_7ball(){
     }
   }
   trapdoor.set(1);
+  chassis.pid_drive_set(4.5, 80, true);
+  chassis.pid_wait_quick_chain();
+
+  discore_mech.set(1);
+
+  chassis.pid_turn_set(-131, 80, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_swing_exit_condition_set(0_ms, 4_deg, 250_ms, 7_deg, 500_ms, 100_ms);
+  chassis.pid_swing_constants_set(9, 0.0, 90.5);
+  chassis.pid_swing_set(LEFT_SWING, 180, 127, 22, true);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_drive_set(-21, 80, true);
+
+
+  chassis.drive_brake_set(pros::E_MOTOR_BRAKE_HOLD);
 }
 
 // unfinished
@@ -729,9 +935,9 @@ void left_elims_quick(){
   chassis.pid_wait_quick_chain();
 
   chassis.pid_drive_set(-2, 127, true);
-  pros::delay(320);
+  pros::delay(350);
 
-  chassis.pid_drive_set(4, 80, true);
+  chassis.pid_drive_set(4.5, 80, true);
   chassis.pid_wait_quick_chain();
 
   discore_mech.set(1);
@@ -744,7 +950,7 @@ void left_elims_quick(){
   chassis.pid_swing_set(LEFT_SWING, 180, 127, 22, true);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_drive_set(-20, 80, true);
+  chassis.pid_drive_set(-21, 80, true);
 
 
   chassis.drive_brake_set(pros::E_MOTOR_BRAKE_HOLD);
@@ -845,11 +1051,11 @@ discore_mech.set(0);
   chassis.pid_wait_quick_chain();
 
   chassis.pid_drive_set(1000, 40, true);
-  pros::delay(680);
+  pros::delay(650);
 
   chassis.pid_drive_constants_set(11, 0, 175, 10.0);
-  chassis.pid_drive_set(-25, 80, true);
-  pros::delay(700);
+  chassis.pid_drive_set(-26, 80, true);
+  pros::delay(750);
   trapdoor.set(0);
   Little_Mech_Mac.set(0);
   chassis.pid_wait_quick_chain();
@@ -866,15 +1072,16 @@ discore_mech.set(0);
   chassis.pid_wait_quick_chain();
 
   chassis.pid_drive_set(30, 90, true);
-  chassis.pid_wait_quick();
+  chassis.pid_wait_quick_chain();
 
   intake_piston.set(1);
 
-  chassis.pid_drive_set(10, 60, true);
+  chassis.pid_drive_set(13, 60, true);
   pros::delay(400);
-  intake_top.move(-60);
-  intake_top_score.move(-127);
-  intake_bottom.move(-60);
+  intake_top.move(-80);
+  intake_bottom.move(-80);
+  pros::delay(150);
+  intake_top_score.move(-30);
   chassis.pid_wait_quick_chain();
 
   pros::delay(2000);
@@ -987,6 +1194,8 @@ void push_solo(){
   top_intake_score(127);
   bottom_intake(127);
 
+
+
   chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 100_ms, 100_ms);
   chassis.pid_drive_set(3, 127, true);
   chassis.pid_wait_quick_chain();
@@ -1097,6 +1306,7 @@ void push_solo(){
 
 // finished & tested
 void safe_skills(){
+  pros::Task control(controller_update);
   chassis.pid_drive_constants_set(24, 0, 150); // 22 0 150
   chassis.pid_turn_constants_set(3.4, 0, 22, 12.0); // 3.2 0 22 12.0
 
@@ -1143,7 +1353,7 @@ void safe_skills(){
   
   //grab match loader
   chassis.pid_drive_set(40.5, 80, true);
-  pros::delay(300);
+  pros::delay(100);
   intake_bottom.move(80);
   intake_top.move(-80);
   intake_top_score.move(80);
@@ -1186,7 +1396,7 @@ void safe_skills(){
   chassis.pid_drive_set(59, 100, true);
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_constants_set(22, 0, 150);
-
+  
   //score match loader
   chassis.pid_turn_set(60, 100, true);
   chassis.pid_wait_quick_chain();
@@ -1206,7 +1416,7 @@ void safe_skills(){
 
   pros::delay(1700);
   trapdoor.set(1);
-  
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
   // grab second match loader
  
   intake_bottom.move(127);
@@ -1239,12 +1449,10 @@ void safe_skills(){
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_constants_set(22, 0, 150);
   chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 400_ms, 300_ms);
-
   trapdoor.set(0);
   Little_Mech_Mac.set(0);
   pros::delay(1700);
   //line up for clear
-  
   discore_mech.set(0);
 
   intake_bottom.move(127);
@@ -1910,12 +2118,33 @@ void pid_tune(){
 }
 
 void intake_test(){
-  pros::Task anti_jam_auton1 (anti_jam_auton);
+  pros::Task anti_jam_auton1 (controller_update);
 
-
+  trapdoor.set(1);
+  top_intake(127);
   bottom_intake(127);
-  intake_top.move(127);
-  intake_top_score.move(127);
+  top_intake_score(127);
+  chassis.pid_drive_set(27, 60);
+
+  //matchloader_optical.set_integration_time(3);
+  bool condition = matchloader_distace.get_distance() < 150;
+  int time_detected = pros::millis();
+  int time_started = pros::millis();
+  bool first_ball = false;
+  while(pros::millis() - time_detected < 150 /*was 200*/ && pros::millis() - time_started < 700){
+    condition = matchloader_distace.get_distance() < 150;
+    if (condition){first_ball = true;}
+
+    if (first_ball){
+      if (condition){time_detected = pros::millis();}
+    } else {
+      time_detected = pros::millis();
+    }
+
+  }
+
+  chassis.pid_drive_set(-27, 120);
+  chassis.pid_wait_quick();
 }
 
 void color_sort_test(){
