@@ -20,9 +20,11 @@
  */
 
 ez::Drive chassis(
-  {-6, -5, -8}, //left
-  {14, 19, 18}, //right
-  15,
+
+  {-3, 5, -4}, //left
+  {-17, 1, 18}, //right
+
+  8,
   3.25,
   450
 );
@@ -155,7 +157,7 @@ void initialize() {
 
   // Set the color of the balls you want to throw out here
 
-  color = "B";
+  color = "x";
   discore_mech.set(1);
   // trapdoor.set(1);
   //intake_piston.set(1);
@@ -179,14 +181,15 @@ void initialize() {
 
   ez::as::auton_selector.autons_add({
     {"Skills, Color we are sorting = " + color, full_skills_auton},
-    {"Inake test", intake_test},
+    {"Right 4 3 push; Color we're sorting = " + color, right_4_3_push},
     {"Left 7 long; Color we're sorting = " + color, left_elims_7ball},
+    {"Left side 4 long 3 top & push; Color we're sorting = " + color, left_4_3_push},
+    {"intake_test", intake_test}, 
+    {"PID Tests", square_odom_test},
     {"Left 7 mid (secret weapon); Color we're sorting = " + color, left_7_mid},
     {"Left 4 long rush; Color we're sorting = " + color, left_elims_quick},
-    {"Left side 4 long 3 top & push; Color we're sorting = " + color, left_4_3_push},
     {"Push solo; Color we're sorting = " + color, push_solo},
     {"96 skills; Color we're sorting = " + color, safe_skills},
-    {"Right 4 3 push; Color we're sorting = " + color, right_4_3_push},
     {"Right 7 long; Color we're sorting = " + color, right_elims_7ball},
   });
   
@@ -314,6 +317,8 @@ uint32_t r2_time = 0;
 bool r1_active = false;
 uint32_t r1_time = 0;
 int Digital_X;
+bool trapdoor_state = false;
+int intake_score_allowed = 1;
 void opcontrol() {
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
 	int count = 0;
@@ -322,7 +327,10 @@ void opcontrol() {
   pros::Task color_sort_task_running(color_sort_top);
   while (true) {
     chassis.opcontrol_arcade_standard(ez::SPLIT);
-
+    if (master.get_digital_new_press(DIGITAL_L2)){
+      intake_top_score.move(127);
+      intake_score_allowed = 1;
+    }
     if (master.get_digital_new_press(DIGITAL_R2)) {
       r2_active = true;
       r2_time = pros::millis();
@@ -332,7 +340,6 @@ void opcontrol() {
       r1_active = true;
       r1_time = pros::millis();
     }
-    
     else if (master.get_digital(DIGITAL_L1)) {
 			intake_bottom.move(-127);
 			intake_top.move(-127);
@@ -344,9 +351,22 @@ void opcontrol() {
       //intake_piston.set(0);
 			intake_bottom.move(127);
       if  (control_to_controller)(intake_top.move(127));
-      if  (control_to_controller)(intake_top_score.move(127));
-		} 
+      if  (control_to_controller){
 
+        if (intake_top_score.get_current_draw() > 2300){
+          intake_score_allowed = 0;
+        }
+        if (trapdoor_state){
+          intake_score_allowed = 1;
+        }
+        if (intake_score_allowed == 1){
+          intake_top_score.move(127);
+        }
+        // if (intake_score_allowed == 0){
+        //   intake_top_score.move(0);
+        // }
+		  }
+    } 
     else if (master.get_digital(DIGITAL_A)) {
       intake_bottom.move(127);
 			intake_top.move(55);
@@ -358,13 +378,6 @@ void opcontrol() {
       intake_top_score.move(0);
       intake_piston.set(0);
     }
-
-    // } 
-    //   else {
-		//   	intake_bottom.move(-40);
-		// 	  intake_top.move(-60);
-    //   }
-    // }
 
     if (r2_active) {
       if (pros::millis() - r2_time >= 1000) {
@@ -401,9 +414,13 @@ void opcontrol() {
 
     if (master.get_digital(DIGITAL_RIGHT)) {
       trapdoor.set(0);
+      trapdoor_state = true;
     }
     else {
-      if(control_to_controller)(trapdoor.set(1));
+      if(control_to_controller){
+        trapdoor.set(1);
+        trapdoor_state = false;
+      }
     }
 
     if (master.get_digital(DIGITAL_Y)) {
@@ -421,10 +438,10 @@ void opcontrol() {
     }
 
     if (master.get_digital(DIGITAL_DOWN)) {
-      discore_mech.set(1);
+      discore_mech.set(0);
     }
     else {
-      discore_mech.set(0);
+      discore_mech.set(1);
     }
 
     if (master.get_digital_new_press(DIGITAL_X)) {
@@ -478,12 +495,10 @@ void opcontrol() {
         intake_back = "N";
       }
 
+      //master.print(0, 0,"%d/%d/%d/%s              ",intake_top_score.get_current_draw(),(int) intake_top.get_torque(), dt_temps, color);
 
+      master.print(0,0, "%d/%d/%d           ", distance_back_l.get_distance(), distance_back_r.get_distance(), (int) R3.get_position());
 
-      
-
-      master.print(0, 0,"%d/%d/%d/%s/%d             ",intake_top_score.get_current_draw(),(int) intake_top.get_torque(), dt_temps, color, middgoal_Srore);
-      pros::delay(100);
     }
 
 		count++;

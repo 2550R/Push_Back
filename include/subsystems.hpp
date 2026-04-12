@@ -15,44 +15,39 @@ inline pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 extern Drive chassis;
 
-inline pros::Motor L1(-6);
-inline pros::Motor L2(-5);
-inline pros::Motor L3(-8);
+inline pros::Motor L1(-1);
+inline pros::Motor L2(17);
+inline pros::Motor L3(-18);
 
-inline pros::Motor R1(14);
-inline pros::Motor R2(19);
-inline pros::Motor R3(18);
+inline pros::Motor R1(-5);
+inline pros::Motor R2(4);
+inline pros::Motor R3(-3);
 
-inline pros::Imu inertial(15);
+inline pros::Imu inertial(8);
 
-inline pros::Distance distance_back_l(13); // removed sensor
-inline pros::Distance distance_front_l(9);
+inline pros::Distance distance_back_l(99); // removed sensor
+inline pros::Distance distance_front_l(11);
 inline pros::Distance distance_back(3);
 inline pros::Distance distance_match_loader(21);
 inline pros::Distance distance_back_r(99); // removed sensor
-inline pros::Distance distance_front_r(99); // removed sensor
+inline pros::Distance distance_front_r(14);
 inline pros::Distance distance_front(99); // removed sensor
 
-inline pros::Optical color_sort(16);
+inline pros::Optical color_sort(13);
 inline pros::Distance matchloader_distace(21);
 
-inline pros::Motor intake_bottom(17);
-inline pros::Motor intake_top(-2);
-inline pros::Motor intake_top_score(-10);
+inline pros::Motor intake_bottom(10);
+inline pros::Motor intake_top(-16);
+inline pros::Motor intake_top_score( -13);
 inline pros::Motor vertical_tracker('Z');
 
 inline ez::Piston trapdoor('B');
-inline ez::Piston middle_stage('C'); // removed mech
-inline ez::Piston Little_Mech_Mac('H'); 
-inline ez::Piston color_sort_piston('D'); // removed mech
-inline ez::Piston intake_piston('C');
+inline ez::Piston Little_Mech_Mac('A'); 
+inline ez::Piston intake_piston('D');
 
-inline ez::Piston mid_descore('G');
+inline ez::Piston mid_descore('H');
 
-inline ez::Piston right_rush_mech('F'); // removed mech
-inline ez::Piston left_rush_mech('B'); // removed mech
-
-inline ez::Piston discore_mech('A');
+inline ez::Piston discore_mech('F');
 
 inline pros::Distance intake_distance(16);
 

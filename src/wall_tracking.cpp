@@ -67,6 +67,83 @@ float d_KP = 0.3;
 float d_KI = 0;
 float d_KD = 0.35;
 
+void drive_wall_alternate(float distance, float DRIVE_SPEED){
+  //chassis.drive_brake_set(pros::E_MOTOR_BRAKE_HOLD);
+  stop_task = true;
+  float error;
+  float new_error;
+  float prev_error;
+  float prev_output;
+  float integral;
+  float derivative;
+  float arrival_time_B = 0;
+  float arrival_time_S = 0;
+  float arrival_distance_S = 10;
+  float arrival_distance_B = 40;
+  float time_out_S = 50;
+  float time_out_B = 150;
+  float slue_value = 60;
+
+
+  float imu_sensor_value = inertial.get_heading();
+  float distance_sensor_value = distance_front_l.get_distance();
+  //float slue_value = 10;
+
+  while (true) {
+
+    //Big error timeout
+    if (distance_sensor_value < distance + arrival_distance_B && distance_sensor_value > distance - arrival_distance_B){
+      if (arrival_time_B == 0){
+        arrival_time_B = pros::millis();
+      }
+    }else {
+      arrival_time_B = 0;
+    }
+    if (arrival_time_B != 0 && (pros::millis() - arrival_time_B) > time_out_B){
+      break;
+    }
+    //Small error timeout
+    if (distance_sensor_value < distance + arrival_distance_S && distance_sensor_value > distance - arrival_distance_S ){
+      if (arrival_time_S == 0){
+        arrival_time_S = pros::millis();
+      }
+    }else {
+      arrival_time_S = 0;
+    }
+    if (arrival_time_S != 0 && (pros::millis() - arrival_time_S) > time_out_S){
+      break;
+    }
+
+    error = distance_sensor_value - distance;
+    derivative = error - prev_error;
+    // if (error == 0){
+    //   error = 300;
+    // }
+    float imu_error = imu_sensor_value - inertial.get_heading();
+    float turn_output = imu_error*0.5;
+
+    float output = (error * d_KP + derivative * d_KD + integral * d_KI);
+    if (output > DRIVE_SPEED){
+      output = DRIVE_SPEED;
+    }
+    if (output < -DRIVE_SPEED){
+      output = -DRIVE_SPEED;
+    }
+
+    chassis.drive_set(output,output);
+
+    prev_error = error;
+    if (error < 300 && error > -300){
+      integral += error;
+    }
+
+    pros::delay(50);
+  }
+  chassis.drive_set(0,0);
+  // stop_task = false;
+  chassis_brake();
+}
+
 void drive_wall(float distance, float DRIVE_SPEED) {
   //chassis.drive_brake_set(pros::E_MOTOR_BRAKE_HOLD);
   stop_task = true;
@@ -84,12 +161,15 @@ void drive_wall(float distance, float DRIVE_SPEED) {
   float time_out_B = 150;
   float slue_value = 60;
 
+
   float imu_sensor_value = inertial.get_heading();
+  float distance_sensor_value = distance_front_l.get_distance();
   //float slue_value = 10;
 
   while (true) {
+
     //Big error timeout
-    if (distance_front_l.get_distance() < distance + arrival_distance_B && distance_front_l.get_distance() > distance - arrival_distance_B){
+    if (distance_sensor_value < distance + arrival_distance_B && distance_sensor_value > distance - arrival_distance_B){
       if (arrival_time_B == 0){
         arrival_time_B = pros::millis();
       }
@@ -100,7 +180,7 @@ void drive_wall(float distance, float DRIVE_SPEED) {
       break;
     }
     //Small error timeout
-    if (distance_front_l.get_distance() < distance + arrival_distance_S && distance_front_l.get_distance() > distance - arrival_distance_S ){
+    if (distance_sensor_value < distance + arrival_distance_S && distance_sensor_value > distance - arrival_distance_S ){
       if (arrival_time_S == 0){
         arrival_time_S = pros::millis();
       }
@@ -111,7 +191,7 @@ void drive_wall(float distance, float DRIVE_SPEED) {
       break;
     }
 
-    error = distance_front_l.get_distance() - distance;
+    error = distance_sensor_value - distance;
     derivative = error - prev_error;
     // if (error == 0){
     //   error = 300;
