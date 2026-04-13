@@ -116,7 +116,7 @@ void color_sort_top() {
       continue;
     }
 
-    if (master.get_digital(DIGITAL_R1)){
+    if (r1_active){
       middgoal_Srore = 1;
     } else {
       middgoal_Srore = 0;
@@ -131,11 +131,10 @@ void color_sort_top() {
     }
     if (middgoal_Srore == 0 && count_color >= 4 ) {
       count_color = 0;
-      pros::delay(50);
       control_to_controller = false;
       intake_top_score.move(-127);
       intake_top.move(20);
-      pros::delay(350);
+      pros::delay(250);
       control_to_controller = true;
 
     } else if (middgoal_Srore == 1 && count_color >= 4){
@@ -158,7 +157,7 @@ void initialize() {
   // Set the color of the balls you want to throw out here
 
   color = "x";
-  discore_mech.set(1);
+  // discore_mech.set(1);
   // trapdoor.set(1);
   //intake_piston.set(1);
 
@@ -376,15 +375,18 @@ void opcontrol() {
       intake_bottom.move(0);
 		  intake_top.move(0);
       intake_top_score.move(0);
-      intake_piston.set(0);
+      if (!r2_active){
+        intake_piston.set(0);
+      }
+      
     }
 
     if (r2_active) {
       if (pros::millis() - r2_time >= 1000) {
         if (!master.get_digital(DIGITAL_L1) && !master.get_digital(DIGITAL_L2)){
-          intake_bottom.move(-44);
+          intake_bottom.move(-60);
           intake_top.move(-127);
-          intake_top_score.move(-10);
+          intake_top_score.move(-30);
         }
       }
 
@@ -495,9 +497,9 @@ void opcontrol() {
         intake_back = "N";
       }
 
-      //master.print(0, 0,"%d/%d/%d/%s              ",intake_top_score.get_current_draw(),(int) intake_top.get_torque(), dt_temps, color);
+      master.print(0, 0,"%d/%d/%d/%s              ",(int)color_sort.get_hue(),(int) intake_top.get_torque(), dt_temps, color);
 
-      master.print(0,0, "%d/%d/%d           ", distance_back_l.get_distance(), distance_back_r.get_distance(), (int) R3.get_position());
+      //master.print(0,0, "%d/%d/%d           ", distance_front_l.get_distance(), distance_front_r.get_distance(), (int) R3.get_position());
 
     }
 

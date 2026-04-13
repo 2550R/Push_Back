@@ -86,11 +86,11 @@ void drive_wall_alternate(float distance, float DRIVE_SPEED){
 
 
   float imu_sensor_value = inertial.get_heading();
-  float distance_sensor_value = distance_front_l.get_distance();
+
   //float slue_value = 10;
 
   while (true) {
-
+  float distance_sensor_value = distance_front_r.get_distance();
     //Big error timeout
     if (distance_sensor_value < distance + arrival_distance_B && distance_sensor_value > distance - arrival_distance_B){
       if (arrival_time_B == 0){
@@ -163,11 +163,11 @@ void drive_wall(float distance, float DRIVE_SPEED) {
 
 
   float imu_sensor_value = inertial.get_heading();
-  float distance_sensor_value = distance_front_l.get_distance();
+
   //float slue_value = 10;
 
   while (true) {
-
+  float distance_sensor_value = distance_front_l.get_distance();
     //Big error timeout
     if (distance_sensor_value < distance + arrival_distance_B && distance_sensor_value > distance - arrival_distance_B){
       if (arrival_time_B == 0){

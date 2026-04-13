@@ -30,11 +30,11 @@ inline pros::Distance distance_front_l(11);
 inline pros::Distance distance_back(3);
 inline pros::Distance distance_match_loader(21);
 inline pros::Distance distance_back_r(99); // removed sensor
-inline pros::Distance distance_front_r(14);
+inline pros::Distance distance_front_r(14); 
 inline pros::Distance distance_front(99); // removed sensor
 
-inline pros::Optical color_sort(13);
-inline pros::Distance matchloader_distace(21);
+inline pros::Optical color_sort(12);
+inline pros::Optical matchloader_color(9);
 
 inline pros::Motor intake_bottom(10);
 inline pros::Motor intake_top(-16);
