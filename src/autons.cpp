@@ -595,7 +595,7 @@ void full_skills_auton(){
   top_intake(-127);
   top_intake_score(-127);
   pros::delay(300);
-  //intake_piston.set(0);
+  intake_piston.set(0);
   bottom_intake(80);
   top_intake(55);
   top_intake_score(-33);
