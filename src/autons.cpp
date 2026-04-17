@@ -585,7 +585,7 @@ void full_skills_auton(){
   Little_Mech_Mac.set(1);
   intake_piston.set(1);
   trapdoor.set(1);
-  bottom_intake(-127);
+  bottom_intake(-100);
   top_intake(0);
   top_intake_score(0);
 
