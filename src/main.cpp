@@ -116,11 +116,11 @@ void color_sort_top() {
       continue;
     }
 
-    if (r1_active){
-      middgoal_Srore = 1;
-    } else {
-      middgoal_Srore = 0;
-    }
+    // if (r1_active){
+    //   middgoal_Srore = 1;
+    // } else {
+    //   middgoal_Srore = 0;
+    // }
 
     bool in_proximity = color_sort.get_proximity() > 240;
     
@@ -157,6 +157,9 @@ void initialize() {
   // Set the color of the balls you want to throw out here
 
   color = "x";
+  matchloader_color.set_led_pwm(100);
+  matchloader_color.set_integration_time(3);
+  color_sort.set_led_pwm(100);
   // discore_mech.set(1);
   // trapdoor.set(1);
   //intake_piston.set(1);
@@ -180,10 +183,10 @@ void initialize() {
 
   ez::as::auton_selector.autons_add({
     {"Skills, Color we are sorting = " + color, full_skills_auton},
+    {"intake_test", intake_test}, 
     {"Right 4 3 push; Color we're sorting = " + color, right_4_3_push},
     {"Left 7 long; Color we're sorting = " + color, left_elims_7ball},
     {"Left side 4 long 3 top & push; Color we're sorting = " + color, left_4_3_push},
-    {"intake_test", intake_test}, 
     {"PID Tests", square_odom_test},
     {"Left 7 mid (secret weapon); Color we're sorting = " + color, left_7_mid},
     {"Left 4 long rush; Color we're sorting = " + color, left_elims_quick},
@@ -319,6 +322,8 @@ int Digital_X;
 bool trapdoor_state = false;
 int intake_score_allowed = 1;
 void opcontrol() {
+
+
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
 	int count = 0;
   bool intake_auto_reverse_enabled = false;
@@ -497,7 +502,8 @@ void opcontrol() {
         intake_back = "N";
       }
 
-      master.print(0, 0,"%d/%d/%d/%s              ",(int)color_sort.get_hue(),(int) intake_top.get_torque(), dt_temps, color);
+
+      master.print(0, 0,"%d/%d/%d/%s              ",(int)matchloader_color.get_proximity(),(int)intake_top.get_current_draw(), dt_temps, color);
 
       //master.print(0,0, "%d/%d/%d           ", distance_front_l.get_distance(), distance_front_r.get_distance(), (int) R3.get_position());
 
