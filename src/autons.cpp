@@ -513,19 +513,22 @@ void full_skills_auton(){
   chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 400_ms, 300_ms);
 
   trapdoor.set(0);
-  top_intake(30);
-  top_intake_score(30);
+  top_intake(45);
+  top_intake_score(45);
   bottom_intake(127);
-  scoring_timeout(1000);
-
+  scoring_timeout(3000);
+  //chassis.pid_drive_set(-20, 80, true);
+  pros::delay(300);
+  top_intake_score(0);
   //Line up for the clear
   top_intake(127);
-  top_intake_score(127);
+
   bottom_intake(127);
 
   Little_Mech_Mac.set(0);
   chassis.pid_drive_set(6.3, 127, true);
   chassis.pid_wait_quick_chain();
+  top_intake_score(127);
   chassis.pid_swing_set(LEFT_SWING, 87, 84, 31, true);
   chassis.pid_wait_quick();
   trapdoor.set(1);
@@ -533,7 +536,7 @@ void full_skills_auton(){
   //clear the 6 ball from the park zone
   
   chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 400_ms, 30000000_ms);
-  chassis.pid_drive_set(80, 60, true);
+  chassis.pid_drive_set(72, 60, true);
   intake_top_score.move(127);
   chassis.pid_wait();
   chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 400_ms, 300_ms);
@@ -541,8 +544,17 @@ void full_skills_auton(){
   chassis.pid_turn_set(90, 77, true);
   chassis.pid_wait();
 
-  drive_wall(1100, 100);
-
+  drive_wall(1040, 100);
+  chassis.pid_turn_set(180, 100);
+  chassis.pid_wait_quick();
+  drive_wall_back(1100, 100);
+  Little_Mech_Mac.set(1);
+  chassis.pid_turn_set(45, 100);
+  chassis.pid_wait();
+  chassis.pid_drive_set(-21, 100);
+  chassis.pid_wait_quick();
+  
+  /* Old line up for the middle goal
   chassis.pid_turn_set(30, 80);
   chassis.pid_wait_quick_chain();
 
@@ -565,31 +577,43 @@ void full_skills_auton(){
 
   chassis.pid_drive_set(-21, 100);
   chassis.pid_wait();
+  
 
-  chassis.pid_drive_set(1,2, true);
+  // chassis.pid_drive_set(1,2, true);
   //Scoring the 8 balls in the middle
-  bottom_intake(-80);
-  top_intake(-80);
-  top_intake_score(-80);
+  */
+  Little_Mech_Mac.set(1);
+  intake_piston.set(1);
+  trapdoor.set(1);
+  bottom_intake(-127);
+  top_intake(0);
+  top_intake_score(0);
 
+  pros::delay(200);
+
+  
+  top_intake(-127);
+  top_intake_score(-127);
   pros::delay(300);
-
-  bottom_intake(127);
-  top_intake(65);
-  top_intake_score(-40);
-  //pros::delay(2600);
+  //intake_piston.set(0);
+  bottom_intake(80);
+  top_intake(55);
+  top_intake_score(-33);
+  pros::delay(300);
+  top_intake(50);
+  top_intake_score(-33);
   int waittime = pros::millis();
-  while (pros::millis() - waittime  <= 2600) { 
+  while (pros::millis() - waittime  <= 3500) { 
     if (color_sort.get_hue() > 210 && color_sort.get_hue() < 240){    
       break;
     }
   }
-  pros::delay(100);
   top_intake_score(127);
   top_intake(-127);
   bottom_intake(127);
   chassis.pid_drive_set(42, 80, true);
   chassis.pid_wait_quick_chain();
+  pros::delay(30000);
 
   intake_bottom.move(127);
   intake_top.move(127);
