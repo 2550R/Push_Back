@@ -65,9 +65,9 @@ void chassis_drive_wall(float distance, float DRIVE_SPEED, bool chain, bool back
 
 float d_KP = 0.3;
 float d_KI = 0;
-float d_KD = 0.35;
+float d_KD = 0.4;
 
-void drive_wall_back(float distance, float DRIVE_SPEED) {
+void drive_wall_back(float distance, float DRIVE_SPEED, int time_till_action ) {
   //chassis.drive_brake_set(pros::E_MOTOR_BRAKE_HOLD);
   stop_task = true;
   float error;
@@ -78,12 +78,12 @@ void drive_wall_back(float distance, float DRIVE_SPEED) {
   float derivative;
   float arrival_time_B = 0;
   float arrival_time_S = 0;
-  float arrival_distance_S = 10;
+  float arrival_distance_S = 5;
   float arrival_distance_B = 40;
-  float time_out_S = 50;
-  float time_out_B = 150;
+  float time_out_S = 150;
+  float time_out_B = 300;
   float slue_value = 60;
-
+  int time_start = pros::millis();
 
   float imu_sensor_value = inertial.get_heading();
 
@@ -136,7 +136,11 @@ void drive_wall_back(float distance, float DRIVE_SPEED) {
     if (error < 300 && error > -300){
       integral += error;
     }
-
+    if (time_till_action != 0){
+      if (pros::millis() - time_start > time_till_action){
+        Little_Mech_Mac.set(1);
+      }
+    }
     pros::delay(50);
   }
   chassis.drive_set(0,0);

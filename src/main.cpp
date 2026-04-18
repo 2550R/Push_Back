@@ -189,7 +189,7 @@ void initialize() {
     {"Left side 4 long 3 top & push; Color we're sorting = " + color, left_4_3_push},
     {"PID Tests", square_odom_test},
     {"Left 7 mid (secret weapon); Color we're sorting = " + color, left_7_mid},
-    {"Left 4 long rush; Color we're sorting = " + color, left_elims_quick},
+    //{"Left 4 long rush; Color we're sorting = " + color, left_elims_quick},
     {"Push solo; Color we're sorting = " + color, push_solo},
     {"96 skills; Color we're sorting = " + color, safe_skills},
     {"Right 7 long; Color we're sorting = " + color, right_elims_7ball},
