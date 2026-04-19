@@ -134,7 +134,7 @@ void color_sort_top() {
       control_to_controller = false;
       intake_top_score.move(-127);
       intake_top.move(20);
-      pros::delay(250);
+      pros::delay(150);
       control_to_controller = true;
 
     } else if (middgoal_Srore == 1 && count_color >= 4){
@@ -153,13 +153,16 @@ void color_sort_top() {
 
 
 void initialize() {
-
+  pros::lcd::initialize();
   // Set the color of the balls you want to throw out here
 
   color = "x";
   matchloader_color.set_led_pwm(100);
   matchloader_color.set_integration_time(3);
   color_sort.set_led_pwm(100);
+    color_sort.set_led_pwm(100);
+  seven_ball_sensor.set_led_pwm(100);
+  seven_ball_sensor.set_integration_time(3);
   // discore_mech.set(1);
   // trapdoor.set(1);
   //intake_piston.set(1);
@@ -168,8 +171,9 @@ void initialize() {
 
   // discore_mech.set(1);
   // intake_piston.set(1);
-  ez::ez_template_print();
-  color_sort.set_led_pwm(100);
+
+  //ez::ez_template_print();
+
   pros::delay(500);  // Stop the user from doing anything while legacy ports configure
 	//chassis.odom_tracker_back_set(&horiz_tracker);
   // chassis.odom_tracker_right_set(&vert_tracker);
@@ -203,6 +207,7 @@ void initialize() {
   ez::as::initialize();
   master.rumble(chassis.drive_imu_calibrated() ? "." : "-");
   master.rumble(broken ? "." : "-");
+
 }
 
 void controller_update_main() {
@@ -297,7 +302,7 @@ void ez_screen_task() {
   }
 }
 
-pros::Task ezScreenTask(ez_screen_task);
+//pros::Task ezScreenTask(ez_screen_task);
 
 double to_fahrenheit(double celsius) {
 	return celsius * 9 / 5 + 32;
@@ -322,7 +327,6 @@ int Digital_X;
 bool trapdoor_state = false;
 int intake_score_allowed = 1;
 void opcontrol() {
-
 
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
 	int count = 0;
@@ -503,8 +507,8 @@ void opcontrol() {
       }
 
 
-      //master.print(0, 0,"%d/%d/%d/%s              ",(int)matchloader_color.get_proximity(),(int)intake_top.get_current_draw(), dt_temps, color);
-      master.print(0,0 ,"%d/%d/%d              ", (int)(L1.get_position()+R2.get_position()), (int)(L2.get_position() + (int)R1.get_position()), (int)(L3.get_position() + (int)R3.get_position()));
+      master.print(0, 0,"%d/%d/%d/%s              ",(int)matchloader_color.get_proximity(),(int)intake_top.get_current_draw(), dt_temps, color);
+      //master.print(0,0 ,"%d/%d/%d              ", (int)(L1.get_position()+R2.get_position()), (int)(L2.get_position() + (int)R1.get_position()), (int)(L3.get_position() + (int)R3.get_position()));
       //master.print(0,0, "%d/%d/%d           ", distance_front_l.get_distance(), distance_front_r.get_distance(), (int) R3.get_position());
 
     }

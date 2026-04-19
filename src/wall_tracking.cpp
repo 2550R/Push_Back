@@ -79,9 +79,9 @@ void drive_wall_back(float distance, float DRIVE_SPEED, int time_till_action ) {
   float arrival_time_B = 0;
   float arrival_time_S = 0;
   float arrival_distance_S = 5;
-  float arrival_distance_B = 40;
-  float time_out_S = 150;
-  float time_out_B = 300;
+  float arrival_distance_B = 50;
+  float time_out_S = 250;
+  float time_out_B = 800;
   float slue_value = 60;
   int time_start = pros::millis();
 
