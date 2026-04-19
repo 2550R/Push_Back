@@ -531,7 +531,7 @@ void full_skills_auton(){
   intake_top_score.move(127);
   chassis.pid_wait();
   chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 400_ms, 300_ms);
-  
+  */
   chassis.pid_turn_set(90, 77, true);
   chassis.pid_wait();
 
@@ -558,45 +558,23 @@ void full_skills_auton(){
   chassis.pid_wait_quick();
 
   chassis.pid_drive_set(-29, 100); //24 
-  pros::delay(800);
+  pros::delay(300);
 
   //Scoring the 8 balls in the middle
-*/
-  intake_piston.set(1);
-  trapdoor.set(1);
-  bottom_intake(-85);
-  //Trying to reduce time
-  top_intake(0);
-  top_intake_score(0);
-
-  pros::delay(100);
-  top_intake(-127);
-  top_intake_score(-127);
-  pros::delay(400);
-  
-  trapdoor.set(1); 
-  bottom_intake(0);
-  top_intake(65);
-  top_intake_score(-30);
-  pros::delay(500);
-  intake_piston.set(0);
+  //add the scoring of the 7 balls
   bottom_intake(127);
-  top_intake(47);
-  top_intake_score(-25);
-  pros::delay(600);
-  top_intake(40);
-  top_intake_score(-15);
-  int waittime = pros::millis();
-  while (pros::millis() - waittime  <= 3500) { 
-    if (seven_ball_sensor.get_hue() > 210 && seven_ball_sensor.get_hue() < 240){    
-      break;
-    }
-  }
+  top_intake(0);
+  top_intake_score(-0);
+  // pros::delay(50);
+  // bottom_intake(0);
+  // top_intake(30);
+  // top_intake_score(-10);
+
   pros::Task d (controller_update);
   distance_in_thebeginning = seven_ball_sensor.get_hue();
-  top_intake_score(127);
-  top_intake(-127);
-  bottom_intake(127);
+  // top_intake_score(127);
+  // top_intake(-127);
+  // bottom_intake(127);
   pros::delay(300000);
   chassis.pid_drive_set(41.5, 80, true);
   chassis.pid_wait_quick_chain();
