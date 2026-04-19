@@ -156,7 +156,7 @@ void initialize() {
   pros::lcd::initialize();
   // Set the color of the balls you want to throw out here
 
-  color = "x";
+  color = "R";
   matchloader_color.set_led_pwm(100);
   matchloader_color.set_integration_time(3);
   color_sort.set_led_pwm(100);
@@ -186,16 +186,16 @@ void initialize() {
   //pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"Skills, Color we are sorting = " + color, full_skills_auton},
-    {"intake_test", intake_test}, 
+    {"Skills", full_skills_auton},
+    {"Right 9 split with 6 long 3 mid; Color we're sorting = " + color, right_9split},
+    {"Right 9 ball; Color we're sorting = " + color, right_9ball},
     {"Right 4 3 push; Color we're sorting = " + color, right_4_3_push},
-    {"Left 7 long; Color we're sorting = " + color, left_elims_7ball},
-    {"Left side 4 long 3 top & push; Color we're sorting = " + color, left_4_3_push},
-    {"PID Tests", square_odom_test},
-    {"Left 7 mid (secret weapon); Color we're sorting = " + color, left_7_mid},
-    //{"Left 4 long rush; Color we're sorting = " + color, left_elims_quick},
+    {"Left 9 split with 6 long 3 mid; Color we're sorting = " + color, left_9split},
+    {"Left 9 ball; Color we're sorting = " + color, left_9ball},
     {"Push solo; Color we're sorting = " + color, push_solo},
-    {"96 skills; Color we're sorting = " + color, safe_skills},
+    {"Left side 4 long 3 top & push; Color we're sorting = " + color, left_4_3_push},
+    {"Left 7 long; Color we're sorting = " + color, left_elims_7ball},
+    {"Skills, Color we are sorting = " + color, full_skills_auton},
     {"Right 7 long; Color we're sorting = " + color, right_elims_7ball},
   });
   

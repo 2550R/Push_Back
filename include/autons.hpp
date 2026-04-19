@@ -19,6 +19,11 @@ void empty();
 void norcal_skills();
 void safe_skills();
 
+void left_9ball();
+void left_9split();
+void right_9ball();
+void right_9split();
+
 void left_4_3_push();
 void top_middle_bottom();
 void left_elims_quick_ml();
