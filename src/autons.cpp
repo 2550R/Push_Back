@@ -493,7 +493,7 @@ void full_skills_auton(){
   bottom_intake(127);
 
   
-
+*/
   top_intake(127);
   bottom_intake(127);
   top_intake_score(127);
@@ -514,7 +514,7 @@ void full_skills_auton(){
   chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 400_ms, 300_ms);
   
  
-  drive_wall(730, 100);
+  drive_wall(740, 100);
 
   chassis.pid_swing_set(LEFT_SWING, 25, 117, 5, true);
   chassis.pid_wait();
@@ -524,7 +524,7 @@ void full_skills_auton(){
   chassis.pid_wait();
   chassis.pid_swing_set(LEFT_SWING, -15, -80, -15, true);
   chassis.pid_wait();
-  chassis.pid_drive_set(-7, 100, true);  
+  chassis.pid_drive_set(-15, 100, true);  
   chassis.pid_wait();
   chassis.pid_swing_set(LEFT_SWING, 45, -15, -80, true);
   chassis.pid_wait();
@@ -532,7 +532,7 @@ void full_skills_auton(){
   chassis.pid_drive_set(-10, 100, true);
   pros::delay(500);
   chassis.pid_drive_set(.5, 40, true);
-*/
+
   //Scoring the 8 balls in the middle
   //add the scoring of the 7 balls
   trapdoor.set(1);
@@ -541,8 +541,9 @@ void full_skills_auton(){
   top_intake_score(-80);
   pros::delay(300);
   bottom_intake(0);
-  intake_top_score.move_velocity(-50);
+  intake_top_score.move(-30);
   intake_top.move_velocity(100);
+
   pros::delay(1000);
   bottom_intake(127);
   pros::delay(300000);
