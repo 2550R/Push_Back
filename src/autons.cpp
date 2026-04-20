@@ -45,17 +45,17 @@ void controller_update() {
 
 }
 void matchloader(int time_out){
-  pros::delay(1500);
+  pros::delay(500);
   int matchloader_distance = matchloader_color.get_proximity();
-  bool condition = 50 < matchloader_distance;
+  bool condition = 40 < matchloader_distance && !(matchloader_color.get_hue() > 30 && matchloader_color.get_hue() < 150);
   int time_detected = pros::millis();
   int time_started = pros::millis();
   bool first_ball = false;
-  while(pros::millis() - time_detected < 250 && pros::millis() - time_started < time_out){
+  while(pros::millis() - time_detected < 400 && pros::millis() - time_started < time_out){
     matchloader_color.set_led_pwm(100);
     matchloader_color.set_integration_time(3);
     matchloader_distance = matchloader_color.get_proximity();
-    condition = 50 < matchloader_distance;
+    condition = 40 < matchloader_distance && !(matchloader_color.get_hue() > 30 && matchloader_color.get_hue() < 150);
     if (condition){first_ball = true;}
 
     if (first_ball){
@@ -63,7 +63,7 @@ void matchloader(int time_out){
     } else {
       time_detected = pros::millis();
     }
-
+    pros::delay(20);
   }
 }
 
@@ -337,6 +337,7 @@ void full_skills_auton(){
   chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 400_ms, 30000000_ms);
   chassis.pid_drive_set(57, 57);//62
   chassis.pid_wait();
+  drive_wall_alternate(740, 100);//1080 
   drive_wall_alternate(800, 100);//1080 
   chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 400_ms, 300_ms);
   
@@ -357,7 +358,7 @@ void full_skills_auton(){
   intake_bottom.move(127);
   // drive_wall_back(1251, 80);
   // distance_in_thebeginning = distance_back_r.get_distance();
-  chassis.pid_drive_set(40.5, 80);
+  chassis.pid_drive_set(39.5, 80);
   chassis.pid_wait();
 
   chassis.pid_turn_set(-44, 80);
@@ -400,17 +401,17 @@ void full_skills_auton(){
   Little_Mech_Mac.set(1);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_drive_set(23, 100, true);
+  chassis.pid_drive_set(22, 100, true);
   chassis.pid_wait_quick_chain();
 
   chassis.pid_turn_set(180, 100, true);
   chassis.pid_wait_quick_chain();
 
   chassis.pid_drive_set(30, 65, true);
-  trapdoor.set(0);
-  pros::delay(100);
-  trapdoor.set(1);
-  matchloader(3000);
+  // trapdoor.set(0);
+  // pros::delay(100);
+  // trapdoor.set(1);
+  matchloader(2000);
 
   chassis.pid_drive_set(-8, 100, true);
   chassis.pid_wait_quick_chain();
@@ -470,7 +471,7 @@ void full_skills_auton(){
 
   chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 40_ms,200_ms);
   chassis.pid_drive_set(50, 60);
-  matchloader(4000);
+  matchloader(2500);
 
   chassis.pid_drive_set(-27.5, 127);
   chassis.pid_wait_quick();
@@ -500,10 +501,10 @@ void full_skills_auton(){
   bottom_intake(127);
   top_intake_score(127);
   Little_Mech_Mac.set(0);
-  chassis.pid_drive_set(7, 127, true);
+  chassis.pid_drive_set(6.3, 127, true);
   chassis.pid_wait_quick_chain();
   top_intake_score(127);
-  chassis.pid_swing_set(LEFT_SWING, 87, 84, 31, true); //87, 84, 31
+  chassis.pid_swing_set(LEFT_SWING, 89 , 84, 31, true); //87, 84, 31
   chassis.pid_wait_quick();
   trapdoor.set(1);
 
@@ -555,14 +556,17 @@ void full_skills_auton(){
 
   //Scoring the 8 balls in the middle
   //add the scoring of the 7 balls
-  trapdoor.set(1);
+  bottom_intake(-80);
+  top_intake(0);
+  top_intake_score(0);
+  pros::delay(100);
   bottom_intake(-80);
   top_intake(-80);
   top_intake_score(-80);
   pros::delay(300);
   bottom_intake(100);
-  intake_top_score.move(-30);
-  intake_top.move_velocity(200);
+  intake_top_score.move(-31);
+  intake_top.move_velocity(105);
   scoring_timeout(4000);
   pros::delay(600);
   bottom_intake(127);
@@ -572,7 +576,7 @@ void full_skills_auton(){
   // bottom_intake(0);
   // top_intake(30);
   // top_intake_score(-10);
-  chassis.pid_drive_set(43, 80, true);
+  chassis.pid_drive_set(42, 80, true);
   chassis.pid_wait_quick_chain();
 
 
@@ -585,10 +589,10 @@ void full_skills_auton(){
   chassis.pid_wait_quick_chain();
   
   chassis.pid_drive_set(20, 60, true);
-  matchloader(3000);
+  matchloader(2500);
    
   //New translation for the other side
-chassis.pid_drive_set(-8, 100, true);
+  chassis.pid_drive_set(-8, 100, true);
   chassis.pid_wait_quick_chain();
 
   Little_Mech_Mac.set(0);
@@ -643,7 +647,7 @@ chassis.pid_drive_set(-8, 100, true);
 
   chassis.pid_drive_exit_condition_set(90_ms, 1_in, 200_ms, 3_in, 40_ms,200_ms);
   chassis.pid_drive_set(40, 55);
-  matchloader(4000);
+  matchloader(2500);
 
   chassis.pid_drive_set(-27.5, 127);
   chassis.pid_wait_quick();

@@ -507,7 +507,7 @@ void opcontrol() {
       }
 
 
-      master.print(0, 0,"%d/%d/%d/%s              ",(int)matchloader_color.get_proximity(),(int)intake_top.get_current_draw(), dt_temps, color);
+      master.print(0, 0,"%d/%d/%d/%s              ",(int)matchloader_color.get_proximity(),(int)matchloader_color.get_hue(), dt_temps, color);
       //master.print(0,0 ,"%d/%d/%d              ", (int)(L1.get_position()+R2.get_position()), (int)(L2.get_position() + (int)R1.get_position()), (int)(L3.get_position() + (int)R3.get_position()));
       //master.print(0,0, "%d/%d/%d           ", distance_front_l.get_distance(), distance_front_r.get_distance(), (int) R3.get_position());
 
