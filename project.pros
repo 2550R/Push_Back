@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "2550R",
+    "project_name": "2550R Sk",
     "target": "v5",
     "templates": {
       "EZ-Template": {

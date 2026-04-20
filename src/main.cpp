@@ -187,12 +187,12 @@ void initialize() {
 
   ez::as::auton_selector.autons_add({
     {"Skills", full_skills_auton},
-    {"Right 9 split with 6 long 3 mid; Color we're sorting = " + color, right_9split},
-    {"Right 9 ball; Color we're sorting = " + color, right_9ball},
-    {"Right 4 3 push; Color we're sorting = " + color, right_4_3_push},
     {"Left 9 split with 6 long 3 mid; Color we're sorting = " + color, left_9split},
     {"Left 9 ball; Color we're sorting = " + color, left_9ball},
     {"Push solo; Color we're sorting = " + color, push_solo},
+    {"Right 9 split with 6 long 3 mid; Color we're sorting = " + color, right_9split},
+    {"Right 9 ball; Color we're sorting = " + color, right_9ball},
+    {"Right 4 3 push; Color we're sorting = " + color, right_4_3_push},
     {"Left side 4 long 3 top & push; Color we're sorting = " + color, left_4_3_push},
     {"Left 7 long; Color we're sorting = " + color, left_elims_7ball},
     {"Skills, Color we are sorting = " + color, full_skills_auton},
@@ -405,10 +405,10 @@ void opcontrol() {
       }
     }
     if (r1_active) {
-      if (pros::millis() - r1_time >= 150) {
+      if (pros::millis() - r1_time >= 100) {
         intake_bottom.move(127);
-        intake_top.move(65);
-        intake_top_score.move(-40);
+        intake_top.move(70);
+        intake_top_score.move(-50);
       }
       else {
         intake_bottom.move(-75);

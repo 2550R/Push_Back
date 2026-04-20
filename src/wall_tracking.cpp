@@ -63,7 +63,7 @@ void chassis_drive_wall(float distance, float DRIVE_SPEED, bool chain, bool back
 // }
 
 
-float d_KP = 0.3;
+float d_KP = 0.25;
 float d_KI = 0;
 float d_KD = 0.4;
 
@@ -80,8 +80,8 @@ void drive_wall_back(float distance, float DRIVE_SPEED, int time_till_action ) {
   float arrival_time_S = 0;
   float arrival_distance_S = 5;
   float arrival_distance_B = 50;
-  float time_out_S = 250;
-  float time_out_B = 800;
+  float time_out_S = 100;
+  float time_out_B = 400;
   float slue_value = 60;
   int time_start = pros::millis();
 
