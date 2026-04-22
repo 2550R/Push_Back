@@ -22,7 +22,7 @@
 ez::Drive chassis(
 
   {-3, 5, -4}, //left
-  {-17, 1, 18}, //right
+  {1, -17, 18}, //right
 
   8,
   3.25,
@@ -155,12 +155,13 @@ void color_sort_top() {
 void initialize() {
   pros::lcd::initialize();
   // Set the color of the balls you want to throw out here
+  ez::ez_template_print();
 
-  color = "R";
+  color = "B";
   matchloader_color.set_led_pwm(100);
   matchloader_color.set_integration_time(3);
   color_sort.set_led_pwm(100);
-    color_sort.set_led_pwm(100);
+  color_sort.set_led_pwm(100);
   seven_ball_sensor.set_led_pwm(100);
   seven_ball_sensor.set_integration_time(3);
   // discore_mech.set(1);
@@ -186,12 +187,12 @@ void initialize() {
   //pros::Task task1(anti_jam);
 
   ez::as::auton_selector.autons_add({
-    {"Skills", full_skills_auton},
     {"Left 9 split with 6 long 3 mid; Color we're sorting = " + color, left_9split},
-    {"Left 9 ball; Color we're sorting = " + color, left_9ball},
     {"Push solo; Color we're sorting = " + color, push_solo},
     {"Right 9 split with 6 long 3 mid; Color we're sorting = " + color, right_9split},
     {"Right 9 ball; Color we're sorting = " + color, right_9ball},
+    {"Skills", full_skills_auton},
+    {"Left 9 ball; Color we're sorting = " + color, left_9ball},
     {"Right 4 3 push; Color we're sorting = " + color, right_4_3_push},
     {"Left side 4 long 3 top & push; Color we're sorting = " + color, left_4_3_push},
     {"Left 7 long; Color we're sorting = " + color, left_elims_7ball},
@@ -253,15 +254,6 @@ void autonomous() {
   ez::as::auton_selector.selected_auton_call();
 }
 
-void screen_print_tracker(ez::tracking_wheel *tracker, std::string name, int line) {
-  std::string tracker_value = "", tracker_width = "";
-  if (tracker != nullptr) {
-    tracker_value = name + " tracker: " + util::to_string_with_precision(tracker->get());
-    tracker_width = "  width: " + util::to_string_with_precision(tracker->distance_to_center_get());
-  }
-  ez::screen_print(tracker_value + tracker_width, line);
-}
-
 void screen_print_temp(pros::v5::Motor *motor, std::string name, int line) {
   if (motor != nullptr) {
     double temperature = motor->get_temperature();
@@ -271,38 +263,52 @@ void screen_print_temp(pros::v5::Motor *motor, std::string name, int line) {
   }
 }
 
+void screen_print_tracker(ez::tracking_wheel *tracker, std::string name, int line) {
+  std::string tracker_value = "", tracker_width = "";
+  // Check if the tracker exists
+  if (tracker != nullptr) {
+    tracker_value = name + " tracker: " + util::to_string_with_precision(tracker->get());             // Make text for the tracker value
+    tracker_width = "  width: " + util::to_string_with_precision(tracker->distance_to_center_get());  // Make text for the distance to center
+  }
+  ez::screen_print(tracker_value + tracker_width, line);  // Print final tracker text
+}
+
+/**
+ * Ez screen task
+ * Adding new pages here will let you view them during user control or autonomous
+ * and will help you debug problems you're having
+ */
 void ez_screen_task() {
   while (true) {
-    if (!pros::competition::is_connected() && ez::as::page_blank_is_on(0)) {
-      ez::screen_print("x: " + util::to_string_with_precision(chassis.odom_x_get()) +
-                       "\ny: " + util::to_string_with_precision(chassis.odom_y_get()) +
-                       "\na: " + util::to_string_with_precision(chassis.odom_theta_get()),
-                       1
-			);
+    // Only run this when not connected to a competition switch
+    if (!pros::competition::is_connected()) {
+      // Blank page for odom debuggin
+        if (ez::as::page_blank_is_on(0)) {
+          // Display X, Y, and Theta
+          ez::screen_print("L1: " + util::to_string_with_precision(L1.get_position()) +
+                               "\nL2: " + util::to_string_with_precision(L2.get_position()) +
+                               "\nL3: " + util::to_string_with_precision(L3.get_position()),
+                           1);  // Don't override the top Page line
 
-      screen_print_tracker(chassis.odom_tracker_left, "l", 4);
-      screen_print_tracker(chassis.odom_tracker_right, "r", 5);
-      screen_print_tracker(chassis.odom_tracker_back, "b", 6);
-      screen_print_tracker(chassis.odom_tracker_front, "f", 7);
+          // Display all trackers that are being used
+          screen_print_tracker(chassis.odom_tracker_left, "l", 4);
+          screen_print_tracker(chassis.odom_tracker_right, "r", 5);
+          screen_print_tracker(chassis.odom_tracker_back, "b", 6);
+          screen_print_tracker(chassis.odom_tracker_front, "f", 7);
+        }
     }
+    
 
-    if (ez::as::page_blank_is_on(1)) {
-      screen_print_temp(&L1, "L1", 1);
-      screen_print_temp(&L2, "L2", 2);
-      screen_print_temp(&L3, "L3", 3);
-      screen_print_temp(&R1, "R1", 4);
-      screen_print_temp(&R2, "R2", 5);
-      screen_print_temp(&R3, "R3", 6);
-    }
-    if (ez::as::page_blank_is_on(2)) {
-      ez::screen_print("test_variable: " + util::to_string_with_precision(color_sort.get_hue()), 1);
+    // Remove all blank pages when connected to a comp switch
+    else {
+      if (ez::as::page_blank_amount() > 0)
+        ez::as::page_blank_remove_all();
     }
 
     pros::delay(ez::util::DELAY_TIME);
   }
 }
-
-//pros::Task ezScreenTask(ez_screen_task);
+pros::Task ezScreenTask(ez_screen_task);
 
 double to_fahrenheit(double celsius) {
 	return celsius * 9 / 5 + 32;
@@ -507,9 +513,9 @@ void opcontrol() {
       }
 
 
-      master.print(0, 0,"%d/%d/%d/%s              ",(int)matchloader_color.get_proximity(),(int)matchloader_color.get_hue(), dt_temps, color);
-      //master.print(0,0 ,"%d/%d/%d              ", (int)(L1.get_position()+R2.get_position()), (int)(L2.get_position() + (int)R1.get_position()), (int)(L3.get_position() + (int)R3.get_position()));
-      //master.print(0,0, "%d/%d/%d           ", distance_front_l.get_distance(), distance_front_r.get_distance(), (int) R3.get_position());
+      //master.print(0, 0,"%d/%d/%d/%s              ",(int)matchloader_color.get_proximity(),(int)matchloader_color.get_hue(), dt_temps, color);
+      master.print(0,0 ,"%d/%d/%d            ", (int)R1.get_position(), (int)R2.get_position(), (int)R3.get_position());
+      //master.print(1,0, "%d/%d/%d           ", distance_front_l.get_distance(), distance_front_r.get_distance(), (int) R3.get_position());
 
     }
 
